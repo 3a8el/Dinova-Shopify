@@ -1,0 +1,460 @@
+{%- comment -%}
+  Dinova "Our collection" switcher: a fixed small heading, a list of large category
+  names, and a paragraph, image and link that change with the selected category.
+  Each category is a block, so the client can add, remove and reorder them.
+{%- endcomment -%}
+
+{%- liquid
+  assign categories = section.blocks | where: 'type', 'category'
+-%}
+
+<dinova-collection-switcher
+  class="dinova-switcher section section--page-width"
+  data-hover="{{ section.settings.switch_on_hover }}"
+  style="
+    --dinova-switcher-bg: {{ section.settings.background_color }};
+    --dinova-switcher-text: {{ section.settings.text_color }};
+    --dinova-switcher-muted: {{ section.settings.inactive_color }};
+    --dinova-switcher-name-size: {{ section.settings.name_size }}rem;
+    --dinova-switcher-ratio: {{ section.settings.image_ratio }};
+    --dinova-switcher-pad-top: {{ section.settings.padding_top }}px;
+    --dinova-switcher-pad-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  <div class="dinova-switcher__inner">
+    <div class="dinova-switcher__intro">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="dinova-switcher__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      <div class="dinova-switcher__texts">
+        {%- for block in categories -%}
+          <div
+            class="dinova-switcher__text rte{% if forloop.first %} is-active{% endif %}"
+            id="DinovaSwitcherPanel-{{ block.id }}"
+            role="tabpanel"
+            aria-labelledby="DinovaSwitcherTab-{{ block.id }}"
+            data-index="{{ forloop.index0 }}"
+            {% unless forloop.first %}
+              hidden
+            {% endunless %}
+          >
+            {{ block.settings.text }}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <div class="dinova-switcher__names" role="tablist" aria-label="{{ section.settings.heading | escape }}">
+      {%- for block in categories -%}
+        <button
+          type="button"
+          class="dinova-switcher__name{% if forloop.first %} is-active{% endif %}"
+          id="DinovaSwitcherTab-{{ block.id }}"
+          role="tab"
+          aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+          aria-controls="DinovaSwitcherPanel-{{ block.id }}"
+          data-index="{{ forloop.index0 }}"
+          tabindex="{% if forloop.first %}0{% else %}-1{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          {{- block.settings.title | escape -}}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <div class="dinova-switcher__links">
+      {%- for block in categories -%}
+        {%- if section.settings.link_label != blank -%}
+          <a
+            class="dinova-switcher__link{% if forloop.first %} is-active{% endif %}"
+            href="{{ block.settings.link | default: routes.all_products_collection_url }}"
+            data-index="{{ forloop.index0 }}"
+            {% unless forloop.first %}
+              hidden
+            {% endunless %}
+          >
+            {{- section.settings.link_label | escape -}}
+            <span class="visually-hidden">: {{ block.settings.title | escape }}</span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="dinova-switcher__media">
+      {%- for block in categories -%}
+        <div
+          class="dinova-switcher__image{% if forloop.first %} is-active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+        >
+          {%- if block.settings.image != blank -%}
+            {{
+              block.settings.image
+              | image_url: width: 1600
+              | image_tag:
+                widths: '600, 900, 1200, 1600',
+                sizes: '(min-width: 750px) 50vw, 100vw',
+                loading: 'lazy',
+                alt: block.settings.image.alt
+            }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-switcher__placeholder' }}
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</dinova-collection-switcher>
+
+<script type="module">
+  if (!customElements.get('dinova-collection-switcher')) {
+    customElements.define(
+      'dinova-collection-switcher',
+      class DinovaCollectionSwitcher extends HTMLElement {
+        connectedCallback() {
+          this.tabs = [...this.querySelectorAll('.dinova-switcher__name')];
+          const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+          this.tabs.forEach((tab) => {
+            tab.addEventListener('click', () => this.select(Number(tab.dataset.index)));
+            if (this.dataset.hover === 'true' && canHover) {
+              tab.addEventListener('mouseenter', () => this.select(Number(tab.dataset.index)));
+            }
+            tab.addEventListener('keydown', (event) => this.onKeydown(event));
+          });
+
+          /* Theme editor: show the category whose block is selected */
+          document.addEventListener('shopify:block:select', (event) => {
+            const tab = this.tabs.find((t) => t === event.target || t.contains(event.target));
+            if (tab) this.select(Number(tab.dataset.index));
+          });
+        }
+
+        onKeydown(event) {
+          const current = this.tabs.indexOf(event.currentTarget);
+          let next = null;
+          if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (current + 1) % this.tabs.length;
+          if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (current - 1 + this.tabs.length) % this.tabs.length;
+          if (event.key === 'Home') next = 0;
+          if (event.key === 'End') next = this.tabs.length - 1;
+          if (next === null) return;
+          event.preventDefault();
+          this.select(next);
+          this.tabs[next].focus();
+        }
+
+        select(index) {
+          this.tabs.forEach((tab, i) => {
+            tab.classList.toggle('is-active', i === index);
+            tab.setAttribute('aria-selected', String(i === index));
+            tab.tabIndex = i === index ? 0 : -1;
+          });
+
+          this.querySelectorAll('.dinova-switcher__text, .dinova-switcher__link').forEach((el) => {
+            const active = Number(el.dataset.index) === index;
+            el.classList.toggle('is-active', active);
+            el.hidden = !active;
+          });
+
+          this.querySelectorAll('.dinova-switcher__image').forEach((el) => {
+            el.classList.toggle('is-active', Number(el.dataset.index) === index);
+          });
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-switcher {
+    display: block;
+    background: var(--dinova-switcher-bg);
+    color: var(--dinova-switcher-text);
+    padding-block: var(--dinova-switcher-pad-top) var(--dinova-switcher-pad-bottom);
+  }
+
+  .dinova-switcher__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'intro'
+      'media'
+      'names'
+      'link';
+    gap: 1.5rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-switcher__inner {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      grid-template-areas:
+        'intro media'
+        'names media'
+        'link  media';
+      column-gap: 1.5rem;
+      row-gap: 0;
+    }
+  }
+
+  .dinova-switcher__intro {
+    grid-area: intro;
+    max-width: 36rem;
+  }
+
+  .dinova-switcher__heading {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--dinova-switcher-text);
+  }
+
+  .dinova-switcher__text {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-switcher__text p {
+    margin: 0;
+  }
+
+  .dinova-switcher__text.is-active {
+    animation: dinova-switcher-fade 0.4s ease;
+  }
+
+  .dinova-switcher__names {
+    grid-area: names;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    column-gap: 0.25em;
+    row-gap: 0;
+    padding-block: 2rem;
+    font-size: clamp(2.5rem, 6vw, var(--dinova-switcher-name-size));
+  }
+
+  .dinova-switcher__name {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: inherit;
+    line-height: 1.15;
+    color: var(--dinova-switcher-muted);
+    transition: color 0.35s ease;
+  }
+
+  .dinova-switcher__name:hover,
+  .dinova-switcher__name.is-active {
+    color: var(--dinova-switcher-text);
+  }
+
+  .dinova-switcher__name:focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  .dinova-switcher__links {
+    grid-area: link;
+  }
+
+  .dinova-switcher__link {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--dinova-switcher-text);
+  }
+
+  .dinova-switcher__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .dinova-switcher__media {
+    grid-area: media;
+    position: relative;
+    aspect-ratio: var(--dinova-switcher-ratio);
+    overflow: hidden;
+  }
+
+  .dinova-switcher__image {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .dinova-switcher__image.is-active {
+    opacity: 1;
+  }
+
+  .dinova-switcher__image img,
+  .dinova-switcher__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @keyframes dinova-switcher-fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-switcher__name,
+    .dinova-switcher__image {
+      transition: none;
+    }
+
+    .dinova-switcher__text.is-active {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova collections",
+  "tag": "section",
+  "class": "dinova-switcher-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Small heading",
+      "default": "Our collection"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "View product"
+    },
+    {
+      "type": "checkbox",
+      "id": "switch_on_hover",
+      "label": "Switch category on hover (desktop)",
+      "info": "Categories always switch on click and tap.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "name_size",
+      "label": "Category name size",
+      "min": 3,
+      "max": 8,
+      "step": 0.5,
+      "unit": "rem",
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "4 / 3", "label": "Landscape" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "inactive_color",
+      "label": "Unselected category names",
+      "default": "#d6d2cd"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "default": "Rings"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Paragraph",
+          "default": "<p>Describe this category here.</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Usually the category's collection."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova collections",
+      "blocks": [
+        { "type": "category", "settings": { "title": "Tennis Collection" } },
+        { "type": "category", "settings": { "title": "Rings" } },
+        { "type": "category", "settings": { "title": "Necklaces" } },
+        { "type": "category", "settings": { "title": "Earrings" } },
+        { "type": "category", "settings": { "title": "Bracelets" } },
+        { "type": "category", "settings": { "title": "Bangles" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

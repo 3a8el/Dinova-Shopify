@@ -303,10 +303,67 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "dinova_collection_switcher": {
+      "type": "dinova-collection-switcher",
+      "blocks": {
+        "category_tennis": {
+          "type": "category",
+          "settings": {
+            "title": "Tennis Collection",
+            "text": "<p>Describe this category here.</p>"
+          }
+        },
+        "category_rings": {
+          "type": "category",
+          "settings": {
+            "title": "Rings",
+            "text": "<p>Describe this category here.</p>"
+          }
+        },
+        "category_necklaces": {
+          "type": "category",
+          "settings": {
+            "title": "Necklaces",
+            "text": "<p>Describe this category here.</p>"
+          }
+        },
+        "category_earrings": {
+          "type": "category",
+          "settings": {
+            "title": "Earrings",
+            "text": "<p>Describe this category here.</p>"
+          }
+        },
+        "category_bracelets": {
+          "type": "category",
+          "settings": {
+            "title": "Bracelets",
+            "text": "<p>Describe this category here.</p>"
+          }
+        },
+        "category_bangles": {
+          "type": "category",
+          "settings": {
+            "title": "Bangles",
+            "text": "<p>Describe this category here.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "category_tennis",
+        "category_rings",
+        "category_necklaces",
+        "category_earrings",
+        "category_bracelets",
+        "category_bangles"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "dinova_hero",
+    "dinova_collection_switcher",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]
