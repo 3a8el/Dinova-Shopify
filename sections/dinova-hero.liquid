@@ -1,0 +1,241 @@
+{%- comment -%}
+  Dinova hero: full-width background video with separate desktop and mobile files.
+  Videos play once (no loop) and stop on their last frame. With "Match video size"
+  the section takes the video's own aspect ratio, so nothing is cropped.
+{%- endcomment -%}
+
+{%- liquid
+  assign video_desktop = section.settings.video_desktop
+  assign video_mobile = section.settings.video_mobile | default: video_desktop
+
+  assign ratio_desktop = video_desktop.aspect_ratio | default: 1.7778
+  assign ratio_mobile = video_mobile.aspect_ratio | default: 0.5625
+-%}
+
+<dinova-hero
+  class="dinova-hero dinova-hero--{{ section.settings.size_mode }}"
+  style="
+    --dinova-hero-ratio-desktop: {{ ratio_desktop }};
+    --dinova-hero-ratio-mobile: {{ ratio_mobile }};
+    --dinova-hero-height-desktop: {{ section.settings.height_desktop }}svh;
+    --dinova-hero-height-mobile: {{ section.settings.height_mobile }}svh;
+    --dinova-hero-background: {{ section.settings.background_color }};
+  "
+>
+  {%- if video_desktop != blank -%}
+    <div class="dinova-hero__media dinova-hero__media--desktop">
+      {{
+        video_desktop
+        | video_tag:
+          muted: true,
+          playsinline: true,
+          preload: 'none',
+          class: 'dinova-hero__video',
+          image_size: '1920x'
+      }}
+    </div>
+    <div class="dinova-hero__media dinova-hero__media--mobile">
+      {{
+        video_mobile
+        | video_tag:
+          muted: true,
+          playsinline: true,
+          preload: 'none',
+          class: 'dinova-hero__video',
+          image_size: '900x'
+      }}
+    </div>
+  {%- else -%}
+    <div class="dinova-hero__placeholder">
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'dinova-hero__placeholder-svg' }}
+    </div>
+  {%- endif -%}
+</dinova-hero>
+
+<script type="module">
+  if (!customElements.get('dinova-hero')) {
+    customElements.define(
+      'dinova-hero',
+      class DinovaHero extends HTMLElement {
+        connectedCallback() {
+          this.mobileQuery = window.matchMedia('(max-width: 749px)');
+          this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.onChange = () => this.play();
+          this.mobileQuery.addEventListener('change', this.onChange);
+          this.play();
+        }
+
+        disconnectedCallback() {
+          this.mobileQuery?.removeEventListener('change', this.onChange);
+        }
+
+        /* Only the video for the current screen size is loaded and played, once. */
+        play() {
+          const active = this.mobileQuery.matches ? 'mobile' : 'desktop';
+          this.querySelectorAll('.dinova-hero__media').forEach((media) => {
+            const video = media.querySelector('video');
+            if (!video) return;
+            video.loop = false;
+            video.removeAttribute('controls');
+            if (media.classList.contains(`dinova-hero__media--${active}`)) {
+              video.preload = 'auto';
+              if (this.reducedMotion) return;
+              if (!video.dataset.played) {
+                video.dataset.played = 'true';
+                video.play().catch(() => {});
+              }
+            } else {
+              video.pause();
+            }
+          });
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-hero {
+    position: relative;
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    background: var(--dinova-hero-background, transparent);
+  }
+
+  .dinova-hero__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dinova-hero__video,
+  .dinova-hero__media video,
+  .dinova-hero__placeholder-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-hero--contain .dinova-hero__media video {
+    object-fit: contain;
+  }
+
+  .dinova-hero__placeholder {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Desktop */
+  .dinova-hero__media--mobile {
+    display: none;
+  }
+
+  .dinova-hero--natural {
+    aspect-ratio: var(--dinova-hero-ratio-desktop);
+  }
+
+  .dinova-hero--cover,
+  .dinova-hero--contain {
+    height: var(--dinova-hero-height-desktop);
+  }
+
+  /* Mobile */
+  @media screen and (max-width: 749px) {
+    .dinova-hero__media--desktop {
+      display: none;
+    }
+
+    .dinova-hero__media--mobile {
+      display: block;
+    }
+
+    .dinova-hero--natural {
+      aspect-ratio: var(--dinova-hero-ratio-mobile);
+    }
+
+    .dinova-hero--cover,
+    .dinova-hero--contain {
+      height: var(--dinova-hero-height-mobile);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova hero",
+  "tag": "section",
+  "class": "dinova-hero-section",
+  "settings": [
+    {
+      "type": "video",
+      "id": "video_desktop",
+      "label": "Desktop video"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "Mobile video",
+      "info": "Falls back to the desktop video if empty."
+    },
+    {
+      "type": "paragraph",
+      "content": "Videos play once, muted, and stop on their last frame."
+    },
+    {
+      "type": "select",
+      "id": "size_mode",
+      "label": "Size",
+      "options": [
+        {
+          "value": "natural",
+          "label": "Match video size"
+        },
+        {
+          "value": "contain",
+          "label": "Fixed height, fit video (contain)"
+        },
+        {
+          "value": "cover",
+          "label": "Fixed height, fill (cover)"
+        }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Desktop height",
+      "info": "Used by the fixed height options. Percent of screen height.",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Mobile height",
+      "info": "Used by the fixed height options. Percent of screen height.",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background behind video",
+      "info": "Shows around the video with the contain option.",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova hero"
+    }
+  ]
+}
+{% endschema %}

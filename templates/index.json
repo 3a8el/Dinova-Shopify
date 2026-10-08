@@ -9,6 +9,12 @@
  */
 {
   "sections": {
+    "dinova_hero": {
+      "type": "dinova-hero",
+      "settings": {
+        "size_mode": "natural"
+      }
+    },
     "hero_jVaWmY": {
       "type": "hero",
       "blocks": {
@@ -86,7 +92,8 @@
         "reflection_opacity": 75,
         "padding-block-start": 100,
         "padding-block-end": 72
-      }
+      },
+      "disabled": true
     },
     "product_list_fa6P9H": {
       "type": "product-list",
@@ -276,6 +283,7 @@
     }
   },
   "order": [
+    "dinova_hero",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]
