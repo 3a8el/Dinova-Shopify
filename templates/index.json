@@ -359,11 +359,62 @@
         "category_bangles"
       ],
       "settings": {}
+    },
+    "dinova_stone_cuts": {
+      "type": "dinova-stone-cuts",
+      "blocks": {
+        "cut_princess": {
+          "type": "cut",
+          "settings": {
+            "name": "Princess Cut"
+          }
+        },
+        "cut_pear": {
+          "type": "cut",
+          "settings": {
+            "name": "Pear Cut"
+          }
+        },
+        "cut_marquise": {
+          "type": "cut",
+          "settings": {
+            "name": "Marquise Cut"
+          }
+        },
+        "cut_round": {
+          "type": "cut",
+          "settings": {
+            "name": "Round Cut"
+          }
+        },
+        "cut_emerald": {
+          "type": "cut",
+          "settings": {
+            "name": "Emerald Cut"
+          }
+        },
+        "cut_heart": {
+          "type": "cut",
+          "settings": {
+            "name": "Heart Cut"
+          }
+        }
+      },
+      "block_order": [
+        "cut_princess",
+        "cut_pear",
+        "cut_marquise",
+        "cut_round",
+        "cut_emerald",
+        "cut_heart"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "dinova_hero",
     "dinova_collection_switcher",
+    "dinova_stone_cuts",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

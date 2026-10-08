@@ -1,0 +1,461 @@
+{%- comment -%}
+  Dinova "Stones Cuts" slider: one cut at a time, with a large cut name behind
+  the image, a small name under it, and the previous / next cut names at the
+  sides as the navigation. Each cut is a block.
+{%- endcomment -%}
+
+{%- liquid
+  assign cuts = section.blocks | where: 'type', 'cut'
+  assign last_index = cuts.size | minus: 1
+-%}
+
+<dinova-stone-cuts
+  class="dinova-cuts"
+  style="
+    --dinova-cuts-bg: {{ section.settings.background_color }};
+    --dinova-cuts-text: {{ section.settings.text_color }};
+    --dinova-cuts-big: {{ section.settings.big_name_color }};
+    --dinova-cuts-image-bg: {{ section.settings.image_background }};
+    --dinova-cuts-pad-top: {{ section.settings.padding_top }}px;
+    --dinova-cuts-pad-bottom: {{ section.settings.padding_bottom }}px;
+  "
+>
+  {%- if section.settings.title != blank -%}
+    <h2 class="dinova-cuts__title">{{ section.settings.title }}</h2>
+  {%- endif -%}
+
+  <div class="dinova-cuts__stage" aria-roledescription="carousel" aria-label="{{ section.settings.title | escape }}">
+    <div class="dinova-cuts__big-names" aria-hidden="true">
+      {%- for block in cuts -%}
+        <span class="dinova-cuts__big-name{% if forloop.first %} is-active{% endif %}" data-index="{{ forloop.index0 }}">
+          {{- block.settings.name | escape -}}
+        </span>
+      {%- endfor -%}
+    </div>
+
+    <div class="dinova-cuts__slides">
+      {%- for block in cuts -%}
+        <figure
+          class="dinova-cuts__slide{% if forloop.first %} is-active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+          role="group"
+          aria-roledescription="slide"
+          aria-label="{{ forloop.index }} / {{ cuts.size }}: {{ block.settings.name | escape }}"
+          {% unless forloop.first %}
+            aria-hidden="true"
+          {% endunless %}
+          {{ block.shopify_attributes }}
+        >
+          <div class="dinova-cuts__image">
+            {%- if block.settings.image != blank -%}
+              {{
+                block.settings.image
+                | image_url: width: 1200
+                | image_tag:
+                  widths: '400, 600, 800, 1200',
+                  sizes: '(min-width: 750px) 40vw, 80vw',
+                  loading: 'lazy',
+                  alt: block.settings.image.alt | default: block.settings.name
+              }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'dinova-cuts__placeholder' }}
+            {%- endif -%}
+          </div>
+          <figcaption class="dinova-cuts__caption">
+            <span class="dinova-cuts__small-name">{{ block.settings.name | escape }}</span>
+            {%- if block.settings.subtitle != blank -%}
+              <span class="dinova-cuts__subtitle">{{ block.settings.subtitle | escape }}</span>
+            {%- endif -%}
+          </figcaption>
+        </figure>
+      {%- endfor -%}
+    </div>
+
+    {%- if cuts.size > 1 -%}
+      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--prev" data-direction="-1">
+        <span class="dinova-cuts__arrow" aria-hidden="true">&larr;</span>
+        <span class="visually-hidden">Previous: </span>
+        <span class="dinova-cuts__nav-label">{{ cuts[last_index].settings.name | escape }}</span>
+      </button>
+      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--next" data-direction="1">
+        <span class="visually-hidden">Next: </span>
+        <span class="dinova-cuts__nav-label">{{ cuts[1].settings.name | escape }}</span>
+        <span class="dinova-cuts__arrow" aria-hidden="true">&rarr;</span>
+      </button>
+    {%- endif -%}
+
+    <p class="visually-hidden" aria-live="polite" data-live></p>
+  </div>
+</dinova-stone-cuts>
+
+<script type="module">
+  if (!customElements.get('dinova-stone-cuts')) {
+    customElements.define(
+      'dinova-stone-cuts',
+      class DinovaStoneCuts extends HTMLElement {
+        connectedCallback() {
+          this.slides = [...this.querySelectorAll('.dinova-cuts__slide')];
+          this.bigNames = [...this.querySelectorAll('.dinova-cuts__big-name')];
+          this.names = this.bigNames.map((el) => el.textContent.trim());
+          this.index = 0;
+          if (this.slides.length < 2) return;
+
+          this.querySelectorAll('.dinova-cuts__nav').forEach((button) => {
+            button.addEventListener('click', () => this.go(this.index + Number(button.dataset.direction)));
+          });
+
+          this.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') this.go(this.index - 1);
+            if (event.key === 'ArrowRight') this.go(this.index + 1);
+          });
+
+          /* Swipe on touch screens */
+          const stage = this.querySelector('.dinova-cuts__stage');
+          let startX = null;
+          stage.addEventListener('touchstart', (e) => (startX = e.touches[0].clientX), { passive: true });
+          stage.addEventListener(
+            'touchend',
+            (e) => {
+              if (startX === null) return;
+              const dx = e.changedTouches[0].clientX - startX;
+              if (Math.abs(dx) > 40) this.go(this.index + (dx < 0 ? 1 : -1));
+              startX = null;
+            },
+            { passive: true }
+          );
+
+          /* Theme editor: jump to the selected cut */
+          document.addEventListener('shopify:block:select', (event) => {
+            const i = this.slides.indexOf(event.target);
+            if (i !== -1) this.go(i);
+          });
+        }
+
+        go(target) {
+          const count = this.slides.length;
+          const next = (target + count) % count;
+          if (next === this.index) return;
+          this.index = next;
+
+          [this.slides, this.bigNames].forEach((list) =>
+            list.forEach((el, i) => el.classList.toggle('is-active', i === next))
+          );
+          this.slides.forEach((el, i) => el.setAttribute('aria-hidden', String(i !== next)));
+
+          const prevLabel = this.querySelector('.dinova-cuts__nav--prev .dinova-cuts__nav-label');
+          const nextLabel = this.querySelector('.dinova-cuts__nav--next .dinova-cuts__nav-label');
+          prevLabel.textContent = this.names[(next - 1 + count) % count];
+          nextLabel.textContent = this.names[(next + 1) % count];
+
+          const live = this.querySelector('[data-live]');
+          if (live) live.textContent = this.names[next];
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-cuts {
+    display: block;
+    background: var(--dinova-cuts-bg);
+    color: var(--dinova-cuts-text);
+    padding-block: var(--dinova-cuts-pad-top) var(--dinova-cuts-pad-bottom);
+    overflow: hidden;
+  }
+
+  .dinova-cuts__title {
+    margin: 0 0 2rem;
+    text-align: center;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2rem, 3.5vw, 3.25rem);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--dinova-cuts-text);
+  }
+
+  .dinova-cuts__stage {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding-inline: var(--page-margin, 1rem);
+  }
+
+  /* Big name behind the image */
+  .dinova-cuts__big-names {
+    position: absolute;
+    inset: 0 0 auto;
+    height: min(40vw, 32rem);
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .dinova-cuts__big-name {
+    grid-area: 1 / 1;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(3.5rem, 11vw, 10rem);
+    line-height: 1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--dinova-cuts-big);
+    opacity: 0;
+    transform: translateY(0.15em);
+    transition: opacity 0.5s ease, transform 0.6s ease;
+  }
+
+  .dinova-cuts__big-name.is-active {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Slides stacked in one grid cell */
+  .dinova-cuts__slides {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: min(40vw, 32rem);
+  }
+
+  .dinova-cuts__slide {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, visibility 0.5s;
+  }
+
+  .dinova-cuts__slide.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .dinova-cuts__image {
+    aspect-ratio: 1;
+    background: var(--dinova-cuts-image-bg);
+    overflow: hidden;
+  }
+
+  .dinova-cuts__image img,
+  .dinova-cuts__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-cuts__caption {
+    display: grid;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
+    text-align: center;
+    font-family: var(--font-body--family);
+  }
+
+  .dinova-cuts__small-name {
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .dinova-cuts__subtitle {
+    font-size: 0.8125rem;
+    opacity: 0.7;
+  }
+
+  /* Previous / next cut names at the sides */
+  .dinova-cuts__nav {
+    position: absolute;
+    top: calc(min(40vw, 32rem) / 2);
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--dinova-cuts-text);
+    transform: translateY(-50%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+  }
+
+  .dinova-cuts__nav:hover,
+  .dinova-cuts__nav:focus-visible {
+    opacity: 1;
+  }
+
+  .dinova-cuts__nav--prev {
+    left: var(--page-margin, 1rem);
+  }
+
+  .dinova-cuts__nav--next {
+    right: var(--page-margin, 1rem);
+  }
+
+  .dinova-cuts__arrow {
+    transition: transform 0.3s ease;
+  }
+
+  .dinova-cuts__nav--prev:hover .dinova-cuts__arrow {
+    transform: translateX(-0.25rem);
+  }
+
+  .dinova-cuts__nav--next:hover .dinova-cuts__arrow {
+    transform: translateX(0.25rem);
+  }
+
+  /* Mobile: bigger image, nav row under the caption */
+  @media screen and (max-width: 749px) {
+    .dinova-cuts__slides {
+      width: 78vw;
+    }
+
+    .dinova-cuts__big-names {
+      height: 78vw;
+    }
+
+    .dinova-cuts__stage {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 1.5rem;
+    }
+
+    .dinova-cuts__slides {
+      grid-column: 1 / -1;
+      justify-self: center;
+    }
+
+    .dinova-cuts__nav {
+      position: static;
+      transform: none;
+      font-size: 0.75rem;
+    }
+
+    .dinova-cuts__nav--prev {
+      justify-self: start;
+    }
+
+    .dinova-cuts__nav--next {
+      justify-self: end;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-cuts__big-name,
+    .dinova-cuts__slide,
+    .dinova-cuts__arrow {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova stone cuts",
+  "tag": "section",
+  "class": "dinova-cuts-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Stones Cuts"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "big_name_color",
+      "label": "Big name behind image",
+      "default": "#bdbab5"
+    },
+    {
+      "type": "color",
+      "id": "image_background",
+      "label": "Image background",
+      "default": "#efeeec"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cut",
+      "name": "Cut",
+      "settings": [
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Cut name",
+          "default": "Round Cut"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Small line under the name",
+          "info": "Optional, for example a short description of the cut."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova stone cuts",
+      "blocks": [
+        { "type": "cut", "settings": { "name": "Princess Cut" } },
+        { "type": "cut", "settings": { "name": "Pear Cut" } },
+        { "type": "cut", "settings": { "name": "Marquise Cut" } },
+        { "type": "cut", "settings": { "name": "Round Cut" } },
+        { "type": "cut", "settings": { "name": "Emerald Cut" } },
+        { "type": "cut", "settings": { "name": "Heart Cut" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
