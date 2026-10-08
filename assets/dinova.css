@@ -3,7 +3,7 @@
  * Keep Dinova-only styles here so Horizon's own files stay close to upstream.
  */
 
-/* ---------- Header: "Menu" trigger (label + circled arrow + underline) ---------- */
+/* ---------- Header: "Menu" + diamond trigger ---------- */
 
 .dinova-menu-trigger {
   display: none;
@@ -22,41 +22,43 @@
   #header-component[data-force-drawer] .dinova-menu-trigger {
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    padding-block: 0.75rem;
-    border-bottom: 1px solid currentColor;
+    gap: 0.5rem;
     font-size: 0.9375rem;
-    letter-spacing: 0.01em;
+    font-weight: 500;
     color: var(--color-foreground);
   }
 
-  .dinova-menu-trigger__circle {
-    position: relative;
+  .dinova-menu-trigger__icon {
     display: inline-flex;
-    width: 2rem;
-    height: 2rem;
-    border: 1px solid currentColor;
-    border-radius: 50%;
-  }
-
-  /* The arrow starts outside the circle, as in the design */
-  .dinova-menu-trigger__circle svg {
-    position: absolute;
-    top: 50%;
-    left: -0.5rem;
-    width: 1.75rem;
-    height: auto;
-    transform: translateY(-50%);
+    width: 1.125rem;
     transition: transform 0.3s ease;
   }
 
-  .header__icon--menu:hover .dinova-menu-trigger__circle svg {
-    transform: translate(0.25rem, -50%);
+  .dinova-menu-trigger__icon svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .header__icon--menu:hover .dinova-menu-trigger__icon {
+    transform: rotate(180deg);
   }
 }
 
+/* ---------- Header: account link ---------- */
+
+.dinova-account-link {
+  display: inline-flex;
+  align-items: center;
+  color: inherit;
+}
+
+.dinova-account-link svg {
+  width: 15px;
+  height: 17px;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .dinova-menu-trigger__circle svg {
+  .dinova-menu-trigger__icon {
     transition: none;
   }
 }

@@ -15,7 +15,7 @@ Keep this list current so Horizon updates can be merged safely.
 |---|---|
 | `sections/header.liquid` | `dinova_force_drawer` setting and `data-force-drawer` attribute |
 | `assets/utilities.js`, `layout/theme.liquid` | Header uses the drawer menu when `data-force-drawer` is set |
-| `snippets/header-drawer.liquid` | "Menu" label + circled arrow trigger |
-| `snippets/header-actions.liquid` | Diamond account icon |
+| `snippets/header-drawer.liquid` | "Menu" + diamond trigger for the menu drawer |
+| `snippets/header-actions.liquid` | Plain account link instead of the `<shopify-account>` popover |
 | `assets/icon-cart.svg` | Basket cart icon |
 | `snippets/stylesheets.liquid` | Loads `assets/dinova.css` |
