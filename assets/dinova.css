@@ -72,6 +72,13 @@
   height: 17px;
 }
 
+/* Account lives in the off-canvas menu on mobile (to be added with the navigation design) */
+@media screen and (max-width: 749px) {
+  .dinova-account-link {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .dinova-menu-trigger__icon {
     transition: none;
