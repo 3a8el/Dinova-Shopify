@@ -79,7 +79,10 @@
             video.removeAttribute('controls');
             if (media.classList.contains(`dinova-hero__media--${active}`)) {
               video.preload = 'auto';
-              if (this.reducedMotion) return;
+              if (this.reducedMotion) {
+                this.showLastFrame(video);
+                return;
+              }
               if (!video.dataset.played) {
                 video.dataset.played = 'true';
                 video.play().catch(() => {});
@@ -88,6 +91,19 @@
               video.pause();
             }
           });
+        }
+
+        /* Reduced motion: skip the animation and show the final frame. */
+        showLastFrame(video) {
+          const seek = () => {
+            video.currentTime = Math.max(video.duration - 0.05, 0);
+          };
+          if (video.readyState >= 1) {
+            seek();
+          } else {
+            video.addEventListener('loadedmetadata', seek, { once: true });
+            video.load();
+          }
         }
       }
     );
@@ -180,7 +196,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Videos play once, muted, and stop on their last frame."
+      "content": "Videos play once, muted, and stop on their last frame. Visitors with reduced motion turned on see the last frame only."
     },
     {
       "type": "select",
