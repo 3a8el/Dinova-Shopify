@@ -39,7 +39,8 @@
         "padding-block-start": 15,
         "padding-block-end": 15,
         "divider_color": "{{ settings.color_palette.color3 }}"
-      }
+      },
+      "disabled": true
     },
     "header_section": {
       "type": "header",
@@ -76,15 +77,15 @@
         }
       },
       "settings": {
-        "logo_position": "left",
+        "logo_position": "center",
         "menu_position": "left",
         "menu_row": "top",
-        "show_search": true,
+        "show_search": false,
         "search_position": "right",
         "search_row": "top",
-        "show_country": true,
+        "show_country": false,
         "country_selector_style": false,
-        "show_language": true,
+        "show_language": false,
         "localization_font": "heading",
         "localization_font_size": "0.875rem",
         "localization_position": "right",
@@ -97,7 +98,9 @@
         "border_width": 0,
         "enable_transparent_header_home": false,
         "enable_transparent_header_product": false,
-        "enable_transparent_header_collection": false
+        "enable_transparent_header_collection": false,
+        "actions_display_style": "icon",
+        "dinova_force_drawer": true
       }
     }
   },

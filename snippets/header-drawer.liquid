@@ -68,6 +68,13 @@
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
         {{- 'icon-menu.svg' | inline_asset_content -}}
       </span>
+      {%- comment -%} Dinova: text + circled-arrow trigger, shown on desktop when the section forces the drawer {%- endcomment -%}
+      <span class="dinova-menu-trigger" aria-hidden="true">
+        <span class="dinova-menu-trigger__label">{{ 'accessibility.menu' | t }}</span>
+        <span class="dinova-menu-trigger__circle">
+          {{- 'icon-dinova-arrow.svg' | inline_asset_content -}}
+        </span>
+      </span>
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
         {{- 'icon-close-menu.svg' | inline_asset_content -}}
       </span>

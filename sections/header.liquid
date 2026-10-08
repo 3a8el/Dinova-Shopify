@@ -348,6 +348,9 @@
   {% endif %}
   data-skip-node-update
   data-scroll-direction="none"
+  {% if section.settings.dinova_force_drawer %}
+    data-force-drawer
+  {% endif %}
   {% if section.settings.menu_row == 'top' and bottom_row_blocks.size > 0 %}
     data-submenu-overlap-bottom-row
   {% endif %}
@@ -1294,6 +1297,13 @@
         }
       ],
       "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "dinova_force_drawer",
+      "label": "Use menu button on desktop",
+      "info": "Dinova: shows a Menu button that opens the menu drawer, instead of the inline menu.",
+      "default": false
     },
     {
       "type": "select",
