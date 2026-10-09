@@ -171,8 +171,73 @@
         "glass_tint": "#ffffff",
         "glass_opacity": 65,
         "glass_blur": 16,
+        "border_width": 1,
+        "border_color": "#ffffff",
+        "border_opacity": 55,
+        "image_radius": 0,
         "padding_top": 64,
         "padding_bottom": 64
+      }
+    },
+    "dinova_split_media": {
+      "type": "dinova-split-media",
+      "settings": {
+        "media_type_1": "image",
+        "media_type_2": "image",
+        "subtitle": "",
+        "text": "<p>We believe that accessories are an essential part of expressing your personal identity</p>",
+        "button_label": "Shop all",
+        "button_link": "",
+        "column_ratio": "1 / 1",
+        "loop_videos": true,
+        "text_color": "#ffffff",
+        "button_background": "#fffbf5",
+        "button_text_color": "#121212",
+        "overlay_color": "#000000",
+        "overlay_opacity": 10
+      }
+    },
+    "dinova_product_carousel": {
+      "type": "dinova-product-carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "source": "latest",
+        "product_list": [],
+        "collection": "",
+        "limit": 12,
+        "shop_all_label": "Shop all",
+        "shop_all_link": "",
+        "columns_desktop": 4,
+        "columns_mobile": "1.25",
+        "hover_image": true,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#dcd9d4",
+        "image_background": "#efeeec",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "dinova_about": {
+      "type": "dinova-about",
+      "settings": {
+        "text": "<p>We believe that accessories are an essential part of expressing your personal identity, and we're dedicated to creating art pieces</p>",
+        "button_label": "About us",
+        "button_link": "",
+        "media_type_1": "image",
+        "hide_mobile_1": false,
+        "media_type_2": "image",
+        "hide_mobile_2": false,
+        "media_type_3": "image",
+        "hide_mobile_3": false,
+        "media_ratio": "3 / 4",
+        "media_width": 78,
+        "media_gap": 12,
+        "loop_videos": true,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "padding_top": 80,
+        "padding_bottom": 80
       }
     },
     "hero_jVaWmY": {
@@ -441,6 +506,7 @@
           ]
         }
       },
+      "disabled": true,
       "name": "t:names.featured_collection",
       "settings": {
         "collection": "all",
@@ -460,22 +526,7 @@
         "background_color": "",
         "padding-block-start": 48,
         "padding-block-end": 48
-      },
-      "disabled": true
-    },
-    "dinova_split_media": {
-      "type": "dinova-split-media",
-      "settings": {}
-    },
-    "dinova_product_carousel": {
-      "type": "dinova-product-carousel",
-      "settings": {
-        "source": "latest"
       }
-    },
-    "dinova_about": {
-      "type": "dinova-about",
-      "settings": {}
     }
   },
   "order": [
