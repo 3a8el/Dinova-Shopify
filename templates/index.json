@@ -218,35 +218,35 @@
         "phrase_1": {
           "type": "phrase",
           "settings": {
-            "phrase": "Bohemian Bliss",
+            "phrase": "Explore our curations",
             "link": ""
           }
         },
         "phrase_2": {
           "type": "phrase",
           "settings": {
-            "phrase": "Celestial Symphony",
+            "phrase": "Explore our curations",
             "link": ""
           }
         },
         "phrase_3": {
           "type": "phrase",
           "settings": {
-            "phrase": "Modern Minimalist",
+            "phrase": "Explore our curations",
             "link": ""
           }
         },
         "phrase_4": {
           "type": "phrase",
           "settings": {
-            "phrase": "Moonlight Mischief",
+            "phrase": "Explore our curations",
             "link": ""
           }
         },
         "phrase_5": {
           "type": "phrase",
           "settings": {
-            "phrase": "Oceanic Treasures",
+            "phrase": "Explore our curations",
             "link": ""
           }
         }
@@ -259,8 +259,8 @@
         "phrase_5"
       ],
       "settings": {
-        "heading": "Explore our curations",
-        "separator": "·",
+        "heading": "",
+        "separator": "/",
         "speed": 40,
         "direction": "left",
         "image_size": 44,
