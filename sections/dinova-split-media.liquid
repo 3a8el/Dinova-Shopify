@@ -18,6 +18,8 @@
     --dinova-split-text: {{ s.text_color }};
     --dinova-split-button-bg: {{ s.button_background }};
     --dinova-split-button-text: {{ s.button_text_color }};
+    --dinova-split-content-bg: {{ s.background_color_2 }};
+    --dinova-split-content-image: {{ s.content_image_width }}px;
     {{ overlay_style }}
   "
 >
@@ -30,7 +32,8 @@
       assign image = s[image_key]
       assign video = s[video_key]
     -%}
-    <div class="dinova-split__column dinova-split__column--{{ i }}">
+    <div class="dinova-split__column dinova-split__column--{{ i }} dinova-split__column--bg-{{ media_type }}">
+      {%- if media_type == 'image' or media_type == 'video' -%}
       <div class="dinova-split__media">
         {%- if media_type == 'video' and video != blank -%}
           {{
@@ -59,13 +62,25 @@
           {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-split__image dinova-split__placeholder' }}
         {%- endif -%}
       </div>
+      {%- endif -%}
 
       {%- if i == 2 -%}
-        {%- if s.overlay_opacity > 0 -%}
+        {%- if s.overlay_opacity > 0 and media_type != 'color' and media_type != 'none' -%}
           <div class="dinova-split__overlay" aria-hidden="true"></div>
         {%- endif -%}
 
         <div class="dinova-split__content">
+          {%- if s.content_image != blank -%}
+            {{
+              s.content_image
+              | image_url: width: 400
+              | image_tag:
+                widths: '100, 200, 300, 400',
+                sizes: '200px',
+                loading: 'lazy',
+                class: 'dinova-split__content-image'
+            }}
+          {%- endif -%}
           {%- if s.subtitle != blank -%}
             <p class="dinova-split__subtitle">{{ s.subtitle | escape }}</p>
           {%- endif -%}
@@ -127,6 +142,17 @@
 
   .dinova-split__overlay {
     background: var(--dinova-split-overlay);
+  }
+
+  .dinova-split__column--bg-color {
+    background: var(--dinova-split-content-bg);
+  }
+
+  .dinova-split__content-image {
+    display: block;
+    width: var(--dinova-split-content-image);
+    max-width: 60%;
+    height: auto;
   }
 
   .dinova-split__media video,
@@ -233,7 +259,9 @@
       "label": "Background",
       "options": [
         { "value": "image", "label": "Image" },
-        { "value": "video", "label": "Video" }
+        { "value": "video", "label": "Video" },
+        { "value": "color", "label": "Colour" },
+        { "value": "none", "label": "None" }
       ],
       "default": "image"
     },
@@ -248,6 +276,28 @@
       "id": "video_2",
       "label": "Video",
       "visible_if": "{{ section.settings.media_type_2 == 'video' }}"
+    },
+    {
+      "type": "color",
+      "id": "background_color_2",
+      "label": "Background colour",
+      "default": "#fffbf5",
+      "visible_if": "{{ section.settings.media_type_2 == 'color' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "content_image",
+      "label": "Small picture above subtitle"
+    },
+    {
+      "type": "range",
+      "id": "content_image_width",
+      "label": "Small picture width",
+      "min": 40,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 120
     },
     {
       "type": "text",
@@ -297,6 +347,7 @@
       "type": "color",
       "id": "text_color",
       "label": "Text",
+      "info": "Use a dark colour with the Colour or None background.",
       "default": "#ffffff"
     },
     {
@@ -315,6 +366,7 @@
       "type": "color",
       "id": "overlay_color",
       "label": "Right column overlay",
+      "info": "Only used with an image or video background.",
       "default": "#000000"
     },
     {
