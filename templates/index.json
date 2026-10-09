@@ -112,7 +112,15 @@
           "type": "cut",
           "settings": {
             "name": "Princess Cut",
-            "image": "shopify://shop_images/princess.webp",
+            "image": "shopify://shop_images/1.png",
+            "subtitle": ""
+          }
+        },
+        "cut_HRhPGh": {
+          "type": "cut",
+          "settings": {
+            "name": "Round Cut",
+            "image": "shopify://shop_images/round-cut.webp",
             "subtitle": ""
           }
         },
@@ -120,7 +128,7 @@
           "type": "cut",
           "settings": {
             "name": "Pear Cut",
-            "image": "shopify://shop_images/pear.webp",
+            "image": "shopify://shop_images/pear-cut.webp",
             "subtitle": ""
           }
         },
@@ -128,6 +136,7 @@
           "type": "cut",
           "settings": {
             "name": "Marquise Cut",
+            "image": "shopify://shop_images/marquise-cut.webp",
             "subtitle": ""
           }
         },
@@ -135,6 +144,7 @@
           "type": "cut",
           "settings": {
             "name": "Round Cut",
+            "image": "shopify://shop_images/round-cut_6531166d-9834-459d-9dec-469bbacf1945.webp",
             "subtitle": ""
           }
         },
@@ -142,6 +152,7 @@
           "type": "cut",
           "settings": {
             "name": "Emerald Cut",
+            "image": "shopify://shop_images/emerald-cut.webp",
             "subtitle": ""
           }
         },
@@ -149,12 +160,14 @@
           "type": "cut",
           "settings": {
             "name": "Heart Cut",
+            "image": "shopify://shop_images/heart-cut.webp",
             "subtitle": ""
           }
         }
       },
       "block_order": [
         "cut_princess",
+        "cut_HRhPGh",
         "cut_pear",
         "cut_marquise",
         "cut_round",
@@ -168,9 +181,9 @@
         "big_name_color": "#bdbab5",
         "image_background_style": "glass",
         "image_background": "#d0cfcf",
-        "glass_tint": "#ffffff",
-        "glass_opacity": 65,
-        "glass_blur": 16,
+        "glass_tint": "{{ settings.color_palette.foreground }}",
+        "glass_opacity": 80,
+        "glass_blur": 4,
         "border_width": 1,
         "border_color": "#ffffff",
         "border_opacity": 55,
@@ -184,6 +197,8 @@
       "settings": {
         "media_type_1": "image",
         "media_type_2": "image",
+        "background_color_2": "#fffbf5",
+        "content_image_width": 120,
         "subtitle": "",
         "text": "<p>We believe that accessories are an essential part of expressing your personal identity</p>",
         "button_label": "Shop all",
@@ -195,6 +210,66 @@
         "button_text_color": "#121212",
         "overlay_color": "#000000",
         "overlay_opacity": 10
+      }
+    },
+    "dinova_marquee": {
+      "type": "dinova-marquee",
+      "blocks": {
+        "phrase_1": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Bohemian Bliss",
+            "link": ""
+          }
+        },
+        "phrase_2": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Celestial Symphony",
+            "link": ""
+          }
+        },
+        "phrase_3": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Modern Minimalist",
+            "link": ""
+          }
+        },
+        "phrase_4": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Moonlight Mischief",
+            "link": ""
+          }
+        },
+        "phrase_5": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Oceanic Treasures",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "phrase_1",
+        "phrase_2",
+        "phrase_3",
+        "phrase_4",
+        "phrase_5"
+      ],
+      "settings": {
+        "heading": "Explore our curations",
+        "separator": "·",
+        "speed": 40,
+        "direction": "left",
+        "image_size": 44,
+        "font_size": 36,
+        "faded_opacity": 55,
+        "background_color": "#fffbf5",
+        "text_color": "#9a9a9a",
+        "padding_top": 40,
+        "padding_bottom": 40
       }
     },
     "dinova_product_carousel": {
@@ -210,7 +285,7 @@
         "columns_desktop": 4,
         "columns_mobile": "1.25",
         "hover_image": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#dcd9d4",
         "image_background": "#efeeec",
@@ -234,10 +309,53 @@
         "media_width": 78,
         "media_gap": 12,
         "loop_videos": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "padding_top": 80,
         "padding_bottom": 80
+      }
+    },
+    "dinova_video_blog": {
+      "type": "dinova-video-blog",
+      "blocks": {
+        "video_1": {
+          "type": "video",
+          "settings": {
+            "video": "",
+            "article": "",
+            "title": "Fashion, diamonds & personal style.",
+            "author": "Noha El Sherbiny",
+            "link": ""
+          }
+        },
+        "video_2": {
+          "type": "video",
+          "settings": {
+            "video": "",
+            "article": "",
+            "title": "What makes a diamond a smart choice",
+            "author": "Nayra Nassar",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "video_1",
+        "video_2"
+      ],
+      "settings": {
+        "heading": "Experience Dinova in Person",
+        "text": "<p>Words can only say so much. The best way to understand the brilliance of a Dinova diamond is to see it for yourself.</p>",
+        "view_all_label": "View all",
+        "blog": "",
+        "view_all_link": "",
+        "view_more_label": "View more",
+        "columns_desktop": "2",
+        "columns_mobile": "1.15",
+        "background_color": "#ffffff",
+        "text_color": "#121212",
+        "padding_top": 64,
+        "padding_bottom": 64
       }
     },
     "hero_jVaWmY": {
@@ -527,73 +645,6 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
-    },
-    "dinova_marquee": {
-      "type": "dinova-marquee",
-      "blocks": {
-        "phrase_1": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Bohemian Bliss"
-          }
-        },
-        "phrase_2": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Celestial Symphony"
-          }
-        },
-        "phrase_3": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Modern Minimalist"
-          }
-        },
-        "phrase_4": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Moonlight Mischief"
-          }
-        },
-        "phrase_5": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Oceanic Treasures"
-          }
-        }
-      },
-      "block_order": [
-        "phrase_1",
-        "phrase_2",
-        "phrase_3",
-        "phrase_4",
-        "phrase_5"
-      ],
-      "settings": {}
-    },
-    "dinova_video_blog": {
-      "type": "dinova-video-blog",
-      "blocks": {
-        "video_1": {
-          "type": "video",
-          "settings": {
-            "title": "Fashion, diamonds & personal style.",
-            "author": "Noha El Sherbiny"
-          }
-        },
-        "video_2": {
-          "type": "video",
-          "settings": {
-            "title": "What makes a diamond a smart choice",
-            "author": "Nayra Nassar"
-          }
-        }
-      },
-      "block_order": [
-        "video_1",
-        "video_2"
-      ],
-      "settings": {}
     }
   },
   "order": [
