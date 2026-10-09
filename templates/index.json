@@ -14,7 +14,155 @@
       "settings": {
         "video_desktop": "shopify://files/videos/hero-pc.mp4",
         "video_mobile": "shopify://files/videos/hero mobile.mp4",
-        "size_mode": "natural"
+        "size_mode": "natural",
+        "height_desktop": 100,
+        "height_mobile": 80,
+        "background_color": "#ffffff"
+      }
+    },
+    "dinova_collection_switcher": {
+      "type": "dinova-collection-switcher",
+      "blocks": {
+        "category_tennis": {
+          "type": "category",
+          "settings": {
+            "title": "Tennis Collection",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Tennis-Necklaces.webp",
+            "link": ""
+          }
+        },
+        "category_rings": {
+          "type": "category",
+          "settings": {
+            "title": "Rings",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Rings.webp",
+            "link": ""
+          }
+        },
+        "category_necklaces": {
+          "type": "category",
+          "settings": {
+            "title": "Necklaces",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Necklaces.webp",
+            "link": ""
+          }
+        },
+        "category_earrings": {
+          "type": "category",
+          "settings": {
+            "title": "Earrings",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Earrings.webp",
+            "link": ""
+          }
+        },
+        "category_bracelets": {
+          "type": "category",
+          "settings": {
+            "title": "Bracelets",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Braceletes.webp",
+            "link": ""
+          }
+        },
+        "category_bangles": {
+          "type": "category",
+          "settings": {
+            "title": "Bangles",
+            "text": "<p>Describe this category here.</p>",
+            "image": "shopify://shop_images/Dinova-Bangles.webp",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "category_tennis",
+        "category_rings",
+        "category_necklaces",
+        "category_earrings",
+        "category_bracelets",
+        "category_bangles"
+      ],
+      "settings": {
+        "heading": "Our collection",
+        "link_label": "View Collection",
+        "switch_on_hover": true,
+        "name_size": 5,
+        "image_ratio": "1 / 1",
+        "background_color": "#fffbf5",
+        "text_color": "#121212",
+        "inactive_color": "#d6d2cd",
+        "padding_top": 64,
+        "padding_bottom": 64
+      }
+    },
+    "dinova_stone_cuts": {
+      "type": "dinova-stone-cuts",
+      "blocks": {
+        "cut_princess": {
+          "type": "cut",
+          "settings": {
+            "name": "Princess Cut",
+            "image": "shopify://shop_images/princess.webp",
+            "subtitle": ""
+          }
+        },
+        "cut_pear": {
+          "type": "cut",
+          "settings": {
+            "name": "Pear Cut",
+            "image": "shopify://shop_images/pear.webp",
+            "subtitle": ""
+          }
+        },
+        "cut_marquise": {
+          "type": "cut",
+          "settings": {
+            "name": "Marquise Cut",
+            "subtitle": ""
+          }
+        },
+        "cut_round": {
+          "type": "cut",
+          "settings": {
+            "name": "Round Cut",
+            "subtitle": ""
+          }
+        },
+        "cut_emerald": {
+          "type": "cut",
+          "settings": {
+            "name": "Emerald Cut",
+            "subtitle": ""
+          }
+        },
+        "cut_heart": {
+          "type": "cut",
+          "settings": {
+            "name": "Heart Cut",
+            "subtitle": ""
+          }
+        }
+      },
+      "block_order": [
+        "cut_princess",
+        "cut_pear",
+        "cut_marquise",
+        "cut_round",
+        "cut_emerald",
+        "cut_heart"
+      ],
+      "settings": {
+        "title": "Stones Cuts",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "big_name_color": "#bdbab5",
+        "image_background": "#D0CFCF",
+        "padding_top": 64,
+        "padding_bottom": 64
       }
     },
     "hero_jVaWmY": {
@@ -70,6 +218,7 @@
         "text_YLPk4p",
         "button_H9gpTf"
       ],
+      "disabled": true,
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "video",
@@ -102,8 +251,7 @@
         "reflection_opacity": 75,
         "padding-block-start": 100,
         "padding-block-end": 72
-      },
-      "disabled": true
+      }
     },
     "product_list_fa6P9H": {
       "type": "product-list",
@@ -303,112 +451,6 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
-    },
-    "dinova_collection_switcher": {
-      "type": "dinova-collection-switcher",
-      "blocks": {
-        "category_tennis": {
-          "type": "category",
-          "settings": {
-            "title": "Tennis Collection",
-            "text": "<p>Describe this category here.</p>"
-          }
-        },
-        "category_rings": {
-          "type": "category",
-          "settings": {
-            "title": "Rings",
-            "text": "<p>Describe this category here.</p>"
-          }
-        },
-        "category_necklaces": {
-          "type": "category",
-          "settings": {
-            "title": "Necklaces",
-            "text": "<p>Describe this category here.</p>"
-          }
-        },
-        "category_earrings": {
-          "type": "category",
-          "settings": {
-            "title": "Earrings",
-            "text": "<p>Describe this category here.</p>"
-          }
-        },
-        "category_bracelets": {
-          "type": "category",
-          "settings": {
-            "title": "Bracelets",
-            "text": "<p>Describe this category here.</p>"
-          }
-        },
-        "category_bangles": {
-          "type": "category",
-          "settings": {
-            "title": "Bangles",
-            "text": "<p>Describe this category here.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "category_tennis",
-        "category_rings",
-        "category_necklaces",
-        "category_earrings",
-        "category_bracelets",
-        "category_bangles"
-      ],
-      "settings": {}
-    },
-    "dinova_stone_cuts": {
-      "type": "dinova-stone-cuts",
-      "blocks": {
-        "cut_princess": {
-          "type": "cut",
-          "settings": {
-            "name": "Princess Cut"
-          }
-        },
-        "cut_pear": {
-          "type": "cut",
-          "settings": {
-            "name": "Pear Cut"
-          }
-        },
-        "cut_marquise": {
-          "type": "cut",
-          "settings": {
-            "name": "Marquise Cut"
-          }
-        },
-        "cut_round": {
-          "type": "cut",
-          "settings": {
-            "name": "Round Cut"
-          }
-        },
-        "cut_emerald": {
-          "type": "cut",
-          "settings": {
-            "name": "Emerald Cut"
-          }
-        },
-        "cut_heart": {
-          "type": "cut",
-          "settings": {
-            "name": "Heart Cut"
-          }
-        }
-      },
-      "block_order": [
-        "cut_princess",
-        "cut_pear",
-        "cut_marquise",
-        "cut_round",
-        "cut_emerald",
-        "cut_heart"
-      ],
-      "settings": {}
     }
   },
   "order": [
