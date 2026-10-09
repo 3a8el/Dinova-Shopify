@@ -472,6 +472,10 @@
       "settings": {
         "source": "latest"
       }
+    },
+    "dinova_about": {
+      "type": "dinova-about",
+      "settings": {}
     }
   },
   "order": [
@@ -480,6 +484,7 @@
     "dinova_stone_cuts",
     "dinova_split_media",
     "dinova_product_carousel",
+    "dinova_about",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

@@ -1,0 +1,390 @@
+{%- comment -%}
+  Dinova about: a centred paragraph and button above a row of three images or
+  videos. The middle one is larger. Any of the three can be hidden on mobile.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<dinova-about
+  class="dinova-about"
+  style="
+    --dinova-about-bg: {{ s.background_color }};
+    --dinova-about-text: {{ s.text_color }};
+    --dinova-about-width: {{ s.media_width }}%;
+    --dinova-about-gap: {{ s.media_gap }}px;
+    --dinova-about-ratio: {{ s.media_ratio }};
+    --dinova-about-pad-top: {{ s.padding_top }}px;
+    --dinova-about-pad-bottom: {{ s.padding_bottom }}px;
+  "
+>
+  <div class="dinova-about__intro">
+    {%- if s.text != blank -%}
+      <div class="dinova-about__text">{{ s.text }}</div>
+    {%- endif -%}
+    {%- if s.button_label != blank -%}
+      <a class="dinova-about__button" href="{{ s.button_link | default: '#' }}">
+        {{- s.button_label | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-about__media">
+    {%- for i in (1..3) -%}
+      {%- liquid
+        assign type_key = 'media_type_' | append: i
+        assign image_key = 'image_' | append: i
+        assign video_key = 'video_' | append: i
+        assign hide_key = 'hide_mobile_' | append: i
+        assign media_type = s[type_key]
+        assign image = s[image_key]
+        assign video = s[video_key]
+        assign position = 'side'
+        if i == 2
+          assign position = 'center'
+        endif
+      -%}
+      <div class="dinova-about__item dinova-about__item--{{ position }}{% if s[hide_key] %} dinova-about__item--hide-mobile{% endif %}">
+        {%- if media_type == 'video' and video != blank -%}
+          {{
+            video
+            | video_tag:
+              autoplay: true,
+              muted: true,
+              loop: s.loop_videos,
+              playsinline: true,
+              controls: false,
+              preload: 'metadata',
+              class: 'dinova-about__video',
+              image_size: '900x'
+          }}
+        {%- elsif image != blank -%}
+          {{
+            image
+            | image_url: width: 1200
+            | image_tag:
+              widths: '400, 600, 900, 1200',
+              sizes: '(min-width: 750px) 30vw, 50vw',
+              loading: 'lazy',
+              class: 'dinova-about__image'
+          }}
+        {%- else -%}
+          {{ 'product-apparel-1' | placeholder_svg_tag: 'dinova-about__image dinova-about__placeholder' }}
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</dinova-about>
+
+<script type="module">
+  /* Respect reduced motion: keep videos paused on their first frame. */
+  if (!customElements.get('dinova-about')) {
+    customElements.define(
+      'dinova-about',
+      class DinovaAbout extends HTMLElement {
+        connectedCallback() {
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          this.querySelectorAll('video').forEach((video) => {
+            video.removeAttribute('autoplay');
+            video.pause();
+          });
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-about {
+    display: block;
+    padding-block: var(--dinova-about-pad-top) var(--dinova-about-pad-bottom);
+    background: var(--dinova-about-bg);
+    color: var(--dinova-about-text);
+  }
+
+  .dinova-about__intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding-inline: 1.5rem;
+    text-align: center;
+  }
+
+  .dinova-about__text {
+    max-width: 30ch;
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    line-height: 1.15;
+  }
+
+  .dinova-about__text p {
+    margin: 0;
+  }
+
+  .dinova-about__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-about__button:hover {
+    background: var(--dinova-about-text);
+    color: var(--dinova-about-bg);
+  }
+
+  .dinova-about__media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--dinova-about-gap);
+    width: var(--dinova-about-width);
+    margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+  }
+
+  /* The middle item is about 15% larger than the two sides. */
+  .dinova-about__item {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    aspect-ratio: var(--dinova-about-ratio);
+    overflow: hidden;
+  }
+
+  .dinova-about__item--center {
+    flex-grow: 1.15;
+  }
+
+  .dinova-about__item video,
+  .dinova-about__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dinova-about__media {
+      width: calc(100% - 2rem);
+      gap: calc(var(--dinova-about-gap) * 0.66);
+    }
+
+    .dinova-about__item--hide-mobile {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova about",
+  "tag": "section",
+  "class": "dinova-about-section",
+  "settings": [
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph",
+      "default": "<p>We believe that accessories are an essential part of expressing your personal identity, and we're dedicated to creating art pieces</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "About us"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Left media"
+    },
+    {
+      "type": "select",
+      "id": "media_type_1",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type_1 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type_1 == 'video' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mobile_1",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Middle media"
+    },
+    {
+      "type": "select",
+      "id": "media_type_2",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type_2 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type_2 == 'video' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mobile_2",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Right media"
+    },
+    {
+      "type": "select",
+      "id": "media_type_3",
+      "label": "Type",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type_3 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type_3 == 'video' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_mobile_3",
+      "label": "Hide on mobile",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "media_ratio",
+      "label": "Media shape",
+      "options": [
+        { "value": "3 / 4", "label": "Portrait" },
+        { "value": "4 / 5", "label": "Short portrait" },
+        { "value": "2 / 3", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "range",
+      "id": "media_width",
+      "label": "Media row width on desktop",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 78
+    },
+    {
+      "type": "range",
+      "id": "media_gap",
+      "label": "Gap between media",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "loop_videos",
+      "label": "Loop videos",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova about"
+    }
+  ]
+}
+{% endschema %}
