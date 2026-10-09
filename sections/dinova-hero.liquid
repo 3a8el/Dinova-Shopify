@@ -119,9 +119,11 @@
     background: var(--dinova-hero-background, transparent);
   }
 
+  /* Bleeds 2px past the top and bottom so a thin encoded edge line in the
+     video file is cropped off by the section's overflow. */
   .dinova-hero__media {
     position: absolute;
-    inset: 0;
+    inset: -2px 0;
   }
 
   .dinova-hero__video,

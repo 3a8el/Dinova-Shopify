@@ -1,7 +1,8 @@
 /**
  * Dinova entrance animations (GSAP + ScrollTrigger + SplitText).
- * Loaded from layout/theme.liquid only when the theme setting is on and never in
- * the theme editor. Visitors with reduced motion turned on see everything static.
+ * Loaded from layout/theme.liquid when the theme setting is on. In the theme
+ * editor, a section replays its animations when it is edited. Visitors with
+ * reduced motion turned on see everything static.
  *
  * - Large serif text: lines slide up from behind a mask.
  * - Small text and buttons: fade up.
@@ -101,9 +102,9 @@
   }
 
   /* Group matches by section so each section staggers on its own. */
-  function bySection(selectors) {
+  function bySection(selectors, root = document) {
     const groups = new Map();
-    document.querySelectorAll(selectors.join(',')).forEach((el) => {
+    root.querySelectorAll(selectors.join(',')).forEach((el) => {
       const key = sectionOf(el);
       if (!groups.has(key)) groups.set(key, []);
       groups.get(key).push(el);
@@ -111,22 +112,49 @@
     return [...groups.values()];
   }
 
-  function init() {
-    const mm = gsap.matchMedia();
+  /* One gsap.matchMedia per section, so the theme editor can rebuild a single
+     section when it is edited without touching the rest of the page. */
+  const contexts = new Map();
+
+  function init(root) {
+    const mm = gsap.matchMedia(root);
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      document.querySelectorAll(LINES.join(',')).forEach(lines);
-      bySection(FADES).forEach(fade);
-      bySection(MEDIA).forEach(media);
+      const lineEls = root.matches?.(LINES.join(',')) ? [root] : root.querySelectorAll(LINES.join(','));
+      lineEls.forEach(lines);
+      bySection(FADES, root).forEach(fade);
+      bySection(MEDIA, root).forEach(media);
     });
+    contexts.set(root, mm);
+  }
+
+  function teardown(root) {
+    contexts.get(root)?.revert();
+    contexts.delete(root);
+  }
+
+  function start() {
+    init(document.body);
 
     /* Images and fonts change the layout after load; re-measure trigger points. */
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+
+    /* Theme editor: replay a section's animations when it is added or changed. */
+    if (window.Shopify?.designMode) {
+      document.addEventListener('shopify:section:unload', (event) => {
+        teardown(event.target);
+        ScrollTrigger.getAll().forEach((t) => event.target.contains(t.trigger) && t.kill());
+      });
+      document.addEventListener('shopify:section:load', (event) => {
+        init(event.target);
+        ScrollTrigger.refresh();
+      });
+    }
   }
 
-  const start = () => (document.fonts?.ready || Promise.resolve()).then(init);
+  const ready = () => (document.fonts?.ready || Promise.resolve()).then(start);
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start, { once: true });
+    document.addEventListener('DOMContentLoaded', ready, { once: true });
   } else {
-    start();
+    ready();
   }
 })();

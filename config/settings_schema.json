@@ -1135,7 +1135,7 @@
         "type": "checkbox",
         "id": "dinova_entrance_animations",
         "label": "Dinova entrance animations",
-        "info": "Text and images animate in as visitors scroll. Off in the theme editor and for visitors who prefer reduced motion.",
+        "info": "Text and images animate in as visitors scroll. Off for visitors who prefer reduced motion.",
         "default": true
       },
       {

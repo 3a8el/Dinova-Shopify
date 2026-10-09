@@ -22,7 +22,7 @@
     {%- render 'card-hover-effect-styles' -%}
     {%- render 'fonts' -%}
     {%- render 'scripts' -%}
-    {%- if settings.dinova_entrance_animations and request.design_mode == false -%}
+    {%- if settings.dinova_entrance_animations -%}
       <script src="{{ 'gsap.min.js' | asset_url }}" defer></script>
       <script src="{{ 'ScrollTrigger.min.js' | asset_url }}" defer></script>
       <script src="{{ 'SplitText.min.js' | asset_url }}" defer></script>
