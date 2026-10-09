@@ -185,7 +185,8 @@
         "background_color": "{{ settings.color_palette.color1 }}",
         "padding-block-start": 36,
         "padding-block-end": 36
-      }
+      },
+      "disabled": true
     },
     "utilities": {
       "type": "footer-utilities",
@@ -228,10 +229,52 @@
         "divider_thickness": 1,
         "padding-block-start": 12,
         "padding-block-end": 16
-      }
+      },
+      "disabled": true
+    },
+    "dinova_footer": {
+      "type": "dinova-footer",
+      "blocks": {
+        "menu_1": {
+          "type": "menu",
+          "settings": {
+            "heading": "Store",
+            "menu": "main-menu"
+          }
+        },
+        "menu_2": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "menu_3": {
+          "type": "menu",
+          "settings": {
+            "heading": "Collections",
+            "menu": "main-menu"
+          }
+        },
+        "menu_4": {
+          "type": "menu",
+          "settings": {
+            "heading": "Help",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": [
+        "menu_1",
+        "menu_2",
+        "menu_3",
+        "menu_4"
+      ],
+      "settings": {}
     }
   },
   "order": [
+    "dinova_footer",
     "footer",
     "utilities"
   ]
