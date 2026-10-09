@@ -10,12 +10,14 @@
 -%}
 
 <dinova-stone-cuts
-  class="dinova-cuts"
+  class="dinova-cuts dinova-cuts--{{ section.settings.image_background_style }}"
   style="
     --dinova-cuts-bg: {{ section.settings.background_color }};
     --dinova-cuts-text: {{ section.settings.text_color }};
     --dinova-cuts-big: {{ section.settings.big_name_color }};
     --dinova-cuts-image-bg: {{ section.settings.image_background }};
+    --dinova-cuts-glass-tint: {{ section.settings.glass_tint | color_modify: 'alpha', section.settings.glass_opacity | divided_by: 100.0 }};
+    --dinova-cuts-glass-blur: {{ section.settings.glass_blur }}px;
     --dinova-cuts-pad-top: {{ section.settings.padding_top }}px;
     --dinova-cuts-pad-bottom: {{ section.settings.padding_bottom }}px;
   "
@@ -240,6 +242,19 @@
     overflow: hidden;
   }
 
+  /* Glass morphism: frosted panel that blurs the big name behind it */
+  .dinova-cuts--glass .dinova-cuts__image {
+    background: var(--dinova-cuts-glass-tint);
+    -webkit-backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
+    backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
+    border: 1px solid rgb(255 255 255 / 0.55);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 0.06), inset 0 1px 0 rgb(255 255 255 / 0.6);
+  }
+
+  .dinova-cuts--glass .dinova-cuts__image img {
+    object-fit: contain;
+  }
+
   .dinova-cuts__image img,
   .dinova-cuts__placeholder {
     display: block;
@@ -393,10 +408,51 @@
       "default": "#bdbab5"
     },
     {
+      "type": "select",
+      "id": "image_background_style",
+      "label": "Image background",
+      "options": [
+        { "value": "solid", "label": "Colour" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "default": "solid",
+      "info": "Glass works best with stone images on a transparent background (PNG or WebP)."
+    },
+    {
       "type": "color",
       "id": "image_background",
-      "label": "Image background",
-      "default": "#efeeec"
+      "label": "Background colour",
+      "default": "#efeeec",
+      "visible_if": "{{ section.settings.image_background_style == 'solid' }}"
+    },
+    {
+      "type": "color",
+      "id": "glass_tint",
+      "label": "Glass tint",
+      "default": "#ffffff",
+      "visible_if": "{{ section.settings.image_background_style == 'glass' }}"
+    },
+    {
+      "type": "range",
+      "id": "glass_opacity",
+      "label": "Glass tint opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 25,
+      "visible_if": "{{ section.settings.image_background_style == 'glass' }}"
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Glass blur",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.image_background_style == 'glass' }}"
     },
     {
       "type": "range",
