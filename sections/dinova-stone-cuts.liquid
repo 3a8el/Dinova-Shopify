@@ -18,6 +18,8 @@
     --dinova-cuts-image-bg: {{ section.settings.image_background }};
     --dinova-cuts-glass-tint: {{ section.settings.glass_tint | color_modify: 'alpha', section.settings.glass_opacity | divided_by: 100.0 }};
     --dinova-cuts-glass-blur: {{ section.settings.glass_blur }}px;
+    --dinova-cuts-border: {{ section.settings.border_width }}px solid {{ section.settings.border_color | color_modify: 'alpha', section.settings.border_opacity | divided_by: 100.0 }};
+    --dinova-cuts-radius: {{ section.settings.image_radius }}px;
     --dinova-cuts-pad-top: {{ section.settings.padding_top }}px;
     --dinova-cuts-pad-bottom: {{ section.settings.padding_bottom }}px;
   "
@@ -239,6 +241,8 @@
   .dinova-cuts__image {
     aspect-ratio: 1;
     background: var(--dinova-cuts-image-bg);
+    border: var(--dinova-cuts-border);
+    border-radius: var(--dinova-cuts-radius);
     overflow: hidden;
   }
 
@@ -247,8 +251,7 @@
     background: var(--dinova-cuts-glass-tint);
     -webkit-backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
     backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
-    border: 1px solid rgb(255 255 255 / 0.55);
-    box-shadow: 0 8px 32px rgb(0 0 0 / 0.06), inset 0 1px 0 rgb(255 255 255 / 0.6);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 0.06);
   }
 
   .dinova-cuts--glass .dinova-cuts__image img {
@@ -453,6 +456,47 @@
       "unit": "px",
       "default": 16,
       "visible_if": "{{ section.settings.image_background_style == 'glass' }}"
+    },
+    {
+      "type": "header",
+      "content": "Image frame"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "info": "Set to 0 for no border.",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "label": "Border opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
