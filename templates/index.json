@@ -461,12 +461,17 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "dinova_split_media": {
+      "type": "dinova-split-media",
+      "settings": {}
     }
   },
   "order": [
     "dinova_hero",
     "dinova_collection_switcher",
     "dinova_stone_cuts",
+    "dinova_split_media",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

@@ -1,0 +1,338 @@
+{%- comment -%}
+  Dinova 50/50 split: two full-bleed columns, each with an image or video
+  background. The second column carries a subtitle, a paragraph and a button.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+{%- capture overlay_style -%}
+  --dinova-split-overlay: {{ s.overlay_color | color_modify: 'alpha', s.overlay_opacity | divided_by: 100.0 }};
+{%- endcapture -%}
+
+<dinova-split-media
+  class="dinova-split"
+  style="
+    --dinova-split-ratio: {{ s.column_ratio }};
+    --dinova-split-text: {{ s.text_color }};
+    --dinova-split-button-bg: {{ s.button_background }};
+    --dinova-split-button-text: {{ s.button_text_color }};
+    {{ overlay_style }}
+  "
+>
+  {%- for i in (1..2) -%}
+    {%- liquid
+      assign type_key = 'media_type_' | append: i
+      assign image_key = 'image_' | append: i
+      assign video_key = 'video_' | append: i
+      assign media_type = s[type_key]
+      assign image = s[image_key]
+      assign video = s[video_key]
+    -%}
+    <div class="dinova-split__column dinova-split__column--{{ i }}">
+      <div class="dinova-split__media">
+        {%- if media_type == 'video' and video != blank -%}
+          {{
+            video
+            | video_tag:
+              autoplay: true,
+              muted: true,
+              loop: s.loop_videos,
+              playsinline: true,
+              controls: false,
+              preload: 'metadata',
+              class: 'dinova-split__video',
+              image_size: '1200x'
+          }}
+        {%- elsif image != blank -%}
+          {{
+            image
+            | image_url: width: 1800
+            | image_tag:
+              widths: '600, 900, 1200, 1800',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              loading: 'lazy',
+              class: 'dinova-split__image'
+          }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-split__image dinova-split__placeholder' }}
+        {%- endif -%}
+      </div>
+
+      {%- if i == 2 -%}
+        {%- if s.overlay_opacity > 0 -%}
+          <div class="dinova-split__overlay" aria-hidden="true"></div>
+        {%- endif -%}
+
+        <div class="dinova-split__content">
+          {%- if s.subtitle != blank -%}
+            <p class="dinova-split__subtitle">{{ s.subtitle | escape }}</p>
+          {%- endif -%}
+          {%- if s.text != blank -%}
+            <div class="dinova-split__text">{{ s.text }}</div>
+          {%- endif -%}
+          {%- if s.button_label != blank -%}
+            <a class="dinova-split__button" href="{{ s.button_link | default: routes.all_products_collection_url }}">
+              {{- s.button_label | escape -}}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endfor -%}
+</dinova-split-media>
+
+<script type="module">
+  /* Respect reduced motion: pause background videos on their first frame. */
+  if (!customElements.get('dinova-split-media')) {
+    customElements.define(
+      'dinova-split-media',
+      class DinovaSplitMedia extends HTMLElement {
+        connectedCallback() {
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          this.querySelectorAll('video').forEach((video) => {
+            video.removeAttribute('autoplay');
+            video.pause();
+          });
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-split {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .dinova-split__column {
+    position: relative;
+    aspect-ratio: var(--dinova-split-ratio);
+    overflow: hidden;
+  }
+
+  .dinova-split__media,
+  .dinova-split__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dinova-split__overlay {
+    background: var(--dinova-split-overlay);
+  }
+
+  .dinova-split__media video,
+  .dinova-split__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-split__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    text-align: center;
+    color: var(--dinova-split-text);
+  }
+
+  .dinova-split__subtitle {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .dinova-split__text {
+    max-width: 24ch;
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-size: clamp(1.5rem, 2.4vw, 2.375rem);
+    line-height: 1.1;
+  }
+
+  .dinova-split__text p {
+    margin: 0;
+  }
+
+  .dinova-split__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 13rem;
+    padding: 1rem 2rem;
+    background: var(--dinova-split-button-bg);
+    color: var(--dinova-split-button-text);
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .dinova-split__button:hover {
+    opacity: 0.85;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova split media",
+  "tag": "section",
+  "class": "dinova-split-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Left column"
+    },
+    {
+      "type": "select",
+      "id": "media_type_1",
+      "label": "Background",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type_1 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type_1 == 'video' }}"
+    },
+    {
+      "type": "header",
+      "content": "Right column"
+    },
+    {
+      "type": "select",
+      "id": "media_type_2",
+      "label": "Background",
+      "options": [
+        { "value": "image", "label": "Image" },
+        { "value": "video", "label": "Video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image",
+      "visible_if": "{{ section.settings.media_type_2 == 'image' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video",
+      "visible_if": "{{ section.settings.media_type_2 == 'video' }}"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph",
+      "default": "<p>We believe that accessories are an essential part of expressing your personal identity</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop all"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "column_ratio",
+      "label": "Column shape",
+      "options": [
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "4 / 3", "label": "Landscape" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop_videos",
+      "label": "Loop videos",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Right column overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "info": "Darkens the right column so the text is easier to read.",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova split media"
+    }
+  ]
+}
+{% endschema %}
