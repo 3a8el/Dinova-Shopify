@@ -1133,6 +1133,13 @@
     "settings": [
       {
         "type": "checkbox",
+        "id": "dinova_entrance_animations",
+        "label": "Dinova entrance animations",
+        "info": "Text and images animate in as visitors scroll. Off in the theme editor and for visitors who prefer reduced motion.",
+        "default": true
+      },
+      {
+        "type": "checkbox",
         "id": "page_transition_enabled",
         "label": "t:settings.page_transition_enabled",
         "default": true
