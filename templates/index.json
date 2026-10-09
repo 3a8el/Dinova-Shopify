@@ -527,6 +527,49 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "dinova_marquee": {
+      "type": "dinova-marquee",
+      "blocks": {
+        "phrase_1": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Bohemian Bliss"
+          }
+        },
+        "phrase_2": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Celestial Symphony"
+          }
+        },
+        "phrase_3": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Modern Minimalist"
+          }
+        },
+        "phrase_4": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Moonlight Mischief"
+          }
+        },
+        "phrase_5": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Oceanic Treasures"
+          }
+        }
+      },
+      "block_order": [
+        "phrase_1",
+        "phrase_2",
+        "phrase_3",
+        "phrase_4",
+        "phrase_5"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -534,6 +577,7 @@
     "dinova_collection_switcher",
     "dinova_stone_cuts",
     "dinova_split_media",
+    "dinova_marquee",
     "dinova_product_carousel",
     "dinova_about",
     "hero_jVaWmY",

@@ -1,0 +1,371 @@
+{%- comment -%}
+  Dinova marquee: an endless row of phrases, each with a small round image.
+  Images are faded until hovered; hovering an item restores its colour, scales
+  it up and pauses the row. Each item can link somewhere.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign placeholders = 'product-apparel-1,product-apparel-2,product-apparel-3,product-apparel-4' | split: ','
+-%}
+
+{%- capture items -%}
+  {%- for block in section.blocks -%}
+    {%- liquid
+      assign tag = 'div'
+      if block.settings.link != blank
+        assign tag = 'a'
+      endif
+      assign placeholder_index = forloop.index0 | modulo: 4
+    -%}
+    <{{ tag }}
+      class="dinova-marquee__item"
+      {% if tag == 'a' %}href="{{ block.settings.link }}"{% endif %}
+      {{ block.shopify_attributes }}
+    >
+      {%- if block.settings.image != blank -%}
+        {{
+          block.settings.image
+          | image_url: width: 160
+          | image_tag:
+            widths: '80, 120, 160',
+            sizes: '80px',
+            loading: 'lazy',
+            alt: '',
+            class: 'dinova-marquee__image'
+        }}
+      {%- else -%}
+        {{ placeholders[placeholder_index] | placeholder_svg_tag: 'dinova-marquee__image dinova-marquee__placeholder' }}
+      {%- endif -%}
+      <span class="dinova-marquee__phrase">{{ block.settings.phrase | escape }}</span>
+    </{{ tag }}>
+    <span class="dinova-marquee__separator" aria-hidden="true">{{ s.separator | escape }}</span>
+  {%- endfor -%}
+{%- endcapture -%}
+
+<dinova-marquee
+  class="dinova-marquee dinova-marquee--{{ s.direction }}"
+  style="
+    --dinova-marquee-bg: {{ s.background_color }};
+    --dinova-marquee-text: {{ s.text_color }};
+    --dinova-marquee-image-size: {{ s.image_size }}px;
+    --dinova-marquee-font-size: {{ s.font_size }}px;
+    --dinova-marquee-faded: {{ s.faded_opacity | divided_by: 100.0 }};
+    --dinova-marquee-pad-top: {{ s.padding_top }}px;
+    --dinova-marquee-pad-bottom: {{ s.padding_bottom }}px;
+  "
+  data-speed="{{ s.speed }}"
+>
+  {%- if s.heading != blank -%}
+    <h2 class="dinova-marquee__heading">{{ s.heading | escape }}</h2>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="dinova-marquee__viewport">
+      <div class="dinova-marquee__track">
+        <div class="dinova-marquee__group">{{ items }}</div>
+        <div class="dinova-marquee__group" aria-hidden="true" inert>{{ items }}</div>
+      </div>
+    </div>
+  {%- endif -%}
+</dinova-marquee>
+
+<script type="module">
+  if (!customElements.get('dinova-marquee')) {
+    customElements.define(
+      'dinova-marquee',
+      class DinovaMarquee extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('.dinova-marquee__track');
+          if (!this.track) return;
+          this.observer = new ResizeObserver(() => this.fill());
+          this.observer.observe(this);
+          this.observer.observe(this.track.firstElementChild);
+          this.fill();
+        }
+
+        disconnectedCallback() {
+          this.observer?.disconnect();
+        }
+
+        /* Clone the phrase group until the row is always covered, then size the loop to one group. */
+        fill() {
+          const groups = this.track.querySelectorAll('.dinova-marquee__group');
+          const first = groups[0];
+          const groupWidth = first.getBoundingClientRect().width;
+          if (!groupWidth) return;
+
+          const needed = Math.ceil(this.clientWidth / groupWidth) + 1;
+          for (let i = groups.length; i < needed; i++) {
+            const clone = first.cloneNode(true);
+            clone.setAttribute('aria-hidden', 'true');
+            clone.inert = true;
+                  this.track.append(clone);
+          }
+
+          const speed = Number(this.dataset.speed) || 40;
+          this.style.setProperty('--dinova-marquee-distance', `${groupWidth}px`);
+          this.style.setProperty('--dinova-marquee-duration', `${groupWidth / speed}s`);
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-marquee {
+    display: block;
+    padding-block: var(--dinova-marquee-pad-top) var(--dinova-marquee-pad-bottom);
+    background: var(--dinova-marquee-bg);
+    color: var(--dinova-marquee-text);
+    overflow: hidden;
+  }
+
+  .dinova-marquee__heading {
+    margin: 0 0 1.5rem;
+    padding-inline: 1.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    color: inherit;
+  }
+
+  .dinova-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: dinova-marquee var(--dinova-marquee-duration, 40s) linear infinite;
+  }
+
+  .dinova-marquee--right .dinova-marquee__track {
+    animation-direction: reverse;
+  }
+
+  .dinova-marquee__track:hover,
+  .dinova-marquee__track:focus-within {
+    animation-play-state: paused;
+  }
+
+  @keyframes dinova-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-1 * var(--dinova-marquee-distance, 50%)));
+    }
+  }
+
+  .dinova-marquee__group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+  }
+
+  .dinova-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75em;
+    padding-block: 0.5rem;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .dinova-marquee__image {
+    flex-shrink: 0;
+    display: block;
+    width: var(--dinova-marquee-image-size);
+    height: var(--dinova-marquee-image-size);
+    border-radius: 50%;
+    object-fit: cover;
+    opacity: var(--dinova-marquee-faded);
+    filter: grayscale(0.6);
+    transition: opacity 0.35s ease, filter 0.35s ease, transform 0.35s ease;
+  }
+
+  .dinova-marquee__item:hover .dinova-marquee__image,
+  .dinova-marquee__item:focus-visible .dinova-marquee__image {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.25);
+  }
+
+  .dinova-marquee__phrase,
+  .dinova-marquee__separator {
+    font-family: var(--font-accent--family, var(--font-heading--family));
+    font-size: var(--dinova-marquee-font-size);
+    line-height: 1.2;
+  }
+
+  .dinova-marquee__separator {
+    padding-inline: 0.6em;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dinova-marquee__phrase,
+    .dinova-marquee__separator {
+      font-size: max(1.5rem, calc(var(--dinova-marquee-font-size) * 0.65));
+    }
+  }
+
+  /* Reduced motion: no scrolling animation; visitors can swipe through instead. */
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-marquee__viewport {
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .dinova-marquee__track {
+      animation: none;
+    }
+
+    .dinova-marquee__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova marquee",
+  "tag": "section",
+  "class": "dinova-marquee-section",
+  "max_blocks": 20,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Explore our curations"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "·"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed",
+      "min": 10,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "info": "Pixels per second.",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Right to left" },
+        { "value": "right", "label": "Left to right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "image_size",
+      "label": "Image size",
+      "min": 24,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Text size on desktop",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "faded_opacity",
+      "label": "Faded image opacity",
+      "info": "How visible images are before they are hovered.",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 55
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#9a9a9a"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "phrase",
+      "name": "Phrase",
+      "settings": [
+        {
+          "type": "text",
+          "id": "phrase",
+          "label": "Phrase",
+          "default": "Curation name"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Round image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova marquee",
+      "blocks": [
+        { "type": "phrase", "settings": { "phrase": "Bohemian Bliss" } },
+        { "type": "phrase", "settings": { "phrase": "Celestial Symphony" } },
+        { "type": "phrase", "settings": { "phrase": "Modern Minimalist" } },
+        { "type": "phrase", "settings": { "phrase": "Moonlight Mischief" } },
+        { "type": "phrase", "settings": { "phrase": "Oceanic Treasures" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
