@@ -460,11 +460,18 @@
         "background_color": "",
         "padding-block-start": 48,
         "padding-block-end": 48
-      }
+      },
+      "disabled": true
     },
     "dinova_split_media": {
       "type": "dinova-split-media",
       "settings": {}
+    },
+    "dinova_product_carousel": {
+      "type": "dinova-product-carousel",
+      "settings": {
+        "source": "latest"
+      }
     }
   },
   "order": [
@@ -472,6 +479,7 @@
     "dinova_collection_switcher",
     "dinova_stone_cuts",
     "dinova_split_media",
+    "dinova_product_carousel",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]

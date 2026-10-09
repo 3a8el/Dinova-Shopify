@@ -1,0 +1,481 @@
+{%- comment -%}
+  Dinova product carousel: a row of product cards separated by thin lines.
+  Products come from a hand-picked list, a collection, or the newest products.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign limit = s.limit
+
+  case s.source
+    when 'featured'
+      assign products_list = s.product_list
+    when 'collection'
+      assign products_list = s.collection.products
+    else
+      assign products_list = collections.all.products | sort: 'created_at' | reverse
+  endcase
+
+  assign shop_all_url = s.shop_all_link
+  if shop_all_url == blank and s.source == 'collection' and s.collection != blank
+    assign shop_all_url = s.collection.url
+  endif
+  if shop_all_url == blank
+    assign shop_all_url = routes.all_products_collection_url
+  endif
+-%}
+
+<dinova-product-carousel
+  class="dinova-carousel"
+  style="
+    --dinova-carousel-bg: {{ s.background_color }};
+    --dinova-carousel-text: {{ s.text_color }};
+    --dinova-carousel-line: {{ s.line_color }};
+    --dinova-carousel-image-bg: {{ s.image_background }};
+    --dinova-carousel-columns: {{ s.columns_desktop }};
+    --dinova-carousel-columns-mobile: {{ s.columns_mobile }};
+    --dinova-carousel-pad-top: {{ s.padding_top }}px;
+    --dinova-carousel-pad-bottom: {{ s.padding_bottom }}px;
+  "
+>
+  {%- if s.title != blank -%}
+    <h2 class="dinova-carousel__title">{{ s.title | escape }}</h2>
+  {%- endif -%}
+
+  <div class="dinova-carousel__viewport">
+    <ul class="dinova-carousel__track" role="list" data-track>
+      {%- for product in products_list limit: limit -%}
+        {%- liquid
+          assign first_image = product.featured_media.preview_image
+          assign second_image = product.media[1].preview_image
+        -%}
+        <li class="dinova-carousel__item">
+          <a class="dinova-carousel__card" href="{{ product.url }}">
+            <div class="dinova-carousel__image{% if s.hover_image and second_image %} has-hover{% endif %}">
+              {%- if first_image -%}
+                {{
+                  first_image
+                  | image_url: width: 900
+                  | image_tag:
+                    widths: '300, 450, 600, 900',
+                    sizes: '(min-width: 750px) 25vw, 75vw',
+                    loading: 'lazy',
+                    class: 'dinova-carousel__img dinova-carousel__img--primary',
+                    alt: product.title
+                }}
+                {%- if s.hover_image and second_image -%}
+                  {{
+                    second_image
+                    | image_url: width: 900
+                    | image_tag:
+                      widths: '300, 450, 600, 900',
+                      sizes: '(min-width: 750px) 25vw, 75vw',
+                      loading: 'lazy',
+                      class: 'dinova-carousel__img dinova-carousel__img--hover',
+                      alt: ''
+                  }}
+                {%- endif -%}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'dinova-carousel__img' }}
+              {%- endif -%}
+            </div>
+            <div class="dinova-carousel__info">
+              <span class="dinova-carousel__name">{{ product.title | escape }}</span>
+              <span class="dinova-carousel__price">
+                {%- if product.price_varies -%}
+                  {{ product.price_min | money }} - {{ product.price_max | money }}
+                {%- else -%}
+                  {%- if product.compare_at_price > product.price -%}
+                    <s class="dinova-carousel__compare">{{ product.compare_at_price | money }}</s>
+                  {%- endif -%}
+                  {{ product.price | money }}
+                {%- endif -%}
+              </span>
+            </div>
+          </a>
+        </li>
+      {%- else -%}
+        {%- for i in (1..4) -%}
+          <li class="dinova-carousel__item">
+            <div class="dinova-carousel__card">
+              <div class="dinova-carousel__image">
+                {{ 'product-' | append: i | placeholder_svg_tag: 'dinova-carousel__img' }}
+              </div>
+              <div class="dinova-carousel__info">
+                <span class="dinova-carousel__name">Product name</span>
+                <span class="dinova-carousel__price">{{ 30000 | money }}</span>
+              </div>
+            </div>
+          </li>
+        {%- endfor -%}
+      {%- endfor -%}
+    </ul>
+
+    <button type="button" class="dinova-carousel__arrow dinova-carousel__arrow--prev" data-direction="-1" aria-label="Previous products" hidden>
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <button type="button" class="dinova-carousel__arrow dinova-carousel__arrow--next" data-direction="1" aria-label="Next products" hidden>
+      <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+
+  {%- if s.shop_all_label != blank -%}
+    <div class="dinova-carousel__footer">
+      <a class="dinova-carousel__shop-all" href="{{ shop_all_url }}">{{ s.shop_all_label | escape }}</a>
+    </div>
+  {%- endif -%}
+</dinova-product-carousel>
+
+<script type="module">
+  if (!customElements.get('dinova-product-carousel')) {
+    customElements.define(
+      'dinova-product-carousel',
+      class DinovaProductCarousel extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-track]');
+          this.arrows = [...this.querySelectorAll('.dinova-carousel__arrow')];
+          this.arrows.forEach((arrow) =>
+            arrow.addEventListener('click', () => this.scrollByCard(Number(arrow.dataset.direction)))
+          );
+          this.update = () => this.updateArrows();
+          this.track.addEventListener('scroll', this.update, { passive: true });
+          this.resizeObserver = new ResizeObserver(this.update);
+          this.resizeObserver.observe(this.track);
+          this.update();
+        }
+
+        disconnectedCallback() {
+          this.resizeObserver?.disconnect();
+        }
+
+        scrollByCard(direction) {
+          const item = this.track.querySelector('.dinova-carousel__item');
+          if (!item) return;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.track.scrollBy({ left: direction * item.offsetWidth, behavior: reduce ? 'auto' : 'smooth' });
+        }
+
+        updateArrows() {
+          const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          const overflowing = scrollWidth > clientWidth + 1;
+          const [prev, next] = this.arrows;
+          if (!prev || !next) return;
+          prev.hidden = !overflowing || scrollLeft <= 1;
+          next.hidden = !overflowing || scrollLeft + clientWidth >= scrollWidth - 1;
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-carousel {
+    display: block;
+    background: var(--dinova-carousel-bg);
+    color: var(--dinova-carousel-text);
+    padding-block: var(--dinova-carousel-pad-top) var(--dinova-carousel-pad-bottom);
+  }
+
+  .dinova-carousel__title {
+    margin: 0 0 2rem;
+    padding-inline: 1rem;
+    text-align: center;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    color: var(--dinova-carousel-text);
+  }
+
+  .dinova-carousel__viewport {
+    position: relative;
+  }
+
+  .dinova-carousel__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(100% / var(--dinova-carousel-columns-mobile));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-block: 1px solid var(--dinova-carousel-line);
+  }
+
+  .dinova-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-carousel__track {
+      grid-auto-columns: calc(100% / var(--dinova-carousel-columns));
+    }
+  }
+
+  .dinova-carousel__item {
+    scroll-snap-align: start;
+    border-inline-end: 1px solid var(--dinova-carousel-line);
+  }
+
+  .dinova-carousel__card {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-carousel__image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--dinova-carousel-image-bg);
+  }
+
+  .dinova-carousel__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.5s ease, transform 0.8s ease;
+  }
+
+  .dinova-carousel__img--hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  @media (hover: hover) {
+    .dinova-carousel__image.has-hover:hover .dinova-carousel__img--hover {
+      opacity: 1;
+    }
+
+    .dinova-carousel__card:hover .dinova-carousel__img--primary {
+      transform: scale(1.03);
+    }
+  }
+
+  .dinova-carousel__info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-top: 0.875rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+  }
+
+  .dinova-carousel__name {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .dinova-carousel__price {
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  .dinova-carousel__compare {
+    margin-inline-end: 0.35rem;
+    opacity: 0.6;
+  }
+
+  .dinova-carousel__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--dinova-carousel-line);
+    border-radius: 50%;
+    background: var(--dinova-carousel-bg);
+    color: var(--dinova-carousel-text);
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .dinova-carousel__arrow[hidden] {
+    display: none;
+  }
+
+  .dinova-carousel__arrow--prev {
+    left: 1rem;
+  }
+
+  .dinova-carousel__arrow--next {
+    right: 1rem;
+  }
+
+  .dinova-carousel__footer {
+    margin-top: 2rem;
+    text-align: center;
+  }
+
+  .dinova-carousel__shop-all {
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--dinova-carousel-text);
+  }
+
+  .dinova-carousel__shop-all:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-carousel__img {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova product carousel",
+  "tag": "section",
+  "class": "dinova-carousel-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Products",
+      "options": [
+        { "value": "featured", "label": "Selected products" },
+        { "value": "collection", "label": "Collection" },
+        { "value": "latest", "label": "Latest products" }
+      ],
+      "default": "latest"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Selected products",
+      "limit": 24',
+      "info": "Used when Products is set to Selected products."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Used when Products is set to Collection."
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Number of products",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "shop_all_label",
+      "label": "Link label",
+      "default": "Shop all"
+    },
+    {
+      "type": "url",
+      "id": "shop_all_link",
+      "label": "Link",
+      "info": "Defaults to the selected collection, or all products."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Products visible on desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Products visible on mobile",
+      "options": [
+        { "value": "1.25", "label": "1 and a peek" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1.25"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_image",
+      "label": "Show second image on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Divider lines",
+      "default": "#dcd9d4"
+    },
+    {
+      "type": "color",
+      "id": "image_background",
+      "label": "Image background",
+      "default": "#efeeec"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova product carousel"
+    }
+  ]
+}
+{% endschema %}
