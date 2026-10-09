@@ -95,7 +95,7 @@
       "settings": {
         "heading": "Our Collections",
         "link_label": "View Collection",
-        "switch_on_hover": true,
+        "switch_on_hover": false,
         "name_size": 5,
         "image_ratio": "1 / 1",
         "background_color": "#fffbf5",
