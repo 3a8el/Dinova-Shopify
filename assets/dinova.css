@@ -84,3 +84,47 @@
     transition: none;
   }
 }
+
+/* ---------- Hover underline ----------
+   A line grows under the link from left to right on hover and shrinks back to
+   the left when the pointer leaves. Add .dinova-underline--rtl to run it from
+   the right instead. */
+
+/* Zero specificity, so a section's own position/display rules still win. */
+:where(.dinova-underline) {
+  position: relative;
+  text-decoration: none;
+}
+
+:where(.dinova-underline:not([hidden])) {
+  display: inline-flex;
+}
+
+.dinova-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.3em;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.dinova-underline--rtl::after {
+  transform-origin: right center;
+}
+
+.dinova-underline:hover::after,
+.dinova-underline:focus-visible::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dinova-underline::after {
+    transition: none;
+  }
+}

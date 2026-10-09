@@ -82,7 +82,7 @@
         -%}
         {%- if section.settings.link_label != blank -%}
           <a
-            class="dinova-switcher__link{% if forloop.first %} is-active{% endif %}"
+            class="dinova-switcher__link dinova-underline{% if forloop.first %} is-active{% endif %}"
             href="{{ target_url }}"
             data-index="{{ forloop.index0 }}"
             {% unless forloop.first %}
@@ -288,10 +288,6 @@
     color: var(--dinova-switcher-text);
   }
 
-  .dinova-switcher__link:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
 
   .dinova-switcher__media {
     grid-area: media;

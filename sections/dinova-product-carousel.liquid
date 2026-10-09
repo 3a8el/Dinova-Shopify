@@ -121,7 +121,7 @@
 
   {%- if s.shop_all_label != blank -%}
     <div class="dinova-carousel__footer">
-      <a class="dinova-carousel__shop-all" href="{{ shop_all_url }}">{{ s.shop_all_label | escape }}</a>
+      <a class="dinova-carousel__shop-all dinova-underline" href="{{ shop_all_url }}">{{ s.shop_all_label | escape }}</a>
     </div>
   {%- endif -%}
 </dinova-product-carousel>
@@ -325,10 +325,6 @@
     color: var(--dinova-carousel-text);
   }
 
-  .dinova-carousel__shop-all:hover {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
 
   @media (prefers-reduced-motion: reduce) {
     .dinova-carousel__img {

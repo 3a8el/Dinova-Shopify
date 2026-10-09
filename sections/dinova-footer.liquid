@@ -55,7 +55,7 @@
             <ul class="dinova-footer__links" role="list">
               {%- for link in block.settings.menu.links -%}
                 <li>
-                  <a href="{{ link.url }}" class="dinova-footer__link"{% if link.current %} aria-current="page"{% endif %}>
+                  <a href="{{ link.url }}" class="dinova-footer__link dinova-underline"{% if link.current %} aria-current="page"{% endif %}>
                     {{- link.title | escape -}}
                   </a>
                 </li>

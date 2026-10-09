@@ -38,6 +38,11 @@
     </div>
 
     <div class="dinova-cuts__slides">
+      {%- comment -%}
+        One frame that never fades: it holds the background, border and glass blur,
+        so the blur is already in place while the images cross-fade on top of it.
+      {%- endcomment -%}
+      <div class="dinova-cuts__frame" aria-hidden="true"></div>
       {%- for block in cuts -%}
         <figure
           class="dinova-cuts__slide{% if forloop.first %} is-active{% endif %}"
@@ -76,12 +81,12 @@
     </div>
 
     {%- if cuts.size > 1 -%}
-      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--prev" data-direction="-1">
+      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--prev dinova-underline dinova-underline--rtl" data-direction="-1">
         <span class="dinova-cuts__arrow" aria-hidden="true">&larr;</span>
         <span class="visually-hidden">Previous: </span>
         <span class="dinova-cuts__nav-label">{{ cuts[last_index].settings.name | escape }}</span>
       </button>
-      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--next" data-direction="1">
+      <button type="button" class="dinova-cuts__nav dinova-cuts__nav--next dinova-underline" data-direction="1">
         <span class="visually-hidden">Next: </span>
         <span class="dinova-cuts__nav-label">{{ cuts[1].settings.name | escape }}</span>
         <span class="dinova-cuts__arrow" aria-hidden="true">&rarr;</span>
@@ -209,12 +214,17 @@
     color: var(--dinova-cuts-big);
     opacity: 0;
     transform: translateY(0.15em);
-    transition: opacity 0.5s ease, transform 0.6s ease;
+    transition: opacity 0.5s ease, transform 0.6s ease, word-spacing 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .dinova-cuts__big-name.is-active {
     opacity: 1;
     transform: none;
+  }
+
+  /* Hovering the cut spreads the words of the big name apart. */
+  .dinova-cuts__stage:has(.dinova-cuts__slide.is-active:hover) .dinova-cuts__big-name.is-active {
+    word-spacing: var(--dinova-cuts-word-spacing, 0.6em);
   }
 
   /* Slides stacked in one grid cell */
@@ -226,6 +236,7 @@
   }
 
   .dinova-cuts__slide {
+    position: relative;
     grid-area: 1 / 1;
     margin: 0;
     opacity: 0;
@@ -238,16 +249,30 @@
     visibility: visible;
   }
 
+  .dinova-cuts__frame,
   .dinova-cuts__image {
     aspect-ratio: 1;
-    background: var(--dinova-cuts-image-bg);
     border: var(--dinova-cuts-border);
     border-radius: var(--dinova-cuts-radius);
     overflow: hidden;
   }
 
-  /* Glass morphism: frosted panel that blurs the big name behind it */
-  .dinova-cuts--glass .dinova-cuts__image {
+  /* The image sits inside the frame; its border is transparent so sizes match. */
+  .dinova-cuts__image {
+    border-color: transparent;
+  }
+
+  .dinova-cuts__frame {
+    grid-area: 1 / 1;
+    align-self: start;
+    width: 100%;
+    background: var(--dinova-cuts-image-bg);
+  }
+
+  /* Glass morphism: frosted panel that blurs the big name behind it.
+     It must not sit inside a fading element: an ancestor with opacity below 1
+     stops backdrop-filter from seeing what is behind it. */
+  .dinova-cuts--glass .dinova-cuts__frame {
     background: var(--dinova-cuts-glass-tint);
     -webkit-backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
     backdrop-filter: blur(var(--dinova-cuts-glass-blur)) saturate(140%);
@@ -353,7 +378,7 @@
     }
 
     .dinova-cuts__nav {
-      position: static;
+      position: relative;
       transform: none;
       font-size: 0.75rem;
     }
