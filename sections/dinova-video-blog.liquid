@@ -1,0 +1,557 @@
+{%- comment -%}
+  Dinova video blog: a carousel of YouTube videos, each with a title, an author
+  and a link to its blog post. The video only loads when the play button is
+  pressed; until then a thumbnail is shown.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<dinova-video-blog
+  class="dinova-vblog"
+  style="
+    --dinova-vblog-bg: {{ s.background_color }};
+    --dinova-vblog-text: {{ s.text_color }};
+    --dinova-vblog-columns: {{ s.columns_desktop }};
+    --dinova-vblog-columns-mobile: {{ s.columns_mobile }};
+    --dinova-vblog-pad-top: {{ s.padding_top }}px;
+    --dinova-vblog-pad-bottom: {{ s.padding_bottom }}px;
+  "
+>
+  <div class="dinova-vblog__header">
+    <div class="dinova-vblog__intro">
+      {%- if s.heading != blank -%}
+        <h2 class="dinova-vblog__heading">{{ s.heading | escape }}</h2>
+      {%- endif -%}
+      {%- if s.text != blank -%}
+        <div class="dinova-vblog__text">{{ s.text }}</div>
+      {%- endif -%}
+    </div>
+    {%- if s.view_all_label != blank -%}
+      <a class="dinova-vblog__button" href="{{ s.view_all_link | default: s.blog.url | default: '/blogs' }}">
+        {{- s.view_all_label | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-vblog__viewport">
+    <ul class="dinova-vblog__track" role="list" data-track>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign b = block.settings
+          assign article = b.article
+          assign title = b.title | default: article.title
+          assign author = b.author | default: article.author
+          assign link = b.link | default: article.url
+          assign thumb = b.image | default: article.image
+          assign video_id = blank
+          if b.video.type == 'youtube'
+            assign video_id = b.video.id
+          endif
+        -%}
+        <li class="dinova-vblog__item" {{ block.shopify_attributes }}>
+          <div class="dinova-vblog__media" {% if video_id != blank %}data-video-id="{{ video_id }}"{% endif %}>
+            {%- if thumb != blank -%}
+              {{
+                thumb
+                | image_url: width: 1400
+                | image_tag:
+                  widths: '500, 800, 1100, 1400',
+                  sizes: '(min-width: 750px) 50vw, 90vw',
+                  loading: 'lazy',
+                  alt: '',
+                  class: 'dinova-vblog__thumb'
+              }}
+            {%- elsif video_id != blank -%}
+              <img
+                class="dinova-vblog__thumb"
+                src="https://i.ytimg.com/vi/{{ video_id }}/maxresdefault.jpg"
+                data-fallback="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
+                alt=""
+                loading="lazy"
+                width="1280"
+                height="720"
+              >
+            {%- else -%}
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-vblog__thumb dinova-vblog__placeholder' }}
+            {%- endif -%}
+
+            {%- if video_id != blank -%}
+              <button type="button" class="dinova-vblog__play" aria-label="Play video: {{ title | escape }}">
+                <svg viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+                  <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                  <path d="M33 27l20 13-20 13z" fill="currentColor"/>
+                </svg>
+              </button>
+            {%- endif -%}
+          </div>
+
+          <div class="dinova-vblog__info">
+            <div class="dinova-vblog__meta">
+              {%- if title != blank -%}
+                <h3 class="dinova-vblog__title">{{ title | escape }}</h3>
+              {%- endif -%}
+              {%- if author != blank -%}
+                <p class="dinova-vblog__author">{{ author | escape }}</p>
+              {%- endif -%}
+            </div>
+            {%- if link != blank and s.view_more_label != blank -%}
+              <a class="dinova-vblog__button dinova-vblog__button--small" href="{{ link }}">
+                {{- s.view_more_label | escape -}}
+                <span class="visually-hidden">: {{ title | escape }}</span>
+              </a>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ul>
+
+    <button type="button" class="dinova-vblog__arrow dinova-vblog__arrow--prev" data-direction="-1" aria-label="Previous videos" hidden>
+      <span aria-hidden="true">&larr;</span>
+    </button>
+    <button type="button" class="dinova-vblog__arrow dinova-vblog__arrow--next" data-direction="1" aria-label="Next videos" hidden>
+      <span aria-hidden="true">&rarr;</span>
+    </button>
+  </div>
+</dinova-video-blog>
+
+<script type="module">
+  if (!customElements.get('dinova-video-blog')) {
+    customElements.define(
+      'dinova-video-blog',
+      class DinovaVideoBlog extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-track]');
+          this.arrows = [...this.querySelectorAll('.dinova-vblog__arrow')];
+          this.arrows.forEach((arrow) =>
+            arrow.addEventListener('click', () => this.scrollByCard(Number(arrow.dataset.direction)))
+          );
+          this.update = () => this.updateArrows();
+          this.track.addEventListener('scroll', this.update, { passive: true });
+          this.resizeObserver = new ResizeObserver(this.update);
+          this.resizeObserver.observe(this.track);
+          this.update();
+
+          /* YouTube has no maxres thumbnail for some videos and returns a 120px stand-in. */
+          this.querySelectorAll('img[data-fallback]').forEach((img) => {
+            const check = () => {
+              if (img.naturalWidth && img.naturalWidth <= 120) img.src = img.dataset.fallback;
+            };
+            img.complete ? check() : img.addEventListener('load', check, { once: true });
+            img.addEventListener('error', () => (img.src = img.dataset.fallback), { once: true });
+          });
+
+          this.querySelectorAll('.dinova-vblog__play').forEach((button) =>
+            button.addEventListener('click', () => this.play(button.closest('[data-video-id]')))
+          );
+        }
+
+        disconnectedCallback() {
+          this.resizeObserver?.disconnect();
+        }
+
+        /* Swap the thumbnail for the YouTube player, and stop any other playing video. */
+        play(media) {
+          this.querySelectorAll('.dinova-vblog__media.is-playing').forEach((other) => {
+            if (other === media) return;
+            other.querySelector('iframe')?.remove();
+            other.classList.remove('is-playing');
+          });
+          if (media.classList.contains('is-playing')) return;
+          const iframe = document.createElement('iframe');
+          iframe.src = `https://www.youtube-nocookie.com/embed/${media.dataset.videoId}?autoplay=1&rel=0&playsinline=1`;
+          iframe.title = media.querySelector('.dinova-vblog__play')?.getAttribute('aria-label') || 'YouTube video';
+          iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+          iframe.allowFullscreen = true;
+          iframe.className = 'dinova-vblog__iframe';
+          media.append(iframe);
+          media.classList.add('is-playing');
+          iframe.focus();
+        }
+
+        scrollByCard(direction) {
+          const item = this.track.querySelector('.dinova-vblog__item');
+          if (!item) return;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+          this.track.scrollBy({ left: direction * (item.offsetWidth + gap), behavior: reduce ? 'auto' : 'smooth' });
+        }
+
+        updateArrows() {
+          const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          const overflowing = scrollWidth > clientWidth + 1;
+          const [prev, next] = this.arrows;
+          if (!prev || !next) return;
+          prev.hidden = !overflowing || scrollLeft <= 1;
+          next.hidden = !overflowing || scrollLeft + clientWidth >= scrollWidth - 1;
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-vblog {
+    --dinova-vblog-gutter: clamp(1rem, 4.5vw, 5.5rem);
+    --dinova-vblog-gap: 1.25rem;
+    display: block;
+    padding-block: var(--dinova-vblog-pad-top) var(--dinova-vblog-pad-bottom);
+    background: var(--dinova-vblog-bg);
+    color: var(--dinova-vblog-text);
+  }
+
+  .dinova-vblog__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-inline: var(--dinova-vblog-gutter);
+    margin-bottom: 1.75rem;
+  }
+
+  .dinova-vblog__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  .dinova-vblog__text {
+    max-width: 60ch;
+    margin-top: 0.75rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .dinova-vblog__text p {
+    margin: 0;
+  }
+
+  /* Same outlined button as the About section. */
+  .dinova-vblog__button {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-vblog__button:hover {
+    background: var(--dinova-vblog-text);
+    color: var(--dinova-vblog-bg);
+  }
+
+  .dinova-vblog__button--small {
+    padding: 0.5rem 1rem;
+    font-size: 0.6875rem;
+  }
+
+  .dinova-vblog__viewport {
+    position: relative;
+  }
+
+  .dinova-vblog__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--dinova-vblog-columns-mobile) - 1) * var(--dinova-vblog-gap)) / var(--dinova-vblog-columns-mobile));
+    gap: var(--dinova-vblog-gap);
+    margin: 0;
+    padding: 0 var(--dinova-vblog-gutter);
+    scroll-padding-inline: var(--dinova-vblog-gutter);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .dinova-vblog__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-vblog__track {
+      grid-auto-columns: calc((100% - 2 * var(--dinova-vblog-gutter) - (var(--dinova-vblog-columns) - 1) * var(--dinova-vblog-gap)) / var(--dinova-vblog-columns));
+    }
+  }
+
+  .dinova-vblog__item {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .dinova-vblog__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .dinova-vblog__thumb,
+  .dinova-vblog__iframe {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+  }
+
+  .dinova-vblog__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .dinova-vblog__play svg {
+    width: clamp(3.5rem, 6vw, 5.5rem);
+    height: auto;
+    filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.25));
+    transition: transform 0.3s ease;
+  }
+
+  .dinova-vblog__play:hover svg,
+  .dinova-vblog__play:focus-visible svg {
+    transform: scale(1.08);
+  }
+
+  .dinova-vblog__media.is-playing .dinova-vblog__play,
+  .dinova-vblog__media.is-playing .dinova-vblog__thumb {
+    display: none;
+  }
+
+  .dinova-vblog__info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 0.5rem 0;
+  }
+
+  .dinova-vblog__title {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: inherit;
+  }
+
+  .dinova-vblog__author {
+    margin: 0.75rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    opacity: 0.75;
+  }
+
+  .dinova-vblog__arrow {
+    position: absolute;
+    top: calc(var(--dinova-vblog-arrow-top, 40%));
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid currentColor;
+    background: var(--dinova-vblog-bg);
+    color: var(--dinova-vblog-text);
+    cursor: pointer;
+    transform: translateY(-50%);
+  }
+
+  .dinova-vblog__arrow[hidden] {
+    display: none;
+  }
+
+  .dinova-vblog__arrow--prev {
+    left: max(0.5rem, calc(var(--dinova-vblog-gutter) - 1.375rem));
+  }
+
+  .dinova-vblog__arrow--next {
+    right: max(0.5rem, calc(var(--dinova-vblog-gutter) - 1.375rem));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-vblog__play svg,
+    .dinova-vblog__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova video blog",
+  "tag": "section",
+  "class": "dinova-vblog-section",
+  "max_blocks": 16,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Experience Dinova in Person"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Words can only say so much. The best way to understand the brilliance of a Dinova diamond is to see it for yourself.</p>"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View all label",
+      "default": "View all"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "The View all button opens this blog unless a link is set below."
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View all link"
+    },
+    {
+      "type": "text",
+      "id": "view_more_label",
+      "label": "Card button label",
+      "default": "View more"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Videos per row on desktop",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Videos per row on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "1.15", "label": "1 with a peek of the next" }
+      ],
+      "default": "1.15"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        {
+          "type": "video_url",
+          "id": "video",
+          "label": "YouTube link",
+          "accept": ["youtube"]
+        },
+        {
+          "type": "article",
+          "id": "article",
+          "label": "Blog post",
+          "info": "Fills the title, author, image and link when those are empty."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Defaults to the blog post."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Thumbnail",
+          "info": "Optional. Uses the blog post image, then the YouTube thumbnail."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova video blog",
+      "blocks": [
+        { "type": "video", "settings": { "title": "Fashion, diamonds & personal style.", "author": "Noha El Sherbiny" } },
+        { "type": "video", "settings": { "title": "What makes a diamond a smart choice", "author": "Nayra Nassar" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

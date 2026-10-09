@@ -570,6 +570,30 @@
         "phrase_5"
       ],
       "settings": {}
+    },
+    "dinova_video_blog": {
+      "type": "dinova-video-blog",
+      "blocks": {
+        "video_1": {
+          "type": "video",
+          "settings": {
+            "title": "Fashion, diamonds & personal style.",
+            "author": "Noha El Sherbiny"
+          }
+        },
+        "video_2": {
+          "type": "video",
+          "settings": {
+            "title": "What makes a diamond a smart choice",
+            "author": "Nayra Nassar"
+          }
+        }
+      },
+      "block_order": [
+        "video_1",
+        "video_2"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -580,6 +604,7 @@
     "dinova_marquee",
     "dinova_product_carousel",
     "dinova_about",
+    "dinova_video_blog",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]
