@@ -85,6 +85,7 @@
     '.dinova-ccar__media',
     '.dinova-spot__card-media',
     '.dinova-spot__photo',
+    '.dinova-cgrid__tile',
   ];
 
   const sectionOf = (el) => el.closest('.shopify-section') || el.parentElement;
