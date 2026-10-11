@@ -1,0 +1,305 @@
+{%- comment -%}
+  Dinova related products: a lined row of product cards (portrait image, name
+  and price). Products come from Shopify's recommendations for the current
+  product, loaded after the page so the product page stays fast.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign product = closest.product
+  assign limit = s.products_to_show
+-%}
+
+<dinova-related-products
+  class="dinova-related"
+  data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}&intent={{ s.intent }}"
+  style="
+    --dinova-related-columns: {{ limit }};
+    --dinova-related-bg: {{ s.background_color }};
+    --dinova-related-text: {{ s.text_color }};
+    --dinova-related-line: {{ s.line_color }};
+  "
+>
+  {%- if recommendations.performed and recommendations.products_count > 0 -%}
+    {%- if s.heading != blank -%}
+      <h2 class="dinova-related__heading">{{ s.heading | escape }}</h2>
+    {%- endif -%}
+    <ul class="dinova-related__grid list-unstyled" role="list">
+      {%- for item in recommendations.products limit: limit -%}
+        <li class="dinova-related__item">
+          <a class="dinova-related__card" href="{{ item.url }}">
+            <div class="dinova-related__media{% if item.images.size > 1 %} dinova-related__media--hover{% endif %}">
+              {%- if item.featured_image != blank -%}
+                {{
+                  item.featured_image
+                  | image_url: width: 900
+                  | image_tag:
+                    widths: '360, 540, 720, 900',
+                    sizes: '(min-width: 990px) 25vw, 50vw',
+                    loading: 'lazy',
+                    alt: item.title,
+                    class: 'dinova-related__img dinova-related__img--primary'
+                }}
+                {%- if item.images.size > 1 -%}
+                  {{
+                    item.images[1]
+                    | image_url: width: 900
+                    | image_tag:
+                      widths: '360, 540, 720, 900',
+                      sizes: '(min-width: 990px) 25vw, 50vw',
+                      loading: 'lazy',
+                      alt: '',
+                      class: 'dinova-related__img dinova-related__img--hover'
+                  }}
+                {%- endif -%}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag: 'dinova-related__img' }}
+              {%- endif -%}
+            </div>
+            <div class="dinova-related__meta">
+              <span class="dinova-related__title">{{ item.title | escape }}</span>
+              <span class="dinova-related__price">
+                {%- if item.price_varies -%}
+                  {{ item.price_min | money }} - {{ item.price_max | money }}
+                {%- else -%}
+                  {{ item.price | money }}
+                {%- endif -%}
+              </span>
+            </div>
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</dinova-related-products>
+
+{% stylesheet %}
+  .dinova-related {
+    display: block;
+    background: var(--dinova-related-bg);
+    color: var(--dinova-related-text);
+  }
+
+  /* The line sits on the content, so nothing shows before products load. */
+  .dinova-related > :first-child {
+    border-top: 1px solid var(--dinova-related-line);
+  }
+
+  .dinova-related__heading {
+    margin: 0;
+    padding: clamp(2.5rem, 5vw, 4rem) 1rem clamp(1.5rem, 3vw, 2.5rem);
+    border-bottom: 1px solid var(--dinova-related-line);
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.05;
+    text-align: center;
+    color: inherit;
+  }
+
+  .dinova-related__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+  }
+
+  .dinova-related__item {
+    border-bottom: 1px solid var(--dinova-related-line);
+  }
+
+  .dinova-related__item:nth-child(odd) {
+    border-inline-end: 1px solid var(--dinova-related-line);
+  }
+
+  .dinova-related__card {
+    display: grid;
+    gap: 0.875rem;
+    height: 100%;
+    padding: 0.75rem 0.75rem 1.25rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-related__media {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--dinova-product-image-bg);
+  }
+
+  .dinova-related__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+    transition: opacity 0.5s ease, transform 0.8s ease;
+  }
+
+  .dinova-related__img--hover {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+
+  .dinova-related__meta {
+    display: grid;
+    gap: 0.25rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .dinova-related__title {
+    text-transform: uppercase;
+  }
+
+  @media (hover: hover) {
+    .dinova-related__card:hover .dinova-related__media--hover .dinova-related__img--primary {
+      opacity: 0;
+    }
+
+    .dinova-related__card:hover .dinova-related__img--hover {
+      opacity: 1;
+    }
+
+    .dinova-related__card:hover .dinova-related__img {
+      transform: scale(1.03);
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-related__card {
+      padding: 1.25rem 1.25rem 1.5rem;
+    }
+
+    .dinova-related__meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 0.8125rem;
+    }
+
+    .dinova-related__price {
+      flex: none;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .dinova-related__grid {
+      grid-template-columns: repeat(var(--dinova-related-columns), minmax(0, 1fr));
+    }
+
+    .dinova-related__item:nth-child(odd) {
+      border-inline-end: 0;
+    }
+
+    .dinova-related__item:not(:last-child) {
+      border-inline-end: 1px solid var(--dinova-related-line);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-related__img {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+<script type="module">
+  if (!customElements.get('dinova-related-products')) {
+    class DinovaRelatedProducts extends HTMLElement {
+      connectedCallback() {
+        if (this.querySelector('.dinova-related__grid')) return;
+        this.observer = new IntersectionObserver(
+          (entries) => {
+            if (!entries[0].isIntersecting) return;
+            this.observer.disconnect();
+            this.load();
+          },
+          { rootMargin: '0px 0px 600px 0px' }
+        );
+        this.observer.observe(this);
+      }
+
+      disconnectedCallback() {
+        this.observer?.disconnect();
+      }
+
+      async load() {
+        try {
+          const response = await fetch(this.dataset.url);
+          const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+          const fresh = html.querySelector('dinova-related-products');
+          if (fresh && fresh.innerHTML.trim()) this.innerHTML = fresh.innerHTML;
+        } catch (error) {
+          console.warn('[dinova-related-products]', error);
+        }
+      }
+    }
+    customElements.define('dinova-related-products', DinovaRelatedProducts);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Dinova related products",
+  "tag": "section",
+  "class": "dinova-related-section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty to show only the products.",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "select",
+      "id": "intent",
+      "label": "Products to show",
+      "options": [
+        { "value": "related", "label": "Related" },
+        { "value": "complementary", "label": "Complementary" }
+      ],
+      "default": "related",
+      "info": "Related products are chosen by Shopify automatically. Complementary ones are picked per product in the Search & Discovery app."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova related products"
+    }
+  ]
+}
+{% endschema %}

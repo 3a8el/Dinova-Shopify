@@ -38,6 +38,7 @@
     '.dinova-contact__title',
     '.dinova-ctitle__heading',
     '.dinova-story__heading',
+    '.dinova-related__heading',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */

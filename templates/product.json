@@ -402,16 +402,27 @@
         "gap": 28,
         "padding-block-start": 48,
         "padding-block-end": 48
-      }
+      },
+      "disabled": true
     },
     "dinova_product_story": {
       "type": "dinova-product-story",
+      "settings": {}
+    },
+    "dinova_related_products": {
+      "type": "dinova-related-products",
+      "settings": {}
+    },
+    "dinova_newsletter": {
+      "type": "dinova-newsletter",
       "settings": {}
     }
   },
   "order": [
     "main",
     "dinova_product_story",
+    "dinova_related_products",
+    "dinova_newsletter",
     "product_recommendations_qggXJq"
   ]
 }
