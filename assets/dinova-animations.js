@@ -29,6 +29,8 @@
     '.dinova-notes__title',
     '.dinova-values__title',
     '.dinova-news__heading',
+    '.dinova-jhero__heading',
+    '.dinova-jhero__title',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -51,6 +53,8 @@
     '.dinova-notes__text',
     '.dinova-values__item',
     '.dinova-news__form',
+    '.dinova-jhero__excerpt',
+    '.dinova-jhero__link',
     '.dinova-footer__menu',
     '.dinova-footer__contact',
   ];
@@ -67,6 +71,7 @@
     '.dinova-notes__small',
     '.dinova-values__media',
     '.dinova-news__frame',
+    '.dinova-jhero__media',
   ];
 
   const sectionOf = (el) => el.closest('.shopify-section') || el.parentElement;
