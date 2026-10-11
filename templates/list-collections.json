@@ -170,11 +170,16 @@
     "dinova_collection_carousel": {
       "type": "dinova-collection-carousel",
       "settings": {}
+    },
+    "dinova_product_spotlight": {
+      "type": "dinova-product-spotlight",
+      "settings": {}
     }
   },
   "order": [
     "dinova_collections_hero",
     "dinova_collection_carousel",
+    "dinova_product_spotlight",
     "collection_list_Wfgh3m"
   ]
 }

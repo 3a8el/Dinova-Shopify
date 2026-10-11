@@ -1,0 +1,396 @@
+{%- comment -%}
+  Dinova product spotlight: a fixed background image with a decorative
+  paragraph, a product card (hover shows Add to cart and Explore), a lifestyle
+  image next to it, and a second product image on the right.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign product = s.product
+  assign bg_mobile = s.image_mobile | default: s.image
+  assign variant = product.selected_or_first_available_variant
+-%}
+
+<div
+  class="dinova-spot{% if s.fixed_background %} dinova-spot--fixed{% endif %}"
+  style="
+    --dinova-spot-text: {{ s.text_color }};
+    --dinova-spot-card-bg: {{ s.card_background }};
+    --dinova-spot-card-text: {{ s.card_text_color }};
+    --dinova-spot-overlay: {{ s.overlay_opacity | divided_by: 100.0 }};
+    --dinova-spot-height: {{ s.height }}vh;
+    {% if s.image != blank %}--dinova-spot-bg: url('{{ s.image | image_url: width: 2400 }}');{% endif %}
+    {% if bg_mobile != blank %}--dinova-spot-bg-mobile: url('{{ bg_mobile | image_url: width: 1200 }}');{% endif %}
+  "
+>
+  <div class="dinova-spot__inner">
+    {%- if s.text != blank -%}
+      <div class="dinova-spot__text">{{ s.text }}</div>
+    {%- endif -%}
+
+    <div class="dinova-spot__row">
+      <div class="dinova-spot__group">
+        <div class="dinova-spot__card">
+          <div class="dinova-spot__card-media">
+            {%- if product.featured_image != blank -%}
+              {{
+                product.featured_image
+                | image_url: width: 600
+                | image_tag:
+                  widths: '300, 450, 600',
+                  sizes: '(min-width: 750px) 15rem, 45vw',
+                  loading: 'lazy',
+                  alt: product.title,
+                  class: 'dinova-spot__img'
+              }}
+            {%- else -%}
+              {{ 'product-1' | placeholder_svg_tag: 'dinova-spot__img' }}
+            {%- endif -%}
+
+            {%- if product != blank -%}
+              <div class="dinova-spot__actions">
+                {%- if product.has_only_default_variant and variant.available -%}
+                  {%- form 'product', product, class: 'dinova-spot__form' -%}
+                    <input type="hidden" name="id" value="{{ variant.id }}">
+                    <button type="submit" class="dinova-spot__action" aria-label="Add {{ product.title | escape }} to cart">
+                      {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+                    </button>
+                  {%- endform -%}
+                {%- else -%}
+                  <a href="{{ product.url }}" class="dinova-spot__action" aria-label="Choose options for {{ product.title | escape }}">
+                    {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+                  </a>
+                {%- endif -%}
+                <a href="{{ product.url }}" class="dinova-spot__action" aria-label="Explore {{ product.title | escape }}">
+                  <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+                </a>
+              </div>
+            {%- endif -%}
+          </div>
+          <a class="dinova-spot__card-info" href="{{ product.url | default: '#' }}">
+            <span class="dinova-spot__name">{{ product.title | default: 'Product name' | escape }}</span>
+            <span class="dinova-spot__price">
+              {%- if product != blank -%}{{ product.price | money }}{%- else -%}{{ 50000 | money }}{%- endif -%}
+            </span>
+          </a>
+        </div>
+
+        <div class="dinova-spot__photo">
+          {%- if s.lifestyle_image != blank -%}
+            {{
+              s.lifestyle_image
+              | image_url: width: 700
+              | image_tag:
+                widths: '300, 500, 700',
+                sizes: '(min-width: 750px) 15rem, 45vw',
+                loading: 'lazy',
+                class: 'dinova-spot__img'
+            }}
+          {%- else -%}
+            {{ 'product-apparel-1' | placeholder_svg_tag: 'dinova-spot__img' }}
+          {%- endif -%}
+        </div>
+      </div>
+
+      <div class="dinova-spot__photo dinova-spot__photo--right">
+        {%- assign right_image = s.right_image | default: product.images[1] -%}
+        {%- if right_image != blank -%}
+          {{
+            right_image
+            | image_url: width: 700
+            | image_tag:
+              widths: '300, 500, 700',
+              sizes: '(min-width: 750px) 15rem, 45vw',
+              loading: 'lazy',
+              class: 'dinova-spot__img'
+          }}
+        {%- else -%}
+          {{ 'product-apparel-2' | placeholder_svg_tag: 'dinova-spot__img' }}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-spot {
+    position: relative;
+    display: flex;
+    min-height: var(--dinova-spot-height);
+    background-color: #ddd;
+    background-image: linear-gradient(rgb(0 0 0 / var(--dinova-spot-overlay)), rgb(0 0 0 / var(--dinova-spot-overlay))), var(--dinova-spot-bg-mobile, none);
+    background-position: center;
+    background-size: cover;
+    color: var(--dinova-spot-text);
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-spot {
+      background-image: linear-gradient(rgb(0 0 0 / var(--dinova-spot-overlay)), rgb(0 0 0 / var(--dinova-spot-overlay))), var(--dinova-spot-bg, none);
+    }
+
+    /* Fixed background on desktop; touch devices ignore it, so it is limited to fine pointers. */
+    @media (pointer: fine) {
+      .dinova-spot--fixed {
+        background-attachment: fixed;
+      }
+    }
+  }
+
+  .dinova-spot__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    width: min(100% - 2.5rem, 80rem);
+    margin-inline: auto;
+    padding-block: clamp(2rem, 4vw, 3rem);
+  }
+
+  .dinova-spot__text {
+    max-width: 30rem;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.05;
+  }
+
+  .dinova-spot__text p {
+    margin: 0;
+  }
+
+  .dinova-spot__row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .dinova-spot__group {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .dinova-spot__card,
+  .dinova-spot__photo {
+    width: min(45vw, 15rem);
+    aspect-ratio: 6 / 7;
+  }
+
+  .dinova-spot__card {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem;
+    background: var(--dinova-spot-card-bg);
+    color: var(--dinova-spot-card-text);
+  }
+
+  .dinova-spot__card-media {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .dinova-spot__photo {
+    overflow: hidden;
+  }
+
+  .dinova-spot__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-spot__card-info {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    text-decoration: none;
+  }
+
+  .dinova-spot__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+
+  .dinova-spot__price {
+    flex-shrink: 0;
+  }
+
+  /* Hover actions: square buttons at the top right of the product image. */
+  .dinova-spot__actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: grid;
+    gap: 0.5rem;
+    opacity: 0;
+    transform: translateX(0.5rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .dinova-spot__card:hover .dinova-spot__actions,
+  .dinova-spot__card:focus-within .dinova-spot__actions {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: none) {
+    .dinova-spot__actions {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .dinova-spot__form {
+    margin: 0;
+  }
+
+  .dinova-spot__action {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid rgb(0 0 0 / 0.12);
+    background: var(--dinova-spot-card-bg);
+    color: var(--dinova-spot-card-text);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-spot__action:hover {
+    background: var(--dinova-spot-card-text);
+    color: var(--dinova-spot-card-bg);
+  }
+
+  .dinova-spot__action svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dinova-spot__photo--right {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-spot__actions,
+    .dinova-spot__action {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova product spotlight",
+  "tag": "section",
+  "class": "dinova-spot-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Falls back to the background image."
+    },
+    {
+      "type": "checkbox",
+      "id": "fixed_background",
+      "label": "Fixed background while scrolling",
+      "info": "Desktop only. Phones and tablets do not support fixed backgrounds.",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph",
+      "default": "<p>Captivate the senses with radiant jewellery crafted from unique precious gemstones and lustrous metals</p>"
+    },
+    {
+      "type": "header",
+      "content": "Product"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "paragraph",
+      "content": "Add to cart works directly for products without options. For products with options (size, metal), the cart button opens the product page."
+    },
+    {
+      "type": "image_picker",
+      "id": "lifestyle_image",
+      "label": "Lifestyle image next to the card"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Image on the right",
+      "info": "Defaults to the product's second image. Hidden on mobile."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height",
+      "min": 50,
+      "max": 120,
+      "step": 5,
+      "unit": "%",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Paragraph text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text",
+      "default": "#121212"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova product spotlight"
+    }
+  ]
+}
+{% endschema %}

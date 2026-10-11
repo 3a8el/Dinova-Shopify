@@ -34,6 +34,7 @@
     '.dinova-jgrid__heading',
     '.dinova-chero__heading',
     '.dinova-ccar__heading',
+    '.dinova-spot__text',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -82,6 +83,8 @@
     '.dinova-jgrid__media',
     '.dinova-chero__slider',
     '.dinova-ccar__media',
+    '.dinova-spot__card-media',
+    '.dinova-spot__photo',
   ];
 
   const sectionOf = (el) => el.closest('.shopify-section') || el.parentElement;
