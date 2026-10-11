@@ -17,8 +17,8 @@
           "static": true,
           "settings": {
             "media_presentation": "grid",
-            "media_columns": "two",
-            "image_gap": 4,
+            "media_columns": "one",
+            "image_gap": 16,
             "large_first_image": false,
             "icons_style": "arrow",
             "slideshow_controls_style": "counter",
@@ -36,7 +36,8 @@
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "padding-inline-end": 0,
+            "dinova_thumbnails": true
           },
           "blocks": {}
         },
@@ -50,7 +51,7 @@
             "custom_width_mobile": 100,
             "height": "fit",
             "details_position": "flex-start",
-            "gap": 28,
+            "gap": 24,
             "sticky_details_desktop": true,
             "background_media": "none",
             "video_position": "cover",
@@ -59,10 +60,10 @@
             "border_width": 1,
             "border_opacity": 100,
             "border_radius": 0,
-            "padding-block-start": 24,
-            "padding-block-end": 24,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
+            "padding-block-start": 96,
+            "padding-block-end": 64,
+            "padding-inline-start": 48,
+            "padding-inline-end": 48
           },
           "blocks": {
             "group_icgrde": {
@@ -108,13 +109,13 @@
                   "name": "t:names.title",
                   "settings": {
                     "text": "<h1>{{ closest.product.title }}</h1>",
-                    "width": "fit-content",
+                    "width": "100%",
                     "max_width": "normal",
                     "alignment": "left",
-                    "type_preset": "h3",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
+                    "type_preset": "custom",
+                    "font": "var(--font-heading--family)",
+                    "font_size": "2.75rem",
+                    "line_height": "tight",
                     "letter_spacing": "normal",
                     "case": "none",
                     "wrap": "pretty",
@@ -127,46 +128,11 @@
                     "padding-inline-end": 0
                   },
                   "blocks": {}
-                },
-                "price_tVjtKg": {
-                  "type": "price",
-                  "settings": {
-                    "show_sale_price_first": true,
-                    "show_installments": true,
-                    "show_tax_info": true,
-                    "type_preset": "paragraph",
-                    "width": "100%",
-                    "alignment": "left",
-                    "font": "var(--font-body--family)",
-                    "font_size": "1rem",
-                    "line_height": "normal",
-                    "letter_spacing": "normal",
-                    "case": "none",
-                    "padding-block-start": 4,
-                    "padding-block-end": 0,
-                    "padding-inline-start": 0,
-                    "padding-inline-end": 0
-                  },
-                  "blocks": {}
                 }
               },
               "block_order": [
-                "text_xpVMaM",
-                "price_tVjtKg"
+                "text_xpVMaM"
               ]
-            },
-            "divider_VJhene": {
-              "type": "_divider",
-              "name": "t:names.divider",
-              "settings": {
-                "thickness": 1,
-                "corner_radius": "square",
-                "divider_color": "{{ settings.color_palette.color3 }}",
-                "width_percent": 100,
-                "padding-block-start": 0,
-                "padding-block-end": 0
-              },
-              "blocks": {}
             },
             "variant_picker_R3rGDr": {
               "type": "variant-picker",
@@ -240,14 +206,44 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "price_tVjtKg": {
+              "type": "price",
+              "settings": {
+                "show_sale_price_first": true,
+                "show_installments": true,
+                "show_tax_info": true,
+                "type_preset": "paragraph",
+                "width": "100%",
+                "alignment": "left",
+                "font": "var(--font-body--family)",
+                "font_size": "1rem",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none",
+                "padding-block-start": 4,
+                "padding-block-end": 0,
+                "padding-inline-start": 0,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "dinova_tabs": {
+              "type": "dinova-product-tabs",
+              "settings": {
+                "tab_1_label": "Description",
+                "tab_1_description": true,
+                "tab_2_label": "Shipping & Return"
+              }
             }
           },
           "block_order": [
             "group_icgrde",
-            "divider_VJhene",
+            "text_aEtTtq",
+            "price_tVjtKg",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "text_aEtTtq"
+            "dinova_tabs"
           ]
         },
         "disclosures": {
@@ -263,13 +259,14 @@
         "disclosures"
       ],
       "settings": {
-        "content_width": "content-center-aligned",
+        "content_width": "content-full-width",
         "desktop_media_position": "left",
-        "equal_columns": false,
-        "limit_details_width": false,
-        "gap": 48,
+        "equal_columns": true,
+        "limit_details_width": true,
+        "gap": 0,
         "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-end": 0,
+        "enable_sticky_add_to_cart": false
       }
     },
     "product_recommendations_qggXJq": {
@@ -406,10 +403,15 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "dinova_product_story": {
+      "type": "dinova-product-story",
+      "settings": {}
     }
   },
   "order": [
     "main",
+    "dinova_product_story",
     "product_recommendations_qggXJq"
   ]
 }

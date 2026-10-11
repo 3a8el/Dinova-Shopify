@@ -64,6 +64,14 @@
     },
     {
       "type": "checkbox",
+      "id": "dinova_thumbnails",
+      "label": "Dinova thumbnail strip",
+      "info": "Desktop only. A strip of thumbnails stays in view over the images and jumps to each one.",
+      "default": false,
+      "visible_if": "{{ block.settings.media_presentation == 'grid' }}"
+    },
+    {
+      "type": "checkbox",
       "id": "large_first_image",
       "label": "t:settings.full_width_first_image",
       "default": false,

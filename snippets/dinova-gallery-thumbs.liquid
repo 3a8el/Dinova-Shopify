@@ -1,0 +1,144 @@
+{%- doc -%}
+  Dinova thumbnail strip for the product media grid (desktop). It stays in view
+  over the images; each thumbnail scrolls to its image and the one in view is
+  marked active.
+
+  @param {object[]} media - The gallery's sorted media.
+{%- enddoc -%}
+
+<dinova-gallery-thumbs class="dinova-thumbs">
+  <ul class="dinova-thumbs__list list-unstyled">
+    {%- for item in media -%}
+      <li>
+        <button
+          type="button"
+          class="dinova-thumbs__button{% if forloop.first %} is-active{% endif %}"
+          data-index="{{ forloop.index0 }}"
+          aria-label="{{ 'Show image ' | append: forloop.index }}"
+          {% if forloop.first %}
+            aria-current="true"
+          {% endif %}
+        >
+          {{
+            item.preview_image
+            | image_url: width: 240
+            | image_tag: widths: '120, 240', sizes: '7rem', loading: 'lazy', alt: '', class: 'dinova-thumbs__img'
+          }}
+        </button>
+      </li>
+    {%- endfor -%}
+  </ul>
+</dinova-gallery-thumbs>
+
+{% stylesheet %}
+  .dinova-thumbs {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    media-gallery:has(> .dinova-thumbs) {
+      position: relative;
+    }
+
+    .dinova-thumbs {
+      display: block;
+      position: absolute;
+      inset: 0 auto 0 0;
+      z-index: 2;
+      padding: 1.5rem;
+      pointer-events: none;
+    }
+
+    .dinova-thumbs__list {
+      position: sticky;
+      top: calc(var(--header-height, 0px) + 1.5rem);
+      display: grid;
+      gap: 0.625rem;
+      margin: 0;
+      pointer-events: auto;
+    }
+
+    .dinova-thumbs__button {
+      display: block;
+      width: clamp(4.5rem, 6vw, 7rem);
+      aspect-ratio: 1;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--color-foreground) 18%, transparent);
+      background: var(--dinova-product-image-bg);
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.3s ease, border-color 0.3s ease;
+    }
+
+    .dinova-thumbs__button:hover,
+    .dinova-thumbs__button:focus-visible,
+    .dinova-thumbs__button.is-active {
+      opacity: 1;
+      border-color: var(--color-foreground);
+    }
+
+    .dinova-thumbs__img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      mix-blend-mode: multiply;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-thumbs__button {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+<script type="module">
+  if (!customElements.get('dinova-gallery-thumbs')) {
+    class DinovaGalleryThumbs extends HTMLElement {
+      connectedCallback() {
+        this.gallery = this.closest('media-gallery');
+        this.items = [...(this.gallery?.querySelectorAll('.media-gallery__grid > li') ?? [])];
+        this.buttons = [...this.querySelectorAll('.dinova-thumbs__button')];
+        if (!this.items.length) return;
+
+        this.onClick = (event) => {
+          const button = event.target.closest('.dinova-thumbs__button');
+          if (!button) return;
+          const item = this.items[Number(button.dataset.index)];
+          if (!item) return;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+          const top = item.getBoundingClientRect().top + window.scrollY - header;
+          window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+        };
+        this.addEventListener('click', this.onClick);
+
+        this.observer = new IntersectionObserver(
+          (entries) => {
+            const hit = entries.find((entry) => entry.isIntersecting);
+            if (hit) this.setActive(this.items.indexOf(hit.target));
+          },
+          { rootMargin: '-50% 0px -50% 0px' }
+        );
+        this.items.forEach((item) => this.observer.observe(item));
+      }
+
+      setActive(index) {
+        this.buttons.forEach((button, i) => {
+          const active = i === index;
+          button.classList.toggle('is-active', active);
+          if (active) button.setAttribute('aria-current', 'true');
+          else button.removeAttribute('aria-current');
+        });
+      }
+
+      disconnectedCallback() {
+        this.observer?.disconnect();
+        this.removeEventListener('click', this.onClick);
+      }
+    }
+    customElements.define('dinova-gallery-thumbs', DinovaGalleryThumbs);
+  }
+</script>

@@ -1,0 +1,211 @@
+{%- comment -%}
+  Dinova product tabs: up to three tabs (Description, Shipping & Return, ...)
+  under the buy buttons. The first tab can show the product description.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = block.settings
+  assign product = closest.product
+  assign tab_count = 0
+-%}
+
+<dinova-product-tabs class="dinova-ptabs" {{ block.shopify_attributes }}>
+  <div class="dinova-ptabs__list" role="tablist">
+    {%- for i in (1..3) -%}
+      {%- liquid
+        assign label_key = 'tab_' | append: i | append: '_label'
+        assign content_key = 'tab_' | append: i | append: '_content'
+        assign label = s[label_key]
+        assign content = s[content_key]
+        if i == 1 and s.tab_1_description and product.description != blank
+          assign content = product.description
+        endif
+      -%}
+      {%- if label != blank and content != blank -%}
+        {%- assign tab_count = tab_count | plus: 1 -%}
+        <button
+          type="button"
+          class="dinova-ptabs__tab"
+          role="tab"
+          id="DinovaTab-{{ block.id }}-{{ i }}"
+          aria-controls="DinovaPanel-{{ block.id }}-{{ i }}"
+          aria-selected="{% if tab_count == 1 %}true{% else %}false{% endif %}"
+          tabindex="{% if tab_count == 1 %}0{% else %}-1{% endif %}"
+        >
+          {{- label | escape -}}
+        </button>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- assign tab_count = 0 -%}
+  {%- for i in (1..3) -%}
+    {%- liquid
+      assign label_key = 'tab_' | append: i | append: '_label'
+      assign content_key = 'tab_' | append: i | append: '_content'
+      assign label = s[label_key]
+      assign content = s[content_key]
+      if i == 1 and s.tab_1_description and product.description != blank
+        assign content = product.description
+      endif
+    -%}
+    {%- if label != blank and content != blank -%}
+      {%- assign tab_count = tab_count | plus: 1 -%}
+      <div
+        class="dinova-ptabs__panel rte"
+        role="tabpanel"
+        id="DinovaPanel-{{ block.id }}-{{ i }}"
+        aria-labelledby="DinovaTab-{{ block.id }}-{{ i }}"
+        tabindex="0"
+        {% if tab_count > 1 %}
+          hidden
+        {% endif %}
+      >
+        {{ content }}
+      </div>
+    {%- endif -%}
+  {%- endfor -%}
+</dinova-product-tabs>
+
+{% stylesheet %}
+  .dinova-ptabs {
+    display: block;
+    width: 100%;
+  }
+
+  .dinova-ptabs__list {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    border: 1px solid var(--dinova-ptabs-line, #d6d1c9);
+  }
+
+  .dinova-ptabs__tab {
+    padding: 0.875rem 0.5rem;
+    border: 0;
+    border-inline-start: 1px solid var(--dinova-ptabs-line, #d6d1c9);
+    background: transparent;
+    color: var(--color-foreground);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+
+  .dinova-ptabs__tab:first-child {
+    border-inline-start: 0;
+  }
+
+  .dinova-ptabs__tab:hover,
+  .dinova-ptabs__tab[aria-selected='true'] {
+    opacity: 1;
+  }
+
+  .dinova-ptabs__panel {
+    padding: 1.5rem 1.75rem 1.75rem;
+    border: 1px solid var(--dinova-ptabs-line, #d6d1c9);
+    border-top: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .dinova-ptabs__panel > :first-child {
+    margin-top: 0;
+  }
+
+  .dinova-ptabs__panel > :last-child {
+    margin-bottom: 0;
+  }
+{% endstylesheet %}
+
+<script type="module">
+  if (!customElements.get('dinova-product-tabs')) {
+    class DinovaProductTabs extends HTMLElement {
+      connectedCallback() {
+        this.tabs = [...this.querySelectorAll('[role="tab"]')];
+        this.addEventListener('click', (event) => {
+          const tab = event.target.closest('[role="tab"]');
+          if (tab) this.select(tab);
+        });
+        this.addEventListener('keydown', (event) => {
+          const index = this.tabs.indexOf(document.activeElement);
+          if (index < 0) return;
+          const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
+          if (!step) return;
+          event.preventDefault();
+          const next = this.tabs[(index + step + this.tabs.length) % this.tabs.length];
+          this.select(next);
+          next.focus();
+        });
+      }
+
+      select(active) {
+        this.tabs.forEach((tab) => {
+          const selected = tab === active;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          const panel = document.getElementById(tab.getAttribute('aria-controls'));
+          if (panel) panel.hidden = !selected;
+        });
+      }
+    }
+    customElements.define('dinova-product-tabs', DinovaProductTabs);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Dinova product tabs",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tab_1_label",
+      "label": "Tab 1 label",
+      "default": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "tab_1_description",
+      "label": "Tab 1 shows the product description",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "tab_1_content",
+      "label": "Tab 1 content",
+      "info": "Used when the product description is off or empty."
+    },
+    {
+      "type": "text",
+      "id": "tab_2_label",
+      "label": "Tab 2 label",
+      "default": "Shipping & Return"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_2_content",
+      "label": "Tab 2 content",
+      "default": "<p>We deliver with contracted carriers across Egypt. Delivery times depend on your location, and the receipt of goods can be signed by a family member or doorman. Returns are accepted within 14 days in original condition.</p>"
+    },
+    {
+      "type": "text",
+      "id": "tab_3_label",
+      "label": "Tab 3 label"
+    },
+    {
+      "type": "richtext",
+      "id": "tab_3_content",
+      "label": "Tab 3 content"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova product tabs"
+    }
+  ]
+}
+{% endschema %}

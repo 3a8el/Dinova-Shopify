@@ -147,3 +147,14 @@
 .dinova-spot__card-media .dinova-spot__img {
   mix-blend-mode: multiply;
 }
+
+/* ---------- Product page ----------
+ * Gallery on the left, details on the right with a line between them.
+ * The details column stays in view (Horizon's sticky details setting).
+ */
+
+@media screen and (min-width: 750px) {
+  .product-information .product-details {
+    border-inline-start: 1px solid #d6d1c9;
+  }
+}

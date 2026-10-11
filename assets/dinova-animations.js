@@ -37,6 +37,7 @@
     '.dinova-spot__text',
     '.dinova-contact__title',
     '.dinova-ctitle__heading',
+    '.dinova-story__heading',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -70,11 +71,13 @@
     '.dinova-contact__text',
     '.dinova-contact__detail',
     '.dinova-contact__form-wrap',
+    '.dinova-story__text',
   ];
 
   /* Media frames that unveil; the image or video inside eases out of a zoom. */
   const MEDIA = [
     '.dinova-contact__main',
+    '.dinova-story__media',
     '.dinova-contact__detail-image',
     '.dinova-switcher__media',
     '.dinova-cuts__slides',

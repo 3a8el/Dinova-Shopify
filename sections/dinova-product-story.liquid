@@ -1,0 +1,748 @@
+{%- comment -%}
+  Dinova product story: follows the product gallery. One column holds more
+  description, the other an image. A compact add-to-cart bar sits at the bottom
+  of the screen while this section scrolls past, then settles at its end.
+  Adding to cart goes through the main product form, so the cart drawer and
+  errors behave as they do higher up the page.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign product = closest.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+  assign variant = product.selected_or_first_available_variant
+
+  assign image = s.image
+  if image == blank and product.media.size > 1
+    assign image = product.media.last.preview_image
+  endif
+
+  assign text = s.text
+  if s.use_metafield and product.metafields.custom.story != blank
+    assign text = product.metafields.custom.story | metafield_tag
+  endif
+
+  assign has_options = false
+  unless product.has_only_default_variant
+    assign has_options = true
+  endunless
+-%}
+
+<div
+  class="dinova-story dinova-story--image-{{ s.image_position }}"
+  style="
+    --dinova-story-panel-bg: {{ s.panel_color }};
+    --dinova-story-panel-text: {{ s.panel_text_color }};
+    --dinova-story-bar-bg: {{ s.bar_color }};
+    --dinova-story-bar-text: {{ s.bar_text_color }};
+  "
+>
+  <div class="dinova-story__grid">
+    <div class="dinova-story__panel">
+      <div class="dinova-story__content">
+        {%- if s.eyebrow != blank -%}
+          <p class="dinova-story__eyebrow">{{ s.eyebrow | escape }}</p>
+        {%- endif -%}
+        {%- if s.heading != blank -%}
+          <h2 class="dinova-story__heading">{{ s.heading | escape }}</h2>
+        {%- endif -%}
+        {%- if text != blank -%}
+          <div class="dinova-story__text rte">{{ text }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="dinova-story__media">
+      {%- if image != blank -%}
+        {{
+          image
+          | image_url: width: 2000
+          | image_tag:
+            widths: '750, 1100, 1500, 2000',
+            sizes: '(min-width: 990px) 50vw, 100vw',
+            loading: 'lazy',
+            class: 'dinova-story__image'
+        }}
+      {%- else -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-story__image' }}
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- if s.show_bar and product != blank -%}
+    <dinova-sticky-buy
+      class="dinova-buybar"
+      data-product-id="{{ product.id }}"
+      data-section-id="{{ section.id }}"
+    >
+      <div class="dinova-buybar__inner">
+        <button
+          type="button"
+          class="dinova-buybar__toggle"
+          aria-expanded="true"
+          aria-label="{{ s.collapse_label | escape }}"
+        >
+          <svg viewBox="0 0 14 8" aria-hidden="true" focusable="false"><path d="M1 1l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        </button>
+
+        <div class="dinova-buybar__product">
+          <div class="dinova-buybar__thumb">
+            {%- assign thumb = variant.featured_media.preview_image | default: product.featured_image -%}
+            {%- if thumb != blank -%}
+              {{
+                thumb
+                | image_url: width: 200
+                | image_tag: widths: '100, 200', sizes: '5rem', loading: 'lazy', alt: '', class: 'dinova-buybar__img'
+              }}
+            {%- endif -%}
+          </div>
+          <div class="dinova-buybar__info">
+            <p class="dinova-buybar__title">{{ product.title | escape }}</p>
+            {%- if has_options -%}
+              <p class="dinova-buybar__variant" data-variant-title>{{ variant.title | escape }}</p>
+            {%- endif -%}
+            <p class="dinova-buybar__price" data-price>{{ variant.price | money }}</p>
+          </div>
+        </div>
+
+        <div class="dinova-buybar__actions">
+          {%- if has_options -%}
+            <button type="button" class="dinova-buybar__button dinova-buybar__button--outline" data-choose>
+              {{- s.choose_label | escape -}}
+            </button>
+          {%- endif -%}
+
+          <div class="dinova-buybar__qty">
+            <button type="button" class="dinova-buybar__step" data-step="-1" aria-label="Decrease quantity">
+              <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h10" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+            <input
+              class="dinova-buybar__qty-input"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              value="1"
+              aria-label="Quantity"
+              data-qty
+            >
+            <button type="button" class="dinova-buybar__step" data-step="1" aria-label="Increase quantity">
+              <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M1 6h10M6 1v10" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+          </div>
+
+          {%- form 'product', product, class: 'dinova-buybar__form' -%}
+            <input type="hidden" name="id" value="{{ variant.id }}" data-variant-id>
+            <input type="hidden" name="quantity" value="1" data-form-qty>
+            <button
+              type="submit"
+              class="dinova-buybar__button dinova-buybar__button--solid"
+              data-add
+              {% unless variant.available %}
+                disabled
+              {% endunless %}
+            >
+              <span data-add-label>
+                {%- if variant.available -%}
+                  {{- s.add_label | escape -}}
+                {%- else -%}
+                  {{- s.sold_out_label | escape -}}
+                {%- endif -%}
+              </span>
+            </button>
+          {%- endform -%}
+        </div>
+      </div>
+    </dinova-sticky-buy>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .dinova-story {
+    position: relative;
+  }
+
+  .dinova-story__grid {
+    display: grid;
+  }
+
+  .dinova-story__panel {
+    display: flex;
+    align-items: center;
+    background: var(--dinova-story-panel-bg);
+    color: var(--dinova-story-panel-text);
+  }
+
+  .dinova-story__content {
+    width: min(100%, 34rem);
+    margin-inline: auto;
+    padding: 3.5rem 1.25rem;
+  }
+
+  .dinova-story__eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .dinova-story__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.75rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-story__text {
+    margin-top: 1.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: inherit;
+  }
+
+  .dinova-story__text > :first-child {
+    margin-top: 0;
+  }
+
+  .dinova-story__text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .dinova-story__media {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+  }
+
+  .dinova-story__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Add-to-cart bar: sticky to the bottom of the screen while the section is
+     in view, then it settles at the end of the section. */
+  .dinova-buybar {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: block;
+    margin-top: -5.5rem;
+    padding: 0 0.75rem 0.75rem;
+    pointer-events: none;
+  }
+
+  .dinova-buybar__inner {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    width: min(100%, 70rem);
+    margin-inline: auto;
+    padding: 0.75rem;
+    background: var(--dinova-story-bar-bg);
+    color: var(--dinova-story-bar-text);
+    box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.08);
+    pointer-events: auto;
+  }
+
+  .dinova-buybar__toggle {
+    position: absolute;
+    top: 0.25rem;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transform: translateX(-50%);
+  }
+
+  .dinova-buybar__toggle svg {
+    width: 0.875rem;
+    transition: transform 0.3s ease;
+  }
+
+  .dinova-buybar.is-collapsed .dinova-buybar__toggle svg {
+    transform: rotate(180deg);
+  }
+
+  .dinova-buybar__product {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-width: 0;
+  }
+
+  .dinova-buybar__thumb {
+    flex: none;
+    width: 3.5rem;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--dinova-product-image-bg);
+  }
+
+  .dinova-buybar__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mix-blend-mode: multiply;
+  }
+
+  .dinova-buybar__info {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+
+  .dinova-buybar__info p {
+    margin: 0;
+    font-family: var(--font-body--family);
+  }
+
+  .dinova-buybar__title {
+    overflow: hidden;
+    font-size: 0.9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dinova-buybar__variant {
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .dinova-buybar__price {
+    font-size: 0.8125rem;
+  }
+
+  .dinova-buybar__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .dinova-buybar__form {
+    flex: 1;
+    display: flex;
+  }
+
+  .dinova-buybar__button {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    border: 1px solid currentColor;
+    border-radius: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-buybar__button--outline {
+    flex: none;
+    background: transparent;
+    color: inherit;
+  }
+
+  .dinova-buybar__button--outline:hover {
+    background: var(--dinova-story-bar-text);
+    color: var(--dinova-story-bar-bg);
+  }
+
+  .dinova-buybar__button--solid {
+    border-color: var(--dinova-story-bar-text);
+    background: var(--dinova-story-bar-text);
+    color: var(--dinova-story-bar-bg);
+  }
+
+  .dinova-buybar__button--solid:hover {
+    background: transparent;
+    color: var(--dinova-story-bar-text);
+  }
+
+  .dinova-buybar__button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .dinova-buybar__qty {
+    flex: none;
+    display: flex;
+    align-items: center;
+    border: 1px solid color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  .dinova-buybar__step {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .dinova-buybar__step svg {
+    width: 0.75rem;
+  }
+
+  .dinova-buybar__qty-input {
+    width: 2.25rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    text-align: center;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .dinova-buybar__qty-input::-webkit-inner-spin-button,
+  .dinova-buybar__qty-input::-webkit-outer-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+
+  /* Collapsed: only the product line and the toggle stay. */
+  .dinova-buybar.is-collapsed .dinova-buybar__actions {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dinova-buybar__button--outline {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-buybar {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .dinova-buybar__inner {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1rem 1rem 1rem 1.25rem;
+    }
+
+    .dinova-buybar__product {
+      padding-inline-end: 1.5rem;
+      border-inline-end: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+    }
+
+    .dinova-buybar__thumb {
+      width: 5rem;
+    }
+
+    .dinova-buybar__title {
+      font-size: 1.0625rem;
+    }
+
+    .dinova-buybar__qty-input {
+      width: 4rem;
+    }
+
+    .dinova-buybar__form {
+      flex: none;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .dinova-story__grid {
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    .dinova-story--image-left .dinova-story__media {
+      order: -1;
+    }
+
+    .dinova-story__media {
+      aspect-ratio: auto;
+    }
+
+    .dinova-story__content {
+      padding: 5rem clamp(2rem, 5vw, 5rem) 9rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-buybar__button,
+    .dinova-buybar__toggle svg {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+<script type="module">
+  if (!customElements.get('dinova-sticky-buy')) {
+    class DinovaStickyBuy extends HTMLElement {
+      connectedCallback() {
+        this.qty = this.querySelector('[data-qty]');
+        this.formQty = this.querySelector('[data-form-qty]');
+        this.variantInput = this.querySelector('[data-variant-id]');
+        this.addButton = this.querySelector('[data-add]');
+        this.abort = new AbortController();
+        const { signal } = this.abort;
+
+        this.addEventListener('click', (event) => this.onClick(event), { signal });
+        this.qty?.addEventListener('change', () => this.setQty(this.qty.value), { signal });
+        this.querySelector('form')?.addEventListener('submit', (event) => this.onSubmit(event), { signal });
+
+        // Variant changes in the main product form. Capture, so it is heard whether or not the event bubbles.
+        document.addEventListener('shopify:product:select', (event) => this.onProductSelect(event), {
+          signal,
+          capture: true,
+        });
+      }
+
+      disconnectedCallback() {
+        this.abort?.abort();
+      }
+
+      get mainForm() {
+        return [...document.querySelectorAll('product-form-component')].find(
+          (form) => form.dataset.productId === this.dataset.productId && !form.closest('.quick-add-modal, dinova-sticky-buy')
+        );
+      }
+
+      setQty(value) {
+        const qty = Math.max(1, parseInt(value, 10) || 1);
+        if (this.qty) this.qty.value = qty;
+        if (this.formQty) this.formQty.value = qty;
+        return qty;
+      }
+
+      onClick(event) {
+        const step = event.target.closest('[data-step]');
+        if (step) {
+          this.setQty((parseInt(this.qty.value, 10) || 1) + Number(step.dataset.step));
+          return;
+        }
+
+        if (event.target.closest('[data-choose]')) {
+          const target = document.querySelector('variant-picker') ?? this.mainForm;
+          if (!target) return;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+          const top = target.getBoundingClientRect().top + window.scrollY - header - 32;
+          window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+          return;
+        }
+
+        const toggle = event.target.closest('.dinova-buybar__toggle');
+        if (toggle) {
+          const collapsed = this.classList.toggle('is-collapsed');
+          toggle.setAttribute('aria-expanded', String(!collapsed));
+        }
+      }
+
+      onSubmit(event) {
+        const form = this.mainForm;
+        const button = form?.querySelector('[ref="addToCartButton"]');
+        // No main form on the page: let this form post to the cart as usual.
+        if (!form || !button) return;
+
+        event.preventDefault();
+        if (button.disabled) return;
+
+        const qty = this.setQty(this.qty?.value);
+        const selector = form.querySelector('quantity-selector-component');
+        if (selector && typeof selector.setValue === 'function') {
+          selector.setValue(qty);
+        } else {
+          const input = form.querySelector('input[name="quantity"]');
+          if (input) input.value = qty;
+        }
+
+        // Skip the main button's own fly-to-cart animation; it is off screen.
+        button.dataset.puppet = 'true';
+        button.click();
+        setTimeout(() => (button.dataset.puppet = 'false'), 1500);
+      }
+
+      onProductSelect(event) {
+        if (!(event.target instanceof Element) || event.target.closest('product-card, .quick-add-modal')) return;
+        event.promise
+          ?.then(({ detail }) => {
+            if (!detail || (detail.productId && String(detail.productId) !== this.dataset.productId)) return;
+            this.update(detail.resource, detail.html);
+          })
+          .catch(() => {});
+      }
+
+      update(variant, html) {
+        const titleEl = this.querySelector('[data-variant-title]');
+        const priceEl = this.querySelector('[data-price]');
+        const label = this.querySelector('[data-add-label]');
+
+        if (!variant) {
+          if (this.addButton) this.addButton.disabled = true;
+          if (label) label.textContent = {{ section.settings.sold_out_label | json }};
+          return;
+        }
+
+        if (titleEl) titleEl.textContent = variant.title ?? '';
+        if (this.variantInput) this.variantInput.value = variant.id;
+
+        const price = html?.querySelector('product-price .price')?.textContent?.trim();
+        if (priceEl && price) priceEl.textContent = price;
+
+        const image = variant.featured_media?.preview_image?.src ?? variant.featured_image?.src;
+        const img = this.querySelector('.dinova-buybar__img');
+        if (img && image) {
+          img.removeAttribute('srcset');
+          img.src = image + (image.includes('?') ? '&' : '?') + 'width=200';
+        }
+
+        if (this.addButton) this.addButton.disabled = !variant.available;
+        if (label) {
+          label.textContent = variant.available
+            ? {{ section.settings.add_label | json }}
+            : {{ section.settings.sold_out_label | json }};
+        }
+      }
+    }
+    customElements.define('dinova-sticky-buy', DinovaStickyBuy);
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Dinova product story",
+  "tag": "section",
+  "class": "dinova-story-section",
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small heading",
+      "default": "The details"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Made to be worn every day"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Each piece is set by hand in our Cairo atelier, with stones chosen one by one for their fire and clarity. Tell the story behind this design, the materials and how it is best worn.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_metafield",
+      "label": "Use the product's own story when it has one",
+      "info": "Reads the product metafield custom.story (rich text). Falls back to the text above.",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Falls back to the product's last image."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image on desktop",
+      "options": [
+        { "value": "right", "label": "Right" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "color",
+      "id": "panel_color",
+      "label": "Text column background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "panel_text_color",
+      "label": "Text column text",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "header",
+      "content": "Add to cart bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bar",
+      "label": "Show add to cart bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "choose_label",
+      "label": "Choose options label",
+      "default": "Choose options"
+    },
+    {
+      "type": "text",
+      "id": "add_label",
+      "label": "Add to cart label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_label",
+      "label": "Sold out label",
+      "default": "Sold out"
+    },
+    {
+      "type": "text",
+      "id": "collapse_label",
+      "label": "Collapse button label for screen readers",
+      "default": "Collapse add to cart bar"
+    },
+    {
+      "type": "color",
+      "id": "bar_color",
+      "label": "Bar background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "bar_text_color",
+      "label": "Bar text",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova product story"
+    }
+  ]
+}
+{% endschema %}

@@ -501,6 +501,9 @@
           </li>
         {% endfor %}
       </ul>
+      {%- if block_settings.dinova_thumbnails and sorted_media.size > 1 -%}
+        {% render 'dinova-gallery-thumbs', media: sorted_media %}
+      {%- endif -%}
     {% endif %}
 
     {%- if block_settings.zoom -%}
