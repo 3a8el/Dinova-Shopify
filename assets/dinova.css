@@ -128,3 +128,22 @@
     transition: none;
   }
 }
+
+/* ---------- Product image holders ----------
+ * A light grey fill behind product images (Theme settings > Product cards).
+ * multiply blends white product backgrounds into it, so every photo sits on
+ * the same tone. The best sellers carousel keeps its own Image background
+ * setting.
+ */
+
+.product-media,
+.dinova-spot__card-media {
+  background-color: var(--dinova-product-image-bg);
+}
+
+.product-media__image,
+.product-media img,
+.dinova-carousel__img,
+.dinova-spot__card-media .dinova-spot__img {
+  mix-blend-mode: multiply;
+}

@@ -1855,6 +1855,13 @@
     "name": "t:names.product_cards",
     "settings": [
       {
+        "type": "color",
+        "id": "dinova_product_image_bg",
+        "label": "Dinova product image background",
+        "info": "Fills product image holders. Images blend into it, so white product backgrounds take on this tone.",
+        "default": "#f1efec"
+      },
+      {
         "type": "checkbox",
         "id": "quick_add",
         "label": "t:settings.quick_add",

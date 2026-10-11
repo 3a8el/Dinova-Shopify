@@ -1,0 +1,152 @@
+{%- comment -%}
+  Dinova collection title: the collection's name, large and centred, with an
+  optional description and a line underneath. The "all products" collection
+  uses its own title setting (Shop all by default).
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign title = collection.title
+  if collection.handle == 'all' and s.all_title != blank
+    assign title = s.all_title
+  endif
+  if title == blank
+    assign title = s.all_title
+  endif
+-%}
+
+<div
+  class="dinova-ctitle dinova-ctitle--{{ s.alignment }}"
+  style="
+    --dinova-ctitle-bg: {{ s.background_color }};
+    --dinova-ctitle-text: {{ s.text_color }};
+    --dinova-ctitle-line: {{ s.line_color }};
+    --dinova-ctitle-pad-top: {{ s.padding_top }}px;
+    --dinova-ctitle-pad-bottom: {{ s.padding_bottom }}px;
+  "
+>
+  <h1 class="dinova-ctitle__heading">{{ title | escape }}</h1>
+  {%- if s.show_description and collection.description != blank -%}
+    <div class="dinova-ctitle__text">{{ collection.description }}</div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .dinova-ctitle {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding: calc(var(--dinova-ctitle-pad-top) * 0.6) 1rem calc(var(--dinova-ctitle-pad-bottom) * 0.6);
+    border-bottom: 1px solid var(--dinova-ctitle-line);
+    background: var(--dinova-ctitle-bg);
+    color: var(--dinova-ctitle-text);
+    text-align: center;
+  }
+
+  .dinova-ctitle--left {
+    justify-items: start;
+    text-align: start;
+  }
+
+  .dinova-ctitle__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: 1;
+    color: inherit;
+  }
+
+  .dinova-ctitle__text {
+    max-width: 38rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .dinova-ctitle__text p {
+    margin: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-ctitle {
+      padding: var(--dinova-ctitle-pad-top) clamp(1.75rem, 4vw, 4rem) var(--dinova-ctitle-pad-bottom);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova collection title",
+  "tag": "section",
+  "class": "dinova-ctitle-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "all_title",
+      "label": "Title on the all products page",
+      "info": "Other collections show their own name.",
+      "default": "Shop all"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show collection description",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "center", "label": "Centre" },
+        { "value": "left", "label": "Left" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Space above",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Space below",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova collection title"
+    }
+  ]
+}
+{% endschema %}
