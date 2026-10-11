@@ -43,10 +43,16 @@
         "gap": 32,
         "padding-block-start": 40,
         "padding-block-end": 80
-      }
+      },
+      "disabled": true
+    },
+    "dinova_about_hero": {
+      "type": "dinova-about-hero",
+      "settings": {}
     }
   },
   "order": [
+    "dinova_about_hero",
     "main"
   ]
 }

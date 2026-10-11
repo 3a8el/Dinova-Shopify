@@ -1,0 +1,301 @@
+{%- comment -%}
+  Dinova About hero: a large background image with a text box (title,
+  subtitle and paragraphs) that stays in view while the image scrolls behind it.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign image_mobile = s.image_mobile | default: s.image
+-%}
+
+<div
+  class="dinova-ahero dinova-ahero--{{ s.box_position }}{% if s.sticky %} dinova-ahero--sticky{% endif %}"
+  style="
+    --dinova-ahero-height: {{ s.height_desktop }}vh;
+    --dinova-ahero-height-mobile: {{ s.height_mobile }}vh;
+    --dinova-ahero-box-bg: {{ s.box_background }};
+    --dinova-ahero-text: {{ s.text_color }};
+    --dinova-ahero-box-width: {{ s.box_width }}px;
+    --dinova-ahero-offset: {{ s.sticky_offset }}px;
+  "
+>
+  <div class="dinova-ahero__media" aria-hidden="true">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '900, 1400, 1800, 2400',
+          sizes: '100vw',
+          fetchpriority: 'high',
+          alt: '',
+          class: 'dinova-ahero__image dinova-ahero__image--desktop'
+      }}
+      {{
+        image_mobile
+        | image_url: width: 1200
+        | image_tag:
+          widths: '600, 900, 1200',
+          sizes: '100vw',
+          fetchpriority: 'high',
+          alt: '',
+          class: 'dinova-ahero__image dinova-ahero__image--mobile'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-ahero__image' }}
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-ahero__inner">
+    <div class="dinova-ahero__box">
+      {%- if s.title != blank -%}
+        <h1 class="dinova-ahero__title">{{ s.title | newline_to_br }}</h1>
+      {%- endif -%}
+      {%- if s.subtitle != blank -%}
+        <p class="dinova-ahero__subtitle">{{ s.subtitle | escape }}</p>
+      {%- endif -%}
+      {%- if s.text != blank -%}
+        <div class="dinova-ahero__text">{{ s.text }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-ahero {
+    position: relative;
+    min-height: var(--dinova-ahero-height);
+    color: var(--dinova-ahero-text);
+  }
+
+  .dinova-ahero__media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .dinova-ahero__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-ahero__image--mobile {
+    display: none;
+  }
+
+  /* The inner wrapper spans the whole section so the sticky box has room to travel. */
+  .dinova-ahero__inner {
+    position: relative;
+    display: flex;
+    min-height: inherit;
+    padding: clamp(2rem, 5vw, 4.5rem) clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .dinova-ahero--right .dinova-ahero__inner {
+    justify-content: flex-end;
+  }
+
+  .dinova-ahero__box {
+    align-self: flex-start;
+    width: min(100%, var(--dinova-ahero-box-width));
+    padding: clamp(1.75rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2.25rem) clamp(2rem, 4vw, 3.5rem);
+    background: var(--dinova-ahero-box-bg);
+  }
+
+  .dinova-ahero--sticky .dinova-ahero__box {
+    position: sticky;
+    top: var(--dinova-ahero-offset);
+  }
+
+  .dinova-ahero__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  .dinova-ahero__subtitle {
+    margin: 1.75rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .dinova-ahero__text {
+    margin-top: 1.25rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .dinova-ahero__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-ahero__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .dinova-ahero {
+      min-height: var(--dinova-ahero-height-mobile);
+    }
+
+    .dinova-ahero__image--desktop {
+      display: none;
+    }
+
+    .dinova-ahero__image--mobile {
+      display: block;
+    }
+
+    .dinova-ahero__inner {
+      padding: 2rem 1rem;
+    }
+
+    .dinova-ahero__box {
+      width: 100%;
+      padding: 1.75rem 1.5rem 2rem;
+    }
+
+    .dinova-ahero__title {
+      font-size: 1.75rem;
+    }
+
+    .dinova-ahero__subtitle {
+      margin-top: 1rem;
+      font-size: 0.8125rem;
+    }
+
+    .dinova-ahero__text {
+      font-size: 1.0625rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova about hero",
+  "tag": "section",
+  "class": "dinova-ahero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Falls back to the background image."
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Celebrating the power\nof women jewellery"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "From coastal rainforests, our challenging climate tends to weed out all but the most vital plants"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraphs",
+      "default": "<p>From coastal rainforests to the Red Centre, our challenging climate tends to weed out all but the most vital plants. The Indigenous peoples of this land have long known the benefits of the natives our products feature.</p><p>Leif reflects Australia, its sunny outlook and obscure flora. We hero key native ingredients with a supporting cast of essential oils and extracts to bring out their best in products that offer their own natural selection.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Text box"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky",
+      "label": "Keep the text box in view while scrolling",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Gap above the box while it sticks",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "select",
+      "id": "box_position",
+      "label": "Position on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "box_width",
+      "label": "Width on desktop",
+      "min": 360,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 610
+    },
+    {
+      "type": "color",
+      "id": "box_background",
+      "label": "Box background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Height on desktop",
+      "info": "Percent of screen height. Taller gives the box more scrolling room.",
+      "min": 60,
+      "max": 250,
+      "step": 10,
+      "unit": "%",
+      "default": 150
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height on mobile",
+      "min": 50,
+      "max": 250,
+      "step": 10,
+      "unit": "%",
+      "default": 120
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova about hero"
+    }
+  ]
+}
+{% endschema %}

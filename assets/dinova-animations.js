@@ -25,6 +25,7 @@
     '.dinova-carousel__title',
     '.dinova-about__text',
     '.dinova-vblog__heading',
+    '.dinova-ahero__title',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -42,6 +43,8 @@
     '.dinova-vblog__text',
     '.dinova-vblog__header > .dinova-vblog__button',
     '.dinova-cuts__caption',
+    '.dinova-ahero__subtitle',
+    '.dinova-ahero__text',
     '.dinova-footer__menu',
     '.dinova-footer__contact',
   ];
