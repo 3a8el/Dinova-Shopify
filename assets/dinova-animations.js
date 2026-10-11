@@ -175,8 +175,22 @@
     contexts.delete(root);
   }
 
+  /* On desktop (990px and up) Horizon scrolls .page-wrapper instead of the
+     window, so ScrollTrigger has to watch that element. */
+  const squeeze = window.matchMedia('(min-width: 990px)');
+  const scroller = () => (squeeze.matches && document.querySelector('.page-wrapper')) || window;
+
   function start() {
+    ScrollTrigger.defaults({ scroller: scroller() });
     init(document.body);
+
+    squeeze.addEventListener('change', () => {
+      [...contexts.keys()].forEach(teardown);
+      ScrollTrigger.getAll().forEach((t) => t.kill());
+      ScrollTrigger.defaults({ scroller: scroller() });
+      init(document.body);
+      ScrollTrigger.refresh();
+    });
 
     /* Images and fonts change the layout after load; re-measure trigger points. */
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });

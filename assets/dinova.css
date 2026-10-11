@@ -44,6 +44,22 @@
   }
 }
 
+/* ---------- Header: keep it visible while the menu drawer is open ----------
+ * The drawer lives inside the header. Horizon's scroll-up sticky header can
+ * switch to its idle state (opacity 0, not sticky) when the scroll lock that
+ * opens the drawer fires a scroll event, which hid the drawer along with it.
+ */
+
+#header-component:has(#Details-menu-drawer-container[open]) {
+  opacity: 1;
+}
+
+.header-section:has(#Details-menu-drawer-container[open]) {
+  position: sticky;
+  top: -1px;
+  z-index: var(--layer-menu-drawer);
+}
+
 /* ---------- Header: search sits with the icons on the right ----------
  * Horizon moves search next to the menu button when the drawer is used.
  * With the forced drawer on desktop, keep it on the right instead.

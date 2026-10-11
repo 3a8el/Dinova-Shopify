@@ -252,6 +252,12 @@
       opacity: 1;
     }
 
+    /* Images blend into the grey (multiply), so the first one must fade out
+       or it shows through the second. */
+    .dinova-carousel__image.has-hover:hover .dinova-carousel__img--primary {
+      opacity: 0;
+    }
+
     .dinova-carousel__card:hover .dinova-carousel__img--primary {
       transform: scale(1.03);
     }
