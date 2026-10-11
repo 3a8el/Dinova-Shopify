@@ -48,7 +48,17 @@
             {%- endif -%}
 
             {%- if product != blank -%}
-              <div class="dinova-spot__actions">
+              {%- comment -%}
+                Quick view reuses Horizon's quick-add modal: the eye opens the product in a
+                popup with its options and add to cart. If the modal is turned off in theme
+                settings, the links fall back to the product page.
+              {%- endcomment -%}
+              <dinova-quick-view
+                class="dinova-spot__actions"
+                data-product-url="{{ product.url }}"
+                data-product-title="{{ product.title | escape }}"
+                data-uses-selling-plans="{% if product.requires_selling_plan %}true{% else %}false{% endif %}"
+              >
                 {%- if product.has_only_default_variant and variant.available -%}
                   {%- form 'product', product, class: 'dinova-spot__form' -%}
                     <input type="hidden" name="id" value="{{ variant.id }}">
@@ -57,14 +67,24 @@
                     </button>
                   {%- endform -%}
                 {%- else -%}
-                  <a href="{{ product.url }}" class="dinova-spot__action" aria-label="Choose options for {{ product.title | escape }}">
+                  <a
+                    href="{{ product.url }}"
+                    class="dinova-spot__action"
+                    on:click="dinova-quick-view/handleClick"
+                    aria-label="Choose options for {{ product.title | escape }}"
+                  >
                     {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
                   </a>
                 {%- endif -%}
-                <a href="{{ product.url }}" class="dinova-spot__action" aria-label="Explore {{ product.title | escape }}">
+                <a
+                  href="{{ product.url }}"
+                  class="dinova-spot__action"
+                  on:click="dinova-quick-view/handleClick"
+                  aria-label="Quick view {{ product.title | escape }}"
+                >
                   <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
                 </a>
-              </div>
+              </dinova-quick-view>
             {%- endif -%}
           </div>
           <a class="dinova-spot__card-info" href="{{ product.url | default: '#' }}">
@@ -111,6 +131,32 @@
     </div>
   </div>
 </div>
+
+<script type="module">
+  import { QuickAddComponent } from '@theme/quick-add';
+
+  /* Horizon's quick-add, pointed at this product instead of a product card. */
+  if (!customElements.get('dinova-quick-view')) {
+    customElements.define(
+      'dinova-quick-view',
+      class DinovaQuickView extends QuickAddComponent {
+        constructor() {
+          super();
+          const open = this.handleClick;
+          this.handleClick = (event) => {
+            // No quick-add modal on the page: let the link open the product page.
+            if (!document.getElementById('quick-add-dialog')) return;
+            return open(event);
+          };
+        }
+
+        get productPageUrl() {
+          return this.dataset.productUrl || '';
+        }
+      }
+    );
+  }
+</script>
 
 {% stylesheet %}
   .dinova-spot {
@@ -237,7 +283,8 @@
   }
 
   .dinova-spot__card:hover .dinova-spot__actions,
-  .dinova-spot__card:focus-within .dinova-spot__actions {
+  .dinova-spot__card:focus-within .dinova-spot__actions,
+  .dinova-spot__actions[stay-visible] {
     opacity: 1;
     transform: none;
   }
@@ -331,7 +378,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Add to cart works directly for products without options. For products with options (size, metal), the cart button opens the product page."
+      "content": "Add to cart works directly for products without options. For products with options (size, metal), the cart button opens the quick view so the customer can choose. The eye always opens the quick view."
     },
     {
       "type": "image_picker",
