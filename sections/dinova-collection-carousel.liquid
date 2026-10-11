@@ -1,0 +1,417 @@
+{%- comment -%}
+  Dinova collection carousel: "All Collections" title, a row of portrait
+  cards (image, name and number) with a line and arrows below, and a short
+  paragraph under it. Cards are collection blocks or tag blocks (a tag links
+  to the products with that tag); with no blocks, every collection is shown.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+{%- capture cards -%}
+  {%- if section.blocks.size > 0 -%}
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign b = block.settings
+        if block.type == 'tag'
+          assign scope = b.collection | default: collections.all
+          assign tag_handle = b.tag | handleize
+          assign url = scope.url | append: '/' | append: tag_handle
+          assign name = b.title | default: b.tag
+          assign img = b.image
+        else
+          assign url = b.collection.url | default: routes.all_products_collection_url
+          assign name = b.title | default: b.collection.title
+          assign img = b.image | default: b.collection.featured_image
+        endif
+      -%}
+      {%- render 'dinova-collection-card', name: name, img: img, url: url, index: forloop.index, attrs: block.shopify_attributes -%}
+    {%- endfor -%}
+  {%- else -%}
+    {%- for c in collections limit: s.limit -%}
+      {%- render 'dinova-collection-card', name: c.title, img: c.featured_image, url: c.url, index: forloop.index, attrs: '' -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+
+<dinova-collection-carousel
+  class="dinova-ccar"
+  style="
+    --dinova-ccar-bg: {{ s.background_color }};
+    --dinova-ccar-text: {{ s.text_color }};
+    --dinova-ccar-line: {{ s.line_color }};
+    --dinova-ccar-columns: {{ s.columns_desktop }};
+    --dinova-ccar-columns-mobile: {{ s.columns_mobile }};
+    --dinova-ccar-ratio: {{ s.image_ratio }};
+  "
+>
+  <div class="dinova-ccar__inner">
+    {%- if s.heading != blank -%}
+      <h2 class="dinova-ccar__heading">{{ s.heading | escape }}</h2>
+    {%- endif -%}
+
+    <ul class="dinova-ccar__track" role="list" data-track>
+      {{ cards }}
+    </ul>
+
+    <div class="dinova-ccar__controls">
+      <button type="button" class="dinova-ccar__arrow" data-direction="-1" aria-label="Previous collections">
+        <svg viewBox="0 0 12 20" aria-hidden="true" focusable="false"><path d="M10 2 2 10l8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+      <button type="button" class="dinova-ccar__arrow" data-direction="1" aria-label="Next collections">
+        <svg viewBox="0 0 12 20" aria-hidden="true" focusable="false"><path d="m2 2 8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+    </div>
+
+    {%- if s.text != blank -%}
+      <div class="dinova-ccar__text">{{ s.text }}</div>
+    {%- endif -%}
+  </div>
+</dinova-collection-carousel>
+
+<script type="module">
+  if (!customElements.get('dinova-collection-carousel')) {
+    customElements.define(
+      'dinova-collection-carousel',
+      class DinovaCollectionCarousel extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-track]');
+          this.arrows = [...this.querySelectorAll('.dinova-ccar__arrow')];
+          this.arrows.forEach((arrow) =>
+            arrow.addEventListener('click', () => this.go(Number(arrow.dataset.direction)))
+          );
+          this.update = () => this.updateArrows();
+          this.track.addEventListener('scroll', this.update, { passive: true });
+          this.resizeObserver = new ResizeObserver(this.update);
+          this.resizeObserver.observe(this.track);
+          this.update();
+        }
+
+        disconnectedCallback() {
+          this.resizeObserver?.disconnect();
+        }
+
+        go(direction) {
+          const card = this.track.querySelector('.dinova-ccar__item');
+          if (!card) return;
+          const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.track.scrollBy({ left: direction * (card.offsetWidth + gap), behavior: reduce ? 'auto' : 'smooth' });
+        }
+
+        updateArrows() {
+          const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          const [prev, next] = this.arrows;
+          if (!prev || !next) return;
+          prev.disabled = scrollLeft <= 1;
+          next.disabled = scrollLeft + clientWidth >= scrollWidth - 1;
+          this.querySelector('.dinova-ccar__controls').hidden = scrollWidth <= clientWidth + 1;
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-ccar {
+    display: block;
+    padding-block: clamp(3rem, 6vw, 5.5rem);
+    background: var(--dinova-ccar-bg);
+    color: var(--dinova-ccar-text);
+  }
+
+  .dinova-ccar__inner {
+    width: min(100% - 2.5rem, 80rem);
+    margin-inline: auto;
+  }
+
+  .dinova-ccar__heading {
+    margin: 0 0 clamp(1.5rem, 2.5vw, 2rem);
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  .dinova-ccar__track {
+    --gap: 0.875rem;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--dinova-ccar-columns-mobile) - 1) * var(--gap)) / var(--dinova-ccar-columns-mobile));
+    gap: var(--gap);
+    margin: 0;
+    padding: 0 0 0.875rem;
+    border-bottom: 1px solid var(--dinova-ccar-line);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .dinova-ccar__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-ccar__track {
+      grid-auto-columns: calc((100% - (var(--dinova-ccar-columns) - 1) * var(--gap)) / var(--dinova-ccar-columns));
+    }
+  }
+
+  .dinova-ccar__item {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .dinova-ccar__card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-ccar__media {
+    aspect-ratio: var(--dinova-ccar-ratio);
+    overflow: hidden;
+  }
+
+  .dinova-ccar__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+  }
+
+  @media (hover: hover) {
+    .dinova-ccar__card:hover .dinova-ccar__image {
+      transform: scale(1.03);
+    }
+  }
+
+  .dinova-ccar__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.625rem;
+    font-family: var(--font-heading--family);
+  }
+
+  .dinova-ccar__name {
+    font-size: clamp(1.125rem, 1.4vw, 1.375rem);
+    line-height: 1.2;
+  }
+
+  .dinova-ccar__number {
+    font-size: 1rem;
+    opacity: 0.55;
+  }
+
+  .dinova-ccar__controls {
+    display: flex;
+    gap: 0.375rem;
+    margin-top: 1rem;
+  }
+
+  .dinova-ccar__controls[hidden] {
+    display: none;
+  }
+
+  .dinova-ccar__arrow {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, opacity 0.3s ease;
+  }
+
+  .dinova-ccar__arrow svg {
+    width: 0.4rem;
+    height: auto;
+  }
+
+  .dinova-ccar__arrow:not(:disabled):hover {
+    background: var(--dinova-ccar-text);
+    color: var(--dinova-ccar-bg);
+  }
+
+  .dinova-ccar__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .dinova-ccar__text {
+    max-width: 34rem;
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .dinova-ccar__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-ccar__image,
+    .dinova-ccar__arrow {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova collection row",
+  "tag": "section",
+  "class": "dinova-ccar-section",
+  "max_blocks": 24,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "All Collections"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph under the carousel",
+      "default": "<p>The brand features timeless jewellery, with precious metals, flowing curves, plenty of lustrous finishes and classic design, which can be incorporated into any personal style. The pieces enchant for their elegance, crafted to last for generations, faithful to the artistry of each era, with a refined touch.</p>"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Collections to show when no cards are added",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Cards per row on desktop",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Cards per row on mobile",
+      "options": [
+        { "value": "1.3", "label": "1 with a peek of the next" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "1.3"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "3 / 4", "label": "Portrait" },
+        { "value": "4 / 5", "label": "Short portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line",
+      "default": "#d6d1c9"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "info": "Defaults to the collection's name."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Defaults to the collection's image."
+        }
+      ]
+    },
+    {
+      "type": "tag",
+      "name": "Tag",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Product tag",
+          "info": "Links to the products with this tag."
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Within collection",
+          "info": "Optional. Defaults to all products."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Name",
+          "info": "Defaults to the tag."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova collection row"
+    }
+  ]
+}
+{% endschema %}

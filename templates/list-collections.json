@@ -160,15 +160,21 @@
         "gap": 12,
         "padding-block-start": 48,
         "padding-block-end": 48
-      }
+      },
+      "disabled": true
     },
     "dinova_collections_hero": {
       "type": "dinova-collections-hero",
+      "settings": {}
+    },
+    "dinova_collection_carousel": {
+      "type": "dinova-collection-carousel",
       "settings": {}
     }
   },
   "order": [
     "dinova_collections_hero",
+    "dinova_collection_carousel",
     "collection_list_Wfgh3m"
   ]
 }

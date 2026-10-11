@@ -1,0 +1,34 @@
+{%- doc -%}
+  One card of the Dinova collection carousel.
+
+  @param {string} name - Name under the image
+  @param {object} [img] - Image to show
+  @param {string} url - Card link
+  @param {number} index - Card number, shown as 01, 02...
+  @param {string} [attrs] - Theme editor block attributes
+{%- enddoc -%}
+
+<li class="dinova-ccar__item" {{ attrs }}>
+  <a class="dinova-ccar__card" href="{{ url }}">
+    <div class="dinova-ccar__media">
+      {%- if img != blank -%}
+        {{
+          img
+          | image_url: width: 900
+          | image_tag:
+            widths: '300, 450, 600, 900',
+            sizes: '(min-width: 750px) 25vw, 75vw',
+            loading: 'lazy',
+            alt: '',
+            class: 'dinova-ccar__image'
+        }}
+      {%- else -%}
+        {{ 'collection-apparel-2' | placeholder_svg_tag: 'dinova-ccar__image' }}
+      {%- endif -%}
+    </div>
+    <div class="dinova-ccar__meta">
+      <span class="dinova-ccar__name">{{ name | escape }}</span>
+      <span class="dinova-ccar__number" aria-hidden="true">{% if index < 10 %}0{% endif %}{{ index }}</span>
+    </div>
+  </a>
+</li>
