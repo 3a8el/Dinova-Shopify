@@ -1,0 +1,463 @@
+{%- comment -%}
+  Dinova journal grid: the blog's posts as cards in a lined grid, with an
+  optional tag filter and pagination. Cards show an "Article" or "Video"
+  badge, the date, title, a short excerpt and a link. A post counts as a
+  video when it has a YouTube link in its custom.youtube_url metafield.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign skip_first = false
+  if s.skip_featured and current_tags == blank
+    assign skip_first = true
+  endif
+-%}
+
+<div
+  class="dinova-jgrid"
+  style="
+    --dinova-jgrid-bg: {{ s.background_color }};
+    --dinova-jgrid-text: {{ s.text_color }};
+    --dinova-jgrid-line: {{ s.line_color }};
+    --dinova-jgrid-columns: {{ s.columns_desktop }};
+    --dinova-jgrid-ratio: {{ s.image_ratio }};
+  "
+>
+  {%- if s.heading != blank -%}
+    <h2 class="dinova-jgrid__heading">{{ s.heading | escape }}</h2>
+  {%- endif -%}
+
+  {%- if s.show_tags and blog.all_tags.size > 0 -%}
+    <nav class="dinova-jgrid__tags" aria-label="Filter posts">
+      <ul role="list">
+        <li>
+          <a href="{{ blog.url }}" class="dinova-underline"{% if current_tags == blank %} aria-current="page"{% endif %}>
+            {{- s.all_label | escape -}}
+          </a>
+        </li>
+        {%- for tag in blog.all_tags -%}
+          <li>
+            <a href="{{ blog.url }}/tagged/{{ tag | handleize }}" class="dinova-underline"{% if current_tags contains tag %} aria-current="page"{% endif %}>
+              {{- tag | escape -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  {%- endif -%}
+
+  {%- paginate blog.articles by s.per_page -%}
+    <ul class="dinova-jgrid__list" role="list">
+      {%- for article in blog.articles -%}
+        {%- if skip_first and paginate.current_page == 1 and forloop.first -%}
+          {%- continue -%}
+        {%- endif -%}
+        {%- liquid
+          assign is_video = false
+          if article.metafields.custom.youtube_url != blank
+            assign is_video = true
+          endif
+          assign excerpt = article.excerpt | strip_html | strip
+          if excerpt == blank
+            assign excerpt = article.content | strip_html | truncatewords: 30
+          endif
+        -%}
+        <li class="dinova-jgrid__item">
+          <article class="dinova-jgrid__card">
+            <a href="{{ article.url }}" class="dinova-jgrid__media" tabindex="-1" aria-hidden="true">
+              {%- if article.image != blank -%}
+                {{
+                  article.image
+                  | image_url: width: 1000
+                  | image_tag:
+                    widths: '400, 600, 800, 1000',
+                    sizes: '(min-width: 990px) 25vw, (min-width: 750px) 50vw, 100vw',
+                    loading: 'lazy',
+                    alt: '',
+                    class: 'dinova-jgrid__image'
+                }}
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-jgrid__image' }}
+              {%- endif -%}
+              {%- if s.show_badge -%}
+                <span class="dinova-jgrid__badge">
+                  {%- if is_video %}{{ s.video_badge | escape }}{% else %}{{ s.article_badge | escape }}{% endif -%}
+                </span>
+              {%- endif -%}
+            </a>
+            <div class="dinova-jgrid__body">
+              {%- if s.show_date -%}
+                <time class="dinova-jgrid__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                  {{- article.published_at | date: format: 'date' -}}
+                </time>
+              {%- endif -%}
+              <h3 class="dinova-jgrid__title">
+                <a href="{{ article.url }}">{{ article.title | escape }}</a>
+              </h3>
+              {%- if excerpt != blank -%}
+                <p class="dinova-jgrid__excerpt">{{ excerpt }}</p>
+              {%- endif -%}
+              {%- if s.link_label != blank -%}
+                <a href="{{ article.url }}" class="dinova-jgrid__link dinova-underline">
+                  {{- s.link_label | escape -}}
+                  <span class="visually-hidden">: {{ article.title | escape }}</span>
+                </a>
+              {%- endif -%}
+            </div>
+          </article>
+        </li>
+      {%- else -%}
+        <li class="dinova-jgrid__empty">No posts yet.</li>
+      {%- endfor -%}
+    </ul>
+
+    {%- if paginate.pages > 1 -%}
+      <nav class="dinova-jgrid__pagination" aria-label="Pages">
+        {%- if paginate.previous -%}
+          <a href="{{ paginate.previous.url }}" class="dinova-underline dinova-underline--rtl">&larr; Previous</a>
+        {%- endif -%}
+        <span class="dinova-jgrid__page">{{ paginate.current_page }} / {{ paginate.pages }}</span>
+        {%- if paginate.next -%}
+          <a href="{{ paginate.next.url }}" class="dinova-underline">Next &rarr;</a>
+        {%- endif -%}
+      </nav>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{% stylesheet %}
+  .dinova-jgrid {
+    display: block;
+    overflow: hidden;
+    background: var(--dinova-jgrid-bg);
+    color: var(--dinova-jgrid-text);
+  }
+
+  .dinova-jgrid a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-jgrid__heading {
+    margin: 0;
+    padding: clamp(2rem, 4vw, 3.5rem) 1.25rem clamp(1.5rem, 2.5vw, 2rem);
+    border-bottom: 1px solid var(--dinova-jgrid-line);
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2rem, 3vw, 2.75rem);
+    line-height: 1.1;
+    text-align: center;
+    color: inherit;
+  }
+
+  .dinova-jgrid__tags {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--dinova-jgrid-line);
+  }
+
+  .dinova-jgrid__tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dinova-jgrid__tags li + li {
+    margin-inline-start: 0.6rem;
+    padding-inline-start: 0.6rem;
+    border-inline-start: 1px solid var(--dinova-jgrid-line);
+  }
+
+  .dinova-jgrid__tags a {
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .dinova-jgrid__tags a[aria-current],
+  .dinova-jgrid__tags a:hover {
+    opacity: 1;
+  }
+
+  /* Lined grid: each card draws its right and bottom line; the overhang is clipped. */
+  .dinova-jgrid__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 0 -1px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-jgrid__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .dinova-jgrid__list {
+      grid-template-columns: repeat(var(--dinova-jgrid-columns), minmax(0, 1fr));
+    }
+  }
+
+  .dinova-jgrid__item {
+    border-inline-end: 1px solid var(--dinova-jgrid-line);
+    border-bottom: 1px solid var(--dinova-jgrid-line);
+  }
+
+  .dinova-jgrid__card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.25rem 1.25rem 1.75rem;
+  }
+
+  .dinova-jgrid__media {
+    position: relative;
+    display: block;
+    aspect-ratio: var(--dinova-jgrid-ratio);
+    overflow: hidden;
+  }
+
+  .dinova-jgrid__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+  }
+
+  @media (hover: hover) {
+    .dinova-jgrid__card:hover .dinova-jgrid__image {
+      transform: scale(1.03);
+    }
+  }
+
+  .dinova-jgrid__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background: #000;
+    color: #fff;
+    font-family: var(--font-body--family);
+    font-size: 0.6875rem;
+    font-weight: 500;
+  }
+
+  .dinova-jgrid__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding-top: 1rem;
+  }
+
+  .dinova-jgrid__date {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .dinova-jgrid__title {
+    margin: 0.35rem 0 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+    line-height: 1.2;
+    color: inherit;
+  }
+
+  .dinova-jgrid__excerpt {
+    display: -webkit-box;
+    margin: 1rem 0 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    line-height: 1.55;
+    opacity: 0.85;
+  }
+
+  .dinova-jgrid__link {
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: 2rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .dinova-jgrid__link::after {
+    bottom: -0.3em;
+  }
+
+  .dinova-jgrid__empty {
+    padding: 3rem 1.25rem;
+    font-family: var(--font-body--family);
+  }
+
+  .dinova-jgrid__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 1.25rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .dinova-jgrid__page {
+    opacity: 0.6;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-jgrid__image {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova journal grid",
+  "tag": "section",
+  "class": "dinova-jgrid-section",
+  "enabled_on": {
+    "templates": ["blog"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our stories"
+    },
+    {
+      "type": "checkbox",
+      "id": "skip_featured",
+      "label": "Hide the newest post",
+      "info": "It is already shown in the journal hero above.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "per_page",
+      "label": "Posts per page",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Tag filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tag filter",
+      "info": "Lists the tags used on this blog's posts.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "all_label",
+      "label": "All posts label",
+      "default": "All"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "article_badge",
+      "label": "Badge for posts",
+      "default": "Article"
+    },
+    {
+      "type": "text",
+      "id": "video_badge",
+      "label": "Badge for video posts",
+      "default": "Video"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Read article"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "3 / 2", "label": "Landscape" },
+        { "value": "16 / 9", "label": "Wide (video)" },
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait" }
+      ],
+      "default": "3 / 2"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Posts per row on desktop",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova journal grid"
+    }
+  ]
+}
+{% endschema %}
