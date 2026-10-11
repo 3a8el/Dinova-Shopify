@@ -1,0 +1,281 @@
+{%- comment -%}
+  Dinova values: an image on one side; on the other a large title and a list
+  of numbered values (title + short sentence) divided by thin lines, in the
+  same lined style as "Notes from the creator". Each value is a block.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign values = section.blocks | where: 'type', 'value'
+-%}
+
+<div
+  class="dinova-values dinova-values--image-{{ s.image_position }}"
+  style="
+    --dinova-values-bg: {{ s.background_color }};
+    --dinova-values-text: {{ s.text_color }};
+    --dinova-values-line: {{ s.line_color }};
+    --dinova-values-ratio: {{ s.image_ratio }};
+  "
+>
+  <div class="dinova-values__media">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 900, 1200, 1600',
+          sizes: '(min-width: 750px) 50vw, 100vw',
+          loading: 'lazy',
+          class: 'dinova-values__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-values__img' }}
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-values__content">
+    {%- if s.title != blank -%}
+      <div class="dinova-values__head">
+        <h2 class="dinova-values__title">{{ s.title | newline_to_br }}</h2>
+      </div>
+    {%- endif -%}
+
+    <ol class="dinova-values__list" role="list">
+      {%- for block in values -%}
+        <li class="dinova-values__item" {{ block.shopify_attributes }}>
+          {%- if s.show_numbers -%}
+            <span class="dinova-values__number" aria-hidden="true">
+              {%- if forloop.index < 10 %}0{% endif %}{{ forloop.index -}}
+            </span>
+          {%- endif -%}
+          <div class="dinova-values__body">
+            <h3 class="dinova-values__item-title">{{ block.settings.title | escape }}</h3>
+            {%- if block.settings.text != blank -%}
+              <p class="dinova-values__item-text">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+          </div>
+        </li>
+      {%- endfor -%}
+    </ol>
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-values {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--dinova-values-bg);
+    color: var(--dinova-values-text);
+  }
+
+  .dinova-values__media {
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .dinova-values__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--dinova-values-ratio);
+    object-fit: cover;
+  }
+
+  .dinova-values__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dinova-values__head {
+    padding: 1.75rem 1.25rem 2rem;
+  }
+
+  .dinova-values__title {
+    margin: 0;
+    max-width: 14ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-values__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dinova-values__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    padding: 1.5rem 1.25rem;
+    border-top: 1px solid var(--dinova-values-line);
+  }
+
+  .dinova-values__number {
+    padding-top: 0.45em;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+  }
+
+  .dinova-values__item-title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.15;
+    color: inherit;
+  }
+
+  .dinova-values__item-text {
+    max-width: 46ch;
+    margin: 0.625rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  /* Desktop: image and content side by side, lines between the cells. */
+  @media screen and (min-width: 750px) {
+    .dinova-values {
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid var(--dinova-values-line);
+    }
+
+    .dinova-values__media {
+      padding: 1.25rem;
+    }
+
+    .dinova-values--image-right .dinova-values__media {
+      order: 2;
+    }
+
+    .dinova-values__content {
+      border-inline-start: 1px solid var(--dinova-values-line);
+    }
+
+    .dinova-values--image-right .dinova-values__content {
+      border-inline-start: 0;
+      border-inline-end: 1px solid var(--dinova-values-line);
+    }
+
+    .dinova-values__head {
+      flex: 1;
+      padding: 1.75rem 2rem 3rem;
+    }
+
+    .dinova-values__item {
+      gap: 2rem;
+      padding: 1.75rem 2rem 2rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova values",
+  "tag": "section",
+  "class": "dinova-values-section",
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Innovation, Transparency, Modern Egyptian Luxury"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_numbers",
+      "label": "Number the values",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "value",
+      "name": "Value",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Value"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Sentence"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova values",
+      "blocks": [
+        { "type": "value", "settings": { "title": "Innovation", "text": "We embrace the technology that allows us to create brilliance, not just find it." } },
+        { "type": "value", "settings": { "title": "Transparency", "text": "From our IGI certifications to our educational hub, we empower you with knowledge. A Dinova customer is an educated customer." } },
+        { "type": "value", "settings": { "title": "Modern Egyptian Luxury", "text": "We are proudly based in Cairo, blending global standards with a deep understanding of what our market desires: quality, value, and authenticity." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

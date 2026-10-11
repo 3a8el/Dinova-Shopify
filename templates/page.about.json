@@ -53,11 +53,44 @@
     "dinova_creator_notes": {
       "type": "dinova-creator-notes",
       "settings": {}
+    },
+    "dinova_values": {
+      "type": "dinova-values",
+      "blocks": {
+        "value_1": {
+          "type": "value",
+          "settings": {
+            "title": "Innovation",
+            "text": "We embrace the technology that allows us to create brilliance, not just find it."
+          }
+        },
+        "value_2": {
+          "type": "value",
+          "settings": {
+            "title": "Transparency",
+            "text": "From our IGI certifications to our educational hub, we empower you with knowledge. A Dinova customer is an educated customer."
+          }
+        },
+        "value_3": {
+          "type": "value",
+          "settings": {
+            "title": "Modern Egyptian Luxury",
+            "text": "We are proudly based in Cairo, blending global standards with a deep understanding of what our market desires: quality, value, and authenticity."
+          }
+        }
+      },
+      "block_order": [
+        "value_1",
+        "value_2",
+        "value_3"
+      ],
+      "settings": {}
     }
   },
   "order": [
     "dinova_about_hero",
     "dinova_creator_notes",
+    "dinova_values",
     "main"
   ]
 }
