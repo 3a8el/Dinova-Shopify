@@ -1,0 +1,42 @@
+{%- doc -%}
+  One slide of the Dinova collections hero.
+
+  @param {string} name - Collection name shown on the slide
+  @param {object} [img] - Image to show
+  @param {string} url - Where the button goes
+  @param {string} label - Button label
+  @param {string} [attrs] - Theme editor block attributes
+  @param {number} index - Slide number
+{%- enddoc -%}
+
+<li class="dinova-chero__slide" {{ attrs }}>
+  {%- if img != blank -%}
+    {%- liquid
+      assign loading = 'lazy'
+      if index == 1
+        assign loading = 'eager'
+      endif
+    -%}
+    {{
+      img
+      | image_url: width: 2400
+      | image_tag:
+        widths: '800, 1200, 1800, 2400',
+        sizes: '(min-width: 750px) 80vw, 90vw',
+        loading: loading,
+        alt: '',
+        class: 'dinova-chero__image'
+    }}
+  {%- else -%}
+    {{ 'collection-apparel-1' | placeholder_svg_tag: 'dinova-chero__image' }}
+  {%- endif -%}
+  <div class="dinova-chero__content">
+    <h2 class="dinova-chero__name">{{ name | escape }}</h2>
+    {%- if label != blank -%}
+      <a class="dinova-chero__button" href="{{ url }}">
+        {{- label | escape -}}
+        <span class="visually-hidden">: {{ name | escape }}</span>
+      </a>
+    {%- endif -%}
+  </div>
+</li>

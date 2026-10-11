@@ -161,9 +161,14 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "dinova_collections_hero": {
+      "type": "dinova-collections-hero",
+      "settings": {}
     }
   },
   "order": [
+    "dinova_collections_hero",
     "collection_list_Wfgh3m"
   ]
 }

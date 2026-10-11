@@ -1,0 +1,451 @@
+{%- comment -%}
+  Dinova collections hero: breadcrumb, a large title and short description,
+  then a full-width slider of collections. Each slide shows the collection's
+  image, name and a Shop all button; the next slide peeks in from the right.
+  Slides are blocks; with no blocks, the store's collections are used.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign slides = section.blocks | where: 'type', 'slide'
+-%}
+
+<dinova-collections-hero
+  class="dinova-chero"
+  style="
+    --dinova-chero-bg: {{ s.background_color }};
+    --dinova-chero-text: {{ s.text_color }};
+    --dinova-chero-slide-text: {{ s.slide_text_color }};
+    --dinova-chero-height: {{ s.height_desktop }}vh;
+    --dinova-chero-height-mobile: {{ s.height_mobile }}vh;
+    --dinova-chero-slide-width: {{ s.slide_width }}%;
+    --dinova-chero-overlay: {{ s.overlay_opacity | divided_by: 100.0 }};
+  "
+>
+  <div class="dinova-chero__intro">
+    {%- if s.show_breadcrumb -%}
+      <nav class="dinova-chero__breadcrumb" aria-label="Breadcrumb">
+        <a href="{{ routes.root_url }}">Home</a>
+        <span aria-hidden="true">&rsaquo;</span>
+        <span aria-current="page">{{ s.heading | default: page_title | escape }}</span>
+      </nav>
+    {%- endif -%}
+    {%- if s.heading != blank -%}
+      <h1 class="dinova-chero__heading">{{ s.heading | escape }}</h1>
+    {%- endif -%}
+    {%- if s.text != blank -%}
+      <div class="dinova-chero__text">{{ s.text }}</div>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-chero__slider">
+    <ul class="dinova-chero__track" role="list" data-track>
+      {%- capture slide_items -%}
+        {%- if slides.size > 0 -%}
+          {%- for block in slides -%}
+            {%- liquid
+              assign c = block.settings.collection
+              assign name = block.settings.title | default: c.title
+              assign img = block.settings.image | default: c.featured_image
+              assign url = block.settings.link | default: c.url | default: routes.all_products_collection_url
+            -%}
+            {%- render 'dinova-collections-hero-slide', name: name, img: img, url: url, label: s.button_label, attrs: block.shopify_attributes, index: forloop.index -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for c in collections limit: 8 -%}
+            {%- render 'dinova-collections-hero-slide', name: c.title, img: c.featured_image, url: c.url, label: s.button_label, attrs: '', index: forloop.index -%}
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endcapture -%}
+      {{ slide_items }}
+    </ul>
+
+    <div class="dinova-chero__arrows">
+      <button type="button" class="dinova-chero__arrow" data-direction="-1" aria-label="Previous collection">
+        <svg viewBox="0 0 12 20" aria-hidden="true" focusable="false"><path d="M10 2 2 10l8 8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button type="button" class="dinova-chero__arrow" data-direction="1" aria-label="Next collection">
+        <svg viewBox="0 0 12 20" aria-hidden="true" focusable="false"><path d="m2 2 8 8-8 8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+</dinova-collections-hero>
+
+<script type="module">
+  if (!customElements.get('dinova-collections-hero')) {
+    customElements.define(
+      'dinova-collections-hero',
+      class DinovaCollectionsHero extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('[data-track]');
+          this.arrows = [...this.querySelectorAll('.dinova-chero__arrow')];
+          this.arrows.forEach((arrow) =>
+            arrow.addEventListener('click', () => this.go(Number(arrow.dataset.direction)))
+          );
+          this.update = () => this.updateArrows();
+          this.track.addEventListener('scroll', this.update, { passive: true });
+          this.resizeObserver = new ResizeObserver(this.update);
+          this.resizeObserver.observe(this.track);
+          this.update();
+
+          /* Theme editor: scroll to the selected slide */
+          document.addEventListener('shopify:block:select', (event) => {
+            if (this.contains(event.target)) event.target.scrollIntoView({ block: 'nearest', inline: 'start' });
+          });
+        }
+
+        disconnectedCallback() {
+          this.resizeObserver?.disconnect();
+        }
+
+        go(direction) {
+          const slide = this.track.querySelector('.dinova-chero__slide');
+          if (!slide) return;
+          const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          this.track.scrollBy({ left: direction * slide.offsetWidth, behavior: reduce ? 'auto' : 'smooth' });
+        }
+
+        updateArrows() {
+          const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          const [prev, next] = this.arrows;
+          if (!prev || !next) return;
+          prev.disabled = scrollLeft <= 1;
+          next.disabled = scrollLeft + clientWidth >= scrollWidth - 1;
+          this.querySelector('.dinova-chero__arrows').hidden = scrollWidth <= clientWidth + 1;
+        }
+      }
+    );
+  }
+</script>
+
+{% stylesheet %}
+  .dinova-chero {
+    display: block;
+    background: var(--dinova-chero-bg);
+    color: var(--dinova-chero-text);
+  }
+
+  .dinova-chero__intro {
+    width: min(100% - 2.5rem, 80rem);
+    margin-inline: auto;
+    padding-block: 1.25rem clamp(2rem, 3.5vw, 3rem);
+  }
+
+  .dinova-chero__breadcrumb {
+    display: flex;
+    gap: 0.4rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+  }
+
+  .dinova-chero__breadcrumb a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-chero__breadcrumb span {
+    opacity: 0.7;
+  }
+
+  .dinova-chero__heading {
+    margin: clamp(2rem, 4vw, 3.5rem) 0 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    line-height: 1;
+    color: inherit;
+  }
+
+  .dinova-chero__text {
+    margin-top: 1.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .dinova-chero__text p {
+    margin: 0;
+  }
+
+  .dinova-chero__slider {
+    position: relative;
+  }
+
+  .dinova-chero__track {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .dinova-chero__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dinova-chero__slide {
+    position: relative;
+    flex: 0 0 90%;
+    height: var(--dinova-chero-height-mobile);
+    overflow: hidden;
+    scroll-snap-align: start;
+  }
+
+  .dinova-chero__slide:only-child {
+    flex-basis: 100%;
+  }
+
+  .dinova-chero__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-chero__slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / var(--dinova-chero-overlay)), transparent 55%);
+    pointer-events: none;
+  }
+
+  .dinova-chero__content {
+    position: absolute;
+    left: clamp(1.25rem, 1.5vw, 1.5rem);
+    bottom: clamp(1.25rem, 1.5vw, 1.5rem);
+    z-index: 1;
+    display: grid;
+    justify-items: start;
+    gap: 1.25rem;
+    color: var(--dinova-chero-slide-text);
+  }
+
+  .dinova-chero__name {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4.5vw, 4rem);
+    line-height: 1;
+    color: inherit;
+  }
+
+  /* Solid light button, in the same type style as the other Dinova buttons. */
+  .dinova-chero__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 11.5rem;
+    padding: 1rem 2rem;
+    background: #fff;
+    color: #121212;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-chero__button:hover {
+    background: #121212;
+    color: #fff;
+  }
+
+  .dinova-chero__arrows {
+    position: absolute;
+    right: clamp(1rem, 1.5vw, 1.5rem);
+    bottom: clamp(1.25rem, 1.5vw, 1.5rem);
+    z-index: 2;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .dinova-chero__arrows[hidden] {
+    display: none;
+  }
+
+  .dinova-chero__arrow {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    border: 1px solid rgb(255 255 255 / 0.7);
+    background: rgb(255 255 255 / 0.9);
+    color: #121212;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+  }
+
+  .dinova-chero__arrow svg {
+    width: 0.5rem;
+    height: auto;
+  }
+
+  .dinova-chero__arrow:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-chero__slide {
+      flex-basis: var(--dinova-chero-slide-width);
+      height: var(--dinova-chero-height);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-chero__button,
+    .dinova-chero__arrow {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova collections hero",
+  "tag": "section",
+  "class": "dinova-chero-section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Collections"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Description",
+      "default": "<p>Explore our range of jewellery items filled with fresh-cut gems</p>"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Slide button label",
+      "default": "Shop all"
+    },
+    {
+      "type": "paragraph",
+      "content": "Add a slide per collection. With no slides, the store's collections are shown."
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "range",
+      "id": "slide_width",
+      "label": "Slide width on desktop",
+      "info": "Less than 100% lets the next slide peek in.",
+      "min": 60,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "height_desktop",
+      "label": "Height on desktop",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 75
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height on mobile",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Shade behind the slide text",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "slide_text_color",
+      "label": "Slide text",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Defaults to the collection's name."
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Defaults to the collection's image."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Button link",
+          "info": "Defaults to the collection."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova collections hero"
+    }
+  ]
+}
+{% endschema %}
