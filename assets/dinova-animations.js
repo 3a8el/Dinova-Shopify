@@ -26,6 +26,7 @@
     '.dinova-about__text',
     '.dinova-vblog__heading',
     '.dinova-ahero__title',
+    '.dinova-notes__title',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -45,6 +46,7 @@
     '.dinova-cuts__caption',
     '.dinova-ahero__subtitle',
     '.dinova-ahero__text',
+    '.dinova-notes__text',
     '.dinova-footer__menu',
     '.dinova-footer__contact',
   ];
@@ -57,6 +59,8 @@
     '.dinova-carousel__image',
     '.dinova-about__item',
     '.dinova-vblog__media',
+    '.dinova-notes__image',
+    '.dinova-notes__small',
   ];
 
   const sectionOf = (el) => el.closest('.shopify-section') || el.parentElement;

@@ -49,10 +49,15 @@
     "dinova_about_hero": {
       "type": "dinova-about-hero",
       "settings": {}
+    },
+    "dinova_creator_notes": {
+      "type": "dinova-creator-notes",
+      "settings": {}
     }
   },
   "order": [
     "dinova_about_hero",
+    "dinova_creator_notes",
     "main"
   ]
 }

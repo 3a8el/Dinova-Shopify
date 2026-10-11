@@ -1,0 +1,246 @@
+{%- comment -%}
+  Dinova "Notes from the creator": a large image on the left; on the right a
+  title cell above a row with the paragraph and a smaller image, all divided
+  by thin lines. Stacks on mobile.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<div
+  class="dinova-notes"
+  style="
+    --dinova-notes-bg: {{ s.background_color }};
+    --dinova-notes-text: {{ s.text_color }};
+    --dinova-notes-line: {{ s.line_color }};
+    --dinova-notes-small-ratio: {{ s.small_image_ratio }};
+  "
+>
+  <div class="dinova-notes__cell dinova-notes__image">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 900, 1200, 1600',
+          sizes: '(min-width: 750px) 50vw, 100vw',
+          loading: 'lazy',
+          class: 'dinova-notes__img'
+      }}
+    {%- else -%}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'dinova-notes__img' }}
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-notes__cell dinova-notes__title-cell">
+    {%- if s.title != blank -%}
+      <h2 class="dinova-notes__title">{{ s.title | newline_to_br }}</h2>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-notes__cell dinova-notes__text-cell">
+    {%- if s.text != blank -%}
+      <div class="dinova-notes__text">{{ s.text }}</div>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-notes__cell dinova-notes__small">
+    {%- if s.small_image != blank -%}
+      {{
+        s.small_image
+        | image_url: width: 900
+        | image_tag:
+          widths: '300, 600, 900',
+          sizes: '(min-width: 750px) 25vw, 100vw',
+          loading: 'lazy',
+          class: 'dinova-notes__img'
+      }}
+    {%- else -%}
+      {{ 'product-apparel-2' | placeholder_svg_tag: 'dinova-notes__img' }}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-notes {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: 'image' 'title' 'text' 'small';
+    padding-inline: 1.25rem;
+    background: var(--dinova-notes-bg);
+    color: var(--dinova-notes-text);
+  }
+
+  .dinova-notes__image {
+    grid-area: image;
+  }
+
+  .dinova-notes__title-cell {
+    grid-area: title;
+    padding-top: 1.5rem;
+  }
+
+  .dinova-notes__text-cell {
+    grid-area: text;
+    padding: 1.25rem 0 2.75rem;
+    border-bottom: 1px solid var(--dinova-notes-line);
+  }
+
+  .dinova-notes__small {
+    grid-area: small;
+    padding-block: 1.5rem;
+  }
+
+  .dinova-notes__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-notes__image .dinova-notes__img {
+    aspect-ratio: 1;
+  }
+
+  .dinova-notes__small .dinova-notes__img {
+    aspect-ratio: var(--dinova-notes-small-ratio);
+  }
+
+  .dinova-notes__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-notes__text {
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-notes__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-notes__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Desktop: image | title over (text | small image), with dividing lines. */
+  @media screen and (min-width: 750px) {
+    .dinova-notes {
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 1fr auto;
+      grid-template-areas:
+        'image title title'
+        'image text small';
+      padding-inline: 0;
+      border-block: 1px solid var(--dinova-notes-line);
+    }
+
+    .dinova-notes__image {
+      padding: 1.25rem;
+    }
+
+    .dinova-notes__title-cell,
+    .dinova-notes__text-cell,
+    .dinova-notes__small {
+      border-inline-start: 1px solid var(--dinova-notes-line);
+    }
+
+    .dinova-notes__title-cell {
+      padding: 1.75rem 2rem;
+      border-bottom: 1px solid var(--dinova-notes-line);
+    }
+
+    .dinova-notes__text-cell {
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem 2rem;
+      border-bottom: 0;
+    }
+
+    .dinova-notes__text {
+      max-width: 30ch;
+    }
+
+    .dinova-notes__small {
+      padding: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova creator notes",
+  "tag": "section",
+  "class": "dinova-notes-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Large image"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Notes from\nthe creator"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph",
+      "default": "<p>The brand features timeless jewellery, with natural gemstones, graceful lines, brilliant reflections and classic design, which complements any aesthetic. The pieces enchant for their understated beauty, made to endure for generations, honoring the craftsmanship of each period, with a distinctive touch.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "small_image",
+      "label": "Small image"
+    },
+    {
+      "type": "select",
+      "id": "small_image_ratio",
+      "label": "Small image shape",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova creator notes"
+    }
+  ]
+}
+{% endschema %}
