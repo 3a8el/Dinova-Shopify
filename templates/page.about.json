@@ -85,12 +85,17 @@
         "value_3"
       ],
       "settings": {}
+    },
+    "dinova_newsletter": {
+      "type": "dinova-newsletter",
+      "settings": {}
     }
   },
   "order": [
     "dinova_about_hero",
     "dinova_creator_notes",
     "dinova_values",
+    "dinova_newsletter",
     "main"
   ]
 }

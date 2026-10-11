@@ -1,0 +1,342 @@
+{%- comment -%}
+  Dinova newsletter: a large inset image with a centred heading and an email
+  field. Uses Shopify's built-in customer form, so sign-ups are saved as
+  customers subscribed to email marketing (Customers in the Shopify admin).
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign image_mobile = s.image_mobile | default: s.image
+  assign form_id = 'DinovaNewsletter-' | append: section.id
+-%}
+
+<div
+  class="dinova-news"
+  style="
+    --dinova-news-bg: {{ s.background_color }};
+    --dinova-news-text: {{ s.text_color }};
+    --dinova-news-overlay: {{ s.overlay_color | color_modify: 'alpha', s.overlay_opacity | divided_by: 100.0 }};
+    --dinova-news-ratio: {{ s.ratio_desktop }};
+    --dinova-news-ratio-mobile: {{ s.ratio_mobile }};
+  "
+>
+  <div class="dinova-news__frame">
+    <div class="dinova-news__media" aria-hidden="true">
+      {%- if s.image != blank -%}
+        {{
+          s.image
+          | image_url: width: 2400
+          | image_tag:
+            widths: '900, 1400, 1800, 2400',
+            sizes: '100vw',
+            loading: 'lazy',
+            alt: '',
+            class: 'dinova-news__image dinova-news__image--desktop'
+        }}
+        {{
+          image_mobile
+          | image_url: width: 1200
+          | image_tag:
+            widths: '600, 900, 1200',
+            sizes: '100vw',
+            loading: 'lazy',
+            alt: '',
+            class: 'dinova-news__image dinova-news__image--mobile'
+        }}
+      {%- else -%}
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-news__image' }}
+      {%- endif -%}
+    </div>
+    <div class="dinova-news__overlay" aria-hidden="true"></div>
+
+    <div class="dinova-news__content">
+      {%- if s.heading != blank -%}
+        <h2 class="dinova-news__heading">{{ s.heading | escape }}</h2>
+      {%- endif -%}
+
+      {%- form 'customer', id: form_id, class: 'dinova-news__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        {%- if form.posted_successfully? -%}
+          <p class="dinova-news__message" role="status" tabindex="-1" autofocus>{{ s.success_message | escape }}</p>
+        {%- else -%}
+          <div class="dinova-news__field">
+            <label for="DinovaNewsletterEmail-{{ section.id }}" class="visually-hidden">{{ s.placeholder | escape }}</label>
+            <input
+              id="DinovaNewsletterEmail-{{ section.id }}"
+              class="dinova-news__input"
+              type="email"
+              name="contact[email]"
+              value="{{ form.email }}"
+              placeholder="{{ s.placeholder | escape }}"
+              autocomplete="email"
+              autocapitalize="off"
+              spellcheck="false"
+              required
+              {% if form.errors %}
+                aria-invalid="true" aria-describedby="DinovaNewsletterError-{{ section.id }}"
+              {% endif %}
+            >
+            <button type="submit" class="dinova-news__submit" aria-label="{{ s.button_label | escape }}">
+              <svg viewBox="0 0 20 12" aria-hidden="true" focusable="false"><path d="M0 6h18M13 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+            </button>
+          </div>
+          {%- if form.errors -%}
+            <p id="DinovaNewsletterError-{{ section.id }}" class="dinova-news__message dinova-news__message--error" role="alert">
+              {{- form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email -}}
+            </p>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-news {
+    padding: 1.25rem;
+    background: var(--dinova-news-bg);
+  }
+
+  .dinova-news__frame {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: var(--dinova-news-ratio-mobile);
+    overflow: hidden;
+    color: var(--dinova-news-text);
+  }
+
+  .dinova-news__media,
+  .dinova-news__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dinova-news__overlay {
+    background: var(--dinova-news-overlay);
+  }
+
+  .dinova-news__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-news__image--desktop {
+    display: none;
+  }
+
+  .dinova-news__content {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+    width: min(100%, 36rem);
+    padding: 2rem 1.25rem;
+    text-align: center;
+  }
+
+  .dinova-news__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 5vw, 4.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-news__form {
+    width: 100%;
+  }
+
+  .dinova-news__field {
+    display: flex;
+    align-items: center;
+    border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+    transition: border-color 0.3s ease;
+  }
+
+  .dinova-news__field:focus-within {
+    border-color: currentColor;
+  }
+
+  .dinova-news__input {
+    flex: 1;
+    min-width: 0;
+    padding: 1.125rem 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .dinova-news__input::placeholder {
+    color: inherit;
+    opacity: 0.9;
+  }
+
+  .dinova-news__submit {
+    display: grid;
+    place-items: center;
+    padding: 1rem 1.25rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .dinova-news__submit svg {
+    width: 1.125rem;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .dinova-news__submit:hover svg,
+  .dinova-news__submit:focus-visible svg {
+    transform: translateX(0.25rem);
+  }
+
+  .dinova-news__message {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+  }
+
+  .dinova-news__message--error {
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-news__frame {
+      aspect-ratio: var(--dinova-news-ratio);
+    }
+
+    .dinova-news__image--desktop {
+      display: block;
+    }
+
+    .dinova-news__image--mobile {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-news__submit svg,
+    .dinova-news__field {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova newsletter",
+  "tag": "section",
+  "class": "dinova-news-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Falls back to the background image."
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Sign up to newsletter"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email field placeholder",
+      "default": "Your email"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label for screen readers",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Thank-you message",
+      "default": "Thank you for subscribing."
+    },
+    {
+      "type": "paragraph",
+      "content": "Sign-ups appear under Customers in the Shopify admin, subscribed to email marketing and tagged newsletter."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "ratio_desktop",
+      "label": "Shape on desktop",
+      "options": [
+        { "value": "16 / 9", "label": "Wide" },
+        { "value": "3 / 2", "label": "Landscape" },
+        { "value": "4 / 3", "label": "Classic" }
+      ],
+      "default": "3 / 2"
+    },
+    {
+      "type": "select",
+      "id": "ratio_mobile",
+      "label": "Shape on mobile",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "3 / 4", "label": "Tall portrait" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "info": "Darkens the image so the text is easier to read.",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background around the image",
+      "default": "#fffbf5"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova newsletter"
+    }
+  ]
+}
+{% endschema %}
