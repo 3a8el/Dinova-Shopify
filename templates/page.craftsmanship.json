@@ -9,6 +9,77 @@
  */
 {
   "sections": {
+    "dinova_about_hero": {
+      "type": "dinova-about-hero",
+      "settings": {
+        "image": "shopify://shop_images/craftsman-ship-1-scaled.webp",
+        "title": "CRAFTSMANSHIP",
+        "subtitle": "The Art Behind Every Creation",
+        "text": "<p>At DINOVA, craftsmanship is a process defined by people, precision, and an uncompromising attention to detail. Every piece is brought to life within a dedicated manufacturing environment, where skilled artisans and specialists work in harmony to transform raw materials into refined jewelry.</p>",
+        "sticky": true,
+        "sticky_offset": 72,
+        "box_position": "left",
+        "box_width": 610,
+        "box_background": "#fffbf5",
+        "text_color": "#121212",
+        "height_desktop": 150,
+        "height_mobile": 120
+      }
+    },
+    "dinova_creator_notes": {
+      "type": "dinova-creator-notes",
+      "settings": {
+        "image": "shopify://shop_images/Section-Image-2-2.webp",
+        "title": "Notes from\nthe creator",
+        "text": "<p>The brand features timeless jewellery, with natural gemstones, graceful lines, brilliant reflections and classic design, which complements any aesthetic. The pieces enchant for their understated beauty, made to endure for generations, honoring the craftsmanship of each period, with a distinctive touch.</p>",
+        "small_image": "shopify://shop_images/section-img-4-4.webp",
+        "small_image_ratio": "4 / 5",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    },
+    "dinova_values": {
+      "type": "dinova-values",
+      "blocks": {
+        "value_1": {
+          "type": "value",
+          "settings": {
+            "title": "Casting",
+            "text": "18K gold is melted, cast, and prepared with precision in our partner facility, setting the foundation for every piece."
+          }
+        },
+        "value_2": {
+          "type": "value",
+          "settings": {
+            "title": "Setting",
+            "text": "Each diamond is positioned by experienced hands — adjusting proportions and perfecting settings to enhance light and balance."
+          }
+        },
+        "value_3": {
+          "type": "value",
+          "settings": {
+            "title": "Polishing",
+            "text": "A flawless finish is achieved through a layered, hands-on process — refined by craftsmen and elevated by attention to every detail."
+          }
+        }
+      },
+      "block_order": [
+        "value_1",
+        "value_2",
+        "value_3"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/More_layers_more_light_more_reasons_to_look_twice.Explore_our_necklace_collection_soon._Dinova.jpg",
+        "title": "Specialists for every phase.",
+        "show_numbers": true,
+        "image_position": "left",
+        "image_ratio": "4 / 5",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    },
     "main": {
       "type": "main-page",
       "blocks": {
@@ -27,6 +98,7 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text_color": "",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -39,7 +111,9 @@
         },
         "page-content": {
           "type": "page-content",
-          "settings": {},
+          "settings": {
+            "text_color": ""
+          },
           "blocks": {}
         }
       },
@@ -47,64 +121,20 @@
         "heading",
         "page-content"
       ],
+      "disabled": true,
       "settings": {
         "content_direction": "column",
         "gap": 32,
+        "background_color": "",
         "padding-block-start": 40,
         "padding-block-end": 80
-      },
-      "disabled": true
-    },
-    "dinova_about_hero": {
-      "type": "dinova-about-hero",
-      "settings": {}
-    },
-    "dinova_creator_notes": {
-      "type": "dinova-creator-notes",
-      "settings": {}
-    },
-    "dinova_values": {
-      "type": "dinova-values",
-      "blocks": {
-        "value_1": {
-          "type": "value",
-          "settings": {
-            "title": "Innovation",
-            "text": "We embrace the technology that allows us to create brilliance, not just find it."
-          }
-        },
-        "value_2": {
-          "type": "value",
-          "settings": {
-            "title": "Transparency",
-            "text": "From our IGI certifications to our educational hub, we empower you with knowledge. A Dinova customer is an educated customer."
-          }
-        },
-        "value_3": {
-          "type": "value",
-          "settings": {
-            "title": "Modern Egyptian Luxury",
-            "text": "We are proudly based in Cairo, blending global standards with a deep understanding of what our market desires: quality, value, and authenticity."
-          }
-        }
-      },
-      "block_order": [
-        "value_1",
-        "value_2",
-        "value_3"
-      ],
-      "settings": {}
-    },
-    "dinova_newsletter": {
-      "type": "dinova-newsletter",
-      "settings": {}
+      }
     }
   },
   "order": [
     "dinova_about_hero",
     "dinova_creator_notes",
     "dinova_values",
-    "dinova_newsletter",
     "main"
   ]
 }
