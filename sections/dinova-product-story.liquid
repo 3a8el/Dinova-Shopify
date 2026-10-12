@@ -510,8 +510,10 @@
           if (!target) return;
           const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
-          const top = target.getBoundingClientRect().top + window.scrollY - header - 32;
-          window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+          // On desktop the page scrolls inside .page-wrapper, not the window,
+          // so let the browser find the right scroll container.
+          target.style.scrollMarginTop = `${header + 32}px`;
+          target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
           return;
         }
       }
