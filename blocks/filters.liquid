@@ -170,7 +170,7 @@
     {{ block.shopify_attributes }}
   >
     <div
-      class="facets facets--{{ block_settings.filter_style }} spacing-style"
+      class="facets facets--{{ block_settings.filter_style }} spacing-style{% if block_settings.filter_style == 'vertical' and block_settings.dinova_sidebar %} dinova-facets{% endif %}"
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
       aria-label="{{ 'accessibility.filters' | t }}"
     >
@@ -254,6 +254,9 @@
                     data-testid: 'horizontal-filters-overflow-list'
                   %}
                 {% else %}
+                  {% if block_settings.dinova_sidebar %}
+                    <p class="dinova-facets__heading">{{ 'content.filters' | t }}</p>
+                  {% endif %}
                   {{ rendered_filters }}
                 {% endif %}
               </div>
@@ -275,6 +278,9 @@
                   </button>
                 </facet-remove-component>
               {% endif %}
+            {% endif %}
+            {% if block_settings.filter_style == 'vertical' and block_settings.dinova_sidebar and block_settings.enable_sorting %}
+              {% render 'dinova-sort-list', results: results, sort_by: sort_by, section_id: section.id %}
             {% endif %}
             {% if block_settings.filter_style == 'horizontal' %}
               <div
@@ -1376,6 +1382,14 @@
       "label": "t:settings.show_filter_label",
       "default": false,
       "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "dinova_sidebar",
+      "label": "Dinova sidebar",
+      "info": "Vertical filters only. Lined sidebar with a Filters heading and Sort by as a list of options.",
+      "default": false,
+      "visible_if": "{{ block.settings.filter_style == 'vertical' }}"
     },
     {
       "type": "checkbox",

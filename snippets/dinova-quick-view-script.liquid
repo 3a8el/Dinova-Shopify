@@ -1,0 +1,7 @@
+{%- doc -%}
+  Loads <dinova-quick-view>: Horizon's quick-add modal pointed at a product
+  URL, used by Dinova cards (spotlight, collection grid). Modules load once,
+  so rendering this for every card is fine.
+{%- enddoc -%}
+
+<script src="{{ 'dinova-quick-view.js' | asset_url }}" type="module"></script>

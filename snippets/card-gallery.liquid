@@ -77,7 +77,7 @@
     --gallery-aspect-ratio: {{ ratio }};
   "
   data-product-id="{{ product.id }}"
-  {% if settings.show_second_image_on_hover and product.media.size > 1 %}
+  {% if settings.show_second_image_on_hover and product.media.size > 1 and block_settings.dinova_hover != true %}
     on:pointerenter="/previewImage"
     on:pointerleave="/resetImage"
   {% endif %}

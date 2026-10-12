@@ -1,0 +1,62 @@
+{%- doc -%}
+  Dinova "Sort by" list for the vertical filter sidebar: radio buttons that
+  drive Horizon's own sort control (hidden on desktop), so sorting and
+  filtering keep sharing one form and one page update.
+
+  @param {object} results - The collection or search results.
+  @param {string} sort_by - The current sort value.
+  @param {string} section_id - The section ID.
+{%- enddoc -%}
+
+<dinova-sort-list class="dinova-sort">
+  <p class="dinova-sort__title dinova-facets__heading" id="DinovaSortTitle-{{ section_id }}">{{ 'actions.sort' | t }}</p>
+  <div class="dinova-sort__options" role="radiogroup" aria-labelledby="DinovaSortTitle-{{ section_id }}">
+    {%- for option in results.sort_options -%}
+      <label class="dinova-sort__option">
+        <input
+          type="radio"
+          class="dinova-sort__input"
+          name="dinova-sort-{{ section_id }}"
+          form="DinovaSortForm-{{ section_id }}"
+          value="{{ option.value }}"
+          {% if option.value == sort_by %}
+            checked
+          {% endif %}
+        >
+        <span>{{ option.name }}</span>
+      </label>
+    {%- endfor -%}
+  </div>
+</dinova-sort-list>
+
+<script type="module">
+  if (!customElements.get('dinova-sort-list')) {
+    class DinovaSortList extends HTMLElement {
+      connectedCallback() {
+        this.addEventListener('change', (event) => {
+          const input = event.target;
+          if (!(input instanceof HTMLInputElement) || !input.classList.contains('dinova-sort__input')) return;
+          event.stopPropagation();
+
+          const facets = this.closest('facets-form-component');
+          const form = facets?.querySelector('form');
+          const target = form
+            ? [...document.querySelectorAll('input[name="sort_by"]')].find(
+                (el) => el.form === form && el.value === input.value
+              )
+            : null;
+
+          if (target) {
+            target.checked = true;
+            facets.updateFilters();
+          } else {
+            const url = new URL(window.location.href);
+            url.searchParams.set('sort_by', input.value);
+            window.location.href = url.toString();
+          }
+        });
+      }
+    }
+    customElements.define('dinova-sort-list', DinovaSortList);
+  }
+</script>

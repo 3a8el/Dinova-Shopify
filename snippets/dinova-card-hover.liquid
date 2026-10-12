@@ -1,0 +1,84 @@
+{%- doc -%}
+  Dinova hover layer for product cards: the second photo fades in out of a
+  blur, cart and quick view icons, and size chips for the product's first
+  option with more than one value.
+
+  @param {object} product - The card's product.
+{%- enddoc -%}
+
+{%- liquid
+  assign second = product.media[1]
+  assign size_option = null
+  for option in product.options_with_values
+    if option.values.size > 1
+      assign size_option = option
+      break
+    endif
+  endfor
+-%}
+
+<div class="dinova-card-hover">
+  {%- if second -%}
+    <div class="dinova-card-hover__image" aria-hidden="true">
+      {{
+        second.preview_image
+        | image_url: width: 1000
+        | image_tag:
+          widths: '360, 540, 720, 1000',
+          sizes: '(min-width: 990px) 35vw, 50vw',
+          loading: 'lazy',
+          alt: '',
+          class: 'dinova-card-hover__img'
+      }}
+    </div>
+  {%- endif -%}
+
+  <dinova-quick-view
+    class="dinova-card-hover__actions"
+    data-product-url="{{ product.url }}"
+    data-product-title="{{ product.title | escape }}"
+    data-uses-selling-plans="{% if product.requires_selling_plan %}true{% else %}false{% endif %}"
+  >
+    {%- if product.available -%}
+      <button
+        type="button"
+        class="dinova-card-hover__action"
+        data-dinova-cart
+        aria-label="Add {{ product.title | escape }} to cart"
+      >
+        {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+      </button>
+    {%- endif -%}
+    <a
+      href="{{ product.url }}"
+      class="dinova-card-hover__action"
+      data-dinova-view
+      on:click="dinova-quick-view/handleClick"
+      aria-label="Quick view {{ product.title | escape }}"
+    >
+      <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M1.5 10S4.5 4.5 10 4.5 18.5 10 18.5 10 15.5 15.5 10 15.5 1.5 10 1.5 10Z" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="10" cy="10" r="2.5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+    </a>
+  </dinova-quick-view>
+
+  {%- if size_option -%}
+    <ul class="dinova-card-hover__sizes list-unstyled" aria-label="{{ size_option.name | escape }}">
+      {%- for value in size_option.values limit: 6 -%}
+        {%- assign value_url = product.url -%}
+        {%- if value.variant -%}
+          {%- assign value_url = value.variant.url -%}
+        {%- endif -%}
+        <li>
+          <a
+            class="dinova-card-hover__size{% unless value.available %} is-unavailable{% endunless %}"
+            href="{{ value_url }}"
+          >
+            {{- value | escape -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- endif -%}
+</div>
+
+{% render 'dinova-quick-view-script' %}
+<script src="{{ 'dinova-card.js' | asset_url }}" type="module"></script>
