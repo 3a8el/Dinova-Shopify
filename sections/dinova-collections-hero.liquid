@@ -82,11 +82,16 @@
           this.arrows.forEach((arrow) =>
             arrow.addEventListener('click', () => this.go(Number(arrow.dataset.direction)))
           );
-          this.update = () => this.updateArrows();
+          this.slides = [...this.track.querySelectorAll('.dinova-chero__slide')];
+          this.update = () => {
+            this.updateArrows();
+            this.updateActive();
+          };
           this.track.addEventListener('scroll', this.update, { passive: true });
           this.resizeObserver = new ResizeObserver(this.update);
           this.resizeObserver.observe(this.track);
           this.update();
+          this.dataset.ready = '';
 
           /* Theme editor: scroll to the selected slide */
           document.addEventListener('shopify:block:select', (event) => {
@@ -103,6 +108,20 @@
           if (!slide) return;
           const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           this.track.scrollBy({ left: direction * slide.offsetWidth, behavior: reduce ? 'auto' : 'smooth' });
+        }
+
+        /* Only the slide in front shows its name and button; the others wait. */
+        updateActive() {
+          const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          const width = this.slides[0]?.offsetWidth;
+          if (!width) return;
+          const atEnd = scrollLeft + clientWidth >= scrollWidth - 1;
+          const index = atEnd ? this.slides.length - 1 : Math.round(scrollLeft / width);
+          this.slides.forEach((slide, i) => {
+            const active = i === index;
+            slide.classList.toggle('is-active', active);
+            slide.querySelector('.dinova-chero__content')?.toggleAttribute('inert', !active);
+          });
         }
 
         updateArrows() {
@@ -225,6 +244,32 @@
     color: var(--dinova-chero-slide-text);
   }
 
+  /* Slide text fades in out of a blur once its slide is in front. Hidden
+     only after the script runs, so it still shows if scripts fail. */
+  .dinova-chero[data-ready] .dinova-chero__content > * {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(1rem);
+    transition:
+      opacity 0.35s ease,
+      filter 0.35s ease,
+      transform 0.35s ease;
+  }
+
+  .dinova-chero[data-ready] .dinova-chero__slide.is-active .dinova-chero__content > * {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    transition:
+      opacity 0.8s ease 0.25s,
+      filter 0.8s ease 0.25s,
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+  }
+
+  .dinova-chero[data-ready] .dinova-chero__slide.is-active .dinova-chero__content > :nth-child(2) {
+    transition-delay: 0.4s;
+  }
+
   .dinova-chero__name {
     margin: 0;
     font-family: var(--font-heading--family);
@@ -304,6 +349,13 @@
     .dinova-chero__button,
     .dinova-chero__arrow {
       transition: none;
+    }
+
+    .dinova-chero[data-ready] .dinova-chero__content > *,
+    .dinova-chero[data-ready] .dinova-chero__slide.is-active .dinova-chero__content > * {
+      filter: none;
+      transform: none;
+      transition: opacity 0.2s ease;
     }
   }
 {% endstylesheet %}
