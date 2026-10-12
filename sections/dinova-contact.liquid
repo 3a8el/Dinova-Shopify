@@ -378,6 +378,29 @@
     object-fit: cover;
   }
 
+  /* Mobile and tablet order: intro and contact details, then the images, then the form. */
+  @media screen and (max-width: 989px) {
+    .dinova-contact__content {
+      display: contents;
+    }
+
+    .dinova-contact__intro {
+      order: 1;
+    }
+
+    .dinova-contact__details {
+      order: 2;
+    }
+
+    .dinova-contact__media {
+      order: 3;
+    }
+
+    .dinova-contact__form-wrap {
+      order: 4;
+    }
+  }
+
   @media screen and (max-width: 749px) {
     .dinova-contact__detail-image--hide-mobile {
       display: none;
