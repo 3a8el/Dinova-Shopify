@@ -20,6 +20,27 @@
         "background_color": "#ffffff"
       }
     },
+    "dinova_product_carousel": {
+      "type": "dinova-product-carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "source": "latest",
+        "product_list": [],
+        "collection": "",
+        "limit": 12,
+        "shop_all_label": "Shop all",
+        "shop_all_link": "",
+        "columns_desktop": 4,
+        "columns_mobile": "1.25",
+        "hover_image": true,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#dcd9d4",
+        "image_background": "#efeeec",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
     "dinova_collection_switcher": {
       "type": "dinova-collection-switcher",
       "blocks": {
@@ -98,7 +119,7 @@
         "switch_on_hover": false,
         "name_size": 5,
         "image_ratio": "1 / 1",
-        "background_color": "#ffffff",
+        "background_color": "#FFFFFF",
         "text_color": "#121212",
         "inactive_color": "#d6d2cd",
         "padding_top": 64,
@@ -176,7 +197,7 @@
       ],
       "settings": {
         "title": "Stones Cuts",
-        "background_color": "#ffffff",
+        "background_color": "#FFFFFF",
         "text_color": "#121212",
         "big_name_color": "#bdbab5",
         "image_background_style": "glass",
@@ -190,26 +211,6 @@
         "image_radius": 0,
         "padding_top": 64,
         "padding_bottom": 64
-      }
-    },
-    "dinova_split_media": {
-      "type": "dinova-split-media",
-      "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "background_color_2": "#fffbf5",
-        "content_image_width": 120,
-        "subtitle": "",
-        "text": "<p>We believe that accessories are an essential part of expressing your personal identity</p>",
-        "button_label": "Shop all",
-        "button_link": "",
-        "column_ratio": "1 / 1",
-        "loop_videos": true,
-        "text_color": "#ffffff",
-        "button_background": "#fffbf5",
-        "button_text_color": "#121212",
-        "overlay_color": "#000000",
-        "overlay_opacity": 10
       }
     },
     "dinova_marquee": {
@@ -258,6 +259,7 @@
         "phrase_4",
         "phrase_5"
       ],
+      "disabled": true,
       "settings": {
         "heading": "",
         "separator": "/",
@@ -266,31 +268,10 @@
         "image_size": 44,
         "font_size": 36,
         "faded_opacity": 55,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#9a9a9a",
         "padding_top": 40,
         "padding_bottom": 40
-      }
-    },
-    "dinova_product_carousel": {
-      "type": "dinova-product-carousel",
-      "settings": {
-        "title": "Best Sellers",
-        "source": "latest",
-        "product_list": [],
-        "collection": "",
-        "limit": 12,
-        "shop_all_label": "Shop all",
-        "shop_all_link": "",
-        "columns_desktop": 4,
-        "columns_mobile": "1.25",
-        "hover_image": true,
-        "background_color": "#ffffff",
-        "text_color": "#121212",
-        "line_color": "#dcd9d4",
-        "image_background": "#efeeec",
-        "padding_top": 48,
-        "padding_bottom": 48
       }
     },
     "dinova_about": {
@@ -300,10 +281,13 @@
         "button_label": "About us",
         "button_link": "",
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/dinova-aura-eye.jpg",
         "hide_mobile_1": false,
         "media_type_2": "image",
+        "image_2": "shopify://shop_images/Love_at_the_neckline_confidence_at_the_wrist._Dinova_LabGrownDiamond_Egypt_smartdecision.jpg",
         "hide_mobile_2": false,
         "media_type_3": "image",
+        "image_3": "shopify://shop_images/dinova-rings.jpg",
         "hide_mobile_3": false,
         "media_ratio": "3 / 4",
         "media_width": 78,
@@ -325,7 +309,7 @@
             "article": "",
             "title": "Fashion, diamonds & personal style.",
             "author": "Noha El Sherbiny",
-            "link": ""
+            "link": "https://www.youtube.com/watch?v=I9bI0tF9AlQ"
           }
         },
         "video_2": {
@@ -333,8 +317,8 @@
           "settings": {
             "video": "",
             "article": "",
-            "title": "What makes a diamond a smart choice",
-            "author": "Nayra Nassar",
+            "title": "",
+            "author": "",
             "link": ""
           }
         }
@@ -356,6 +340,28 @@
         "text_color": "#121212",
         "padding_top": 64,
         "padding_bottom": 64
+      }
+    },
+    "dinova_split_media": {
+      "type": "dinova-split-media",
+      "settings": {
+        "media_type_1": "image",
+        "image_1": "shopify://shop_images/2_jpg.webp",
+        "media_type_2": "none",
+        "background_color_2": "#fffbf5",
+        "content_image": "shopify://shop_images/booklogo-1.png",
+        "content_image_width": 200,
+        "subtitle": "IGI Certified Brilliance",
+        "text": "<p>Every DiNova diamond is independently graded and certified by the International Gemological Institute (IGI).This is your absolute guarantee of quality, authenticity, and transparency.</p>",
+        "button_label": "Shop all",
+        "button_link": "",
+        "column_ratio": "1 / 1",
+        "loop_videos": true,
+        "text_color": "{{ settings.color_palette.foreground }}",
+        "button_background": "{{ settings.color_palette.foreground }}",
+        "button_text_color": "{{ settings.color_palette.background }}",
+        "overlay_color": "#000000",
+        "overlay_opacity": 10
       }
     },
     "hero_jVaWmY": {
@@ -649,13 +655,13 @@
   },
   "order": [
     "dinova_hero",
+    "dinova_product_carousel",
     "dinova_collection_switcher",
     "dinova_stone_cuts",
-    "dinova_split_media",
     "dinova_marquee",
-    "dinova_product_carousel",
     "dinova_about",
     "dinova_video_blog",
+    "dinova_split_media",
     "hero_jVaWmY",
     "product_list_fa6P9H"
   ]
