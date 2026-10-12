@@ -182,6 +182,7 @@
 
 .collection-wrapper:has(.dinova-facets) {
   --dinova-line: #d6d1c9;
+  --dinova-page-gutter: clamp(1.25rem, 3vw, 3rem);
 
   overflow-x: clip;
 }
@@ -189,8 +190,8 @@
 /* Sidebar */
 .dinova-facets__heading {
   margin: 0;
-  padding: 1.25rem var(--dinova-facets-pad, 1.5rem);
-  margin-inline: calc(-1 * var(--dinova-facets-pad, 1.5rem));
+  padding: 1.25rem var(--dinova-facets-pad-end, 1.5rem) 1.25rem var(--dinova-facets-pad, 1.5rem);
+  margin-inline: calc(-1 * var(--dinova-facets-pad, 1.5rem)) calc(-1 * var(--dinova-facets-pad-end, 1.5rem));
   border-bottom: 1px solid var(--dinova-line, #d6d1c9);
   font-family: var(--font-body--family);
   font-size: 0.9375rem;
@@ -208,8 +209,8 @@
   display: block;
   margin-top: 1.5rem;
   border-top: 1px solid var(--dinova-line, #d6d1c9);
-  margin-inline: calc(-1 * var(--dinova-facets-pad, 1.5rem));
-  padding-inline: var(--dinova-facets-pad, 1.5rem);
+  margin-inline: calc(-1 * var(--dinova-facets-pad, 1.5rem)) calc(-1 * var(--dinova-facets-pad-end, 1.5rem));
+  padding-inline: var(--dinova-facets-pad, 1.5rem) var(--dinova-facets-pad-end, 1.5rem);
 }
 
 .dinova-sort .dinova-facets__heading {
@@ -268,16 +269,20 @@
     border-inline-end: 1px solid var(--dinova-line);
   }
 
-  .dinova-facets {
-    --dinova-facets-pad: clamp(1.25rem, 3vw, 4.5rem);
+  /* Horizon's filters stylesheet loads after this file, so this needs the
+     extra specificity to win over its padding-inline. */
+  .collection-wrapper .facets.dinova-facets {
+    --dinova-facets-pad: var(--dinova-page-gutter);
+    --dinova-facets-pad-end: 2rem;
 
-    padding-inline: var(--dinova-facets-pad) 2rem;
+    padding-inline: var(--dinova-facets-pad) var(--dinova-facets-pad-end);
   }
 
   /* Top bar: product count on the left of the grid, view switch on the right. */
   .collection-wrapper:has(.dinova-facets) > .facets-controls-wrapper {
     border-block: 1px solid var(--dinova-line);
     padding-block: 1rem;
+    padding-inline: var(--dinova-page-gutter);
   }
 
   .collection-wrapper:has(.dinova-facets) > .facets-controls-wrapper :is(.facets--filters-title, .sorting-filter) {
@@ -425,9 +430,9 @@
   filter: blur(16px);
   transform: scale(1.06);
   transition:
-    opacity 0.9s ease,
-    filter 1.1s ease,
-    transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.6s ease,
+    filter 0.75s ease,
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dinova-card-hover__img {
@@ -439,7 +444,7 @@
 }
 
 .card-gallery:has(.dinova-card-hover) .product-media img {
-  transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .dinova-card-hover__actions {
@@ -519,8 +524,8 @@
   opacity: 0;
   filter: blur(6px);
   transition:
-    opacity 0.7s ease 0.1s,
-    filter 0.7s ease 0.1s;
+    opacity 0.5s ease 0.08s,
+    filter 0.5s ease 0.08s;
 }
 
 @media (hover: hover) {
@@ -562,4 +567,12 @@
     filter: none;
     transform: none;
   }
+}
+
+/* ---------- Header: more room above and below, with a bottom line ----------
+ * The line itself comes from the header's border setting (#d6d1c9, the same
+ * colour as the collection grid lines).
+ */
+#header-component:not(.header--compact) .header__row--top {
+  --header-padding: clamp(0.875rem, 1.4vw, 1.375rem);
 }
