@@ -1,0 +1,541 @@
+{%- comment -%}
+  Dinova coming soon: the password page shown to visitors while the store is
+  locked. A full-screen image or video, the logo, a heading, a short text and a
+  newsletter sign-up. A discreet link opens Shopify's password box so the team
+  can still enter the store.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign image_mobile = s.image_mobile | default: s.image
+  assign form_id = 'DinovaComingSoon-' | append: section.id
+  assign logo = s.logo | default: settings.logo
+-%}
+
+<div
+  class="dinova-soon"
+  style="
+    --dinova-soon-text: {{ s.text_color }};
+    --dinova-soon-bg: {{ s.background_color }};
+    --dinova-soon-overlay: {{ s.overlay_color | color_modify: 'alpha', s.overlay_opacity | divided_by: 100.0 }};
+  "
+>
+  <div class="dinova-soon__media" aria-hidden="true">
+    {%- if s.video != blank -%}
+      {{
+        s.video
+        | video_tag:
+          autoplay: true,
+          loop: true,
+          muted: true,
+          playsinline: true,
+          controls: false,
+          image_size: '1800x',
+          class: 'dinova-soon__image'
+      }}
+    {%- elsif s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '900, 1400, 1800, 2400',
+          sizes: '100vw',
+          fetchpriority: 'high',
+          alt: '',
+          class: 'dinova-soon__image dinova-soon__image--desktop'
+      }}
+      {{
+        image_mobile
+        | image_url: width: 1200
+        | image_tag:
+          widths: '600, 900, 1200',
+          sizes: '100vw',
+          fetchpriority: 'high',
+          alt: '',
+          class: 'dinova-soon__image dinova-soon__image--mobile'
+      }}
+    {%- endif -%}
+  </div>
+  <div class="dinova-soon__overlay" aria-hidden="true"></div>
+
+  <div class="dinova-soon__inner">
+    <div class="dinova-soon__brand">
+      {%- if logo != blank -%}
+        {%- liquid
+          assign logo_width = s.logo_width | times: 2
+          assign logo_style = 'width: ' | append: s.logo_width | append: 'px'
+        -%}
+        {{
+          logo
+          | image_url: width: logo_width
+          | image_tag: alt: shop.name, class: 'dinova-soon__logo', style: logo_style
+        }}
+      {%- else -%}
+        <span class="dinova-soon__shop">{{ shop.name | escape }}</span>
+      {%- endif -%}
+    </div>
+
+    <div class="dinova-soon__content">
+      {%- if s.eyebrow != blank -%}
+        <p class="dinova-soon__eyebrow">{{ s.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if s.heading != blank -%}
+        <h1 class="dinova-soon__heading">{{ s.heading | newline_to_br }}</h1>
+      {%- endif -%}
+      {%- if s.text != blank -%}
+        <div class="dinova-soon__text">{{ s.text }}</div>
+      {%- endif -%}
+
+      {%- if s.show_newsletter -%}
+        {%- form 'customer', id: form_id, class: 'dinova-soon__form' -%}
+          <input type="hidden" name="contact[tags]" value="newsletter, coming-soon">
+          {%- if form.posted_successfully? -%}
+            <p class="dinova-soon__message" role="status" tabindex="-1" autofocus>{{ s.success_message | escape }}</p>
+          {%- else -%}
+            <div class="dinova-soon__field">
+              <label for="{{ form_id }}-email" class="visually-hidden">{{ s.placeholder | escape }}</label>
+              <input
+                id="{{ form_id }}-email"
+                class="dinova-soon__input"
+                type="email"
+                name="contact[email]"
+                value="{{ form.email }}"
+                placeholder="{{ s.placeholder | escape }}"
+                autocomplete="email"
+                autocapitalize="off"
+                spellcheck="false"
+                required
+                {% if form.errors %}
+                  aria-invalid="true" aria-describedby="{{ form_id }}-error"
+                {% endif %}
+              >
+              <button type="submit" class="dinova-soon__submit">{{ s.button_label | escape }}</button>
+            </div>
+            {%- if form.errors -%}
+              <p id="{{ form_id }}-error" class="dinova-soon__message dinova-soon__message--error" role="alert">
+                {{- form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email -}}
+              </p>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endform -%}
+      {%- endif -%}
+    </div>
+
+    <div class="dinova-soon__footer">
+      <div class="dinova-soon__contact">
+        {%- if s.email != blank -%}
+          <a class="dinova-underline" href="mailto:{{ s.email | strip }}">{{ s.email | escape }}</a>
+        {%- endif -%}
+        {%- if s.phone != blank -%}
+          {%- assign tel = s.phone | remove: ' ' | remove: '-' -%}
+          <a class="dinova-underline" href="tel:{{ tel }}">{{ s.phone | escape }}</a>
+        {%- endif -%}
+        {%- if s.instagram != blank -%}
+          <a class="dinova-underline" href="{{ s.instagram }}" target="_blank" rel="noopener">Instagram</a>
+        {%- endif -%}
+      </div>
+      <button type="button" class="dinova-soon__password dinova-underline" on:click="#password-form/showDialog">
+        {{- s.password_label | escape -}}
+      </button>
+    </div>
+  </div>
+</div>
+
+{%- if s.hide_default_footer -%}
+  <style>
+    .password-footer:not(.shopify-design-mode *) {
+      display: none;
+    }
+  </style>
+{%- endif -%}
+
+{% stylesheet %}
+  .password-main-content:has(.dinova-soon) {
+    padding: 0;
+  }
+
+  .dinova-soon {
+    position: relative;
+    display: grid;
+    min-height: 100svh;
+    overflow: hidden;
+    background: var(--dinova-soon-bg);
+    color: var(--dinova-soon-text);
+  }
+
+  .dinova-soon__media,
+  .dinova-soon__overlay {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dinova-soon__overlay {
+    background: var(--dinova-soon-overlay);
+  }
+
+  .dinova-soon__image,
+  .dinova-soon__media video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-soon__image--desktop {
+    display: none;
+  }
+
+  .dinova-soon__inner {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 2rem;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .dinova-soon__brand {
+    display: flex;
+    justify-content: center;
+  }
+
+  .dinova-soon__logo {
+    display: block;
+    max-width: 60vw;
+    height: auto;
+  }
+
+  .dinova-soon__shop {
+    font-family: var(--font-heading--family);
+    font-size: 1.75rem;
+  }
+
+  .dinova-soon__content {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 1.25rem;
+    width: min(100%, 40rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .dinova-soon__eyebrow {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .dinova-soon__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.75rem, 7vw, 6rem);
+    line-height: 1;
+    color: inherit;
+  }
+
+  .dinova-soon__text {
+    max-width: 30rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  .dinova-soon__text p {
+    margin: 0;
+  }
+
+  .dinova-soon__form {
+    width: min(100%, 28rem);
+    margin-top: 0.75rem;
+  }
+
+  .dinova-soon__field {
+    display: flex;
+    border: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+    transition: border-color 0.3s ease;
+  }
+
+  .dinova-soon__field:focus-within {
+    border-color: currentColor;
+  }
+
+  .dinova-soon__input {
+    flex: 1;
+    min-width: 0;
+    padding: 1rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .dinova-soon__input::placeholder {
+    color: inherit;
+    opacity: 0.85;
+  }
+
+  .dinova-soon__submit {
+    padding: 0 1.25rem;
+    border: 0;
+    border-inline-start: 1px solid color-mix(in srgb, currentColor 55%, transparent);
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-soon__submit:hover,
+  .dinova-soon__submit:focus-visible {
+    background: var(--dinova-soon-text);
+    color: var(--dinova-soon-bg);
+  }
+
+  .dinova-soon__message {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+  }
+
+  .dinova-soon__message--error {
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .dinova-soon__footer {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+  }
+
+  .dinova-soon__contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .dinova-soon__contact a {
+    color: inherit;
+  }
+
+  .dinova-soon__password {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    opacity: 0.8;
+    cursor: pointer;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-soon__image--desktop {
+      display: block;
+    }
+
+    .dinova-soon__image--mobile {
+      display: none;
+    }
+
+    .dinova-soon__inner {
+      padding: 2.5rem clamp(1.75rem, 4vw, 4rem);
+    }
+
+    .dinova-soon__footer {
+      grid-template-columns: 1fr auto;
+      justify-items: start;
+    }
+
+    .dinova-soon__contact {
+      justify-content: flex-start;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-soon__field,
+    .dinova-soon__submit {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova coming soon",
+  "tag": "section",
+  "class": "dinova-soon-section",
+  "enabled_on": {
+    "templates": ["password"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo",
+      "info": "Falls back to the logo in Theme settings. Use a light version on a dark image."
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 80,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 180
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Falls back to the background image."
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Background video",
+      "info": "Plays muted on a loop and replaces the image."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small heading",
+      "default": "Coming soon"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Modern Egyptian luxury, almost here"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Our new home for fine jewellery is on its way. Leave your email and be the first to know when the doors open.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show email sign-up",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email field placeholder",
+      "default": "Your email"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Notify me"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Thank-you message",
+      "default": "Thank you. We will let you know when we launch."
+    },
+    {
+      "type": "paragraph",
+      "content": "Sign-ups appear under Customers, subscribed to email marketing and tagged newsletter and coming-soon."
+    },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "info@dinovadiamond.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "01200126408"
+    },
+    {
+      "type": "url",
+      "id": "instagram",
+      "label": "Instagram link"
+    },
+    {
+      "type": "text",
+      "id": "password_label",
+      "label": "Password link label",
+      "default": "Enter with password"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_default_footer",
+      "label": "Hide Shopify's default footer",
+      "info": "The password link above replaces it.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "info": "Shows when there is no image or video.",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 35
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova coming soon"
+    }
+  ]
+}
+{% endschema %}
