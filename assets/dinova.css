@@ -269,13 +269,23 @@
     border-inline-end: 1px solid var(--dinova-line);
   }
 
-  /* Horizon's filters stylesheet loads after this file, so this needs the
-     extra specificity to win over its padding-inline. */
-  .collection-wrapper .facets.dinova-facets {
+  /* Horizon sets this padding from styles that load after this file (one of
+     them for full-width grids), so these selectors carry extra weight. */
+  .collection-wrapper .facets.facets--vertical.dinova-facets:not(.facets--drawer) {
     --dinova-facets-pad: var(--dinova-page-gutter);
     --dinova-facets-pad-end: 2rem;
 
     padding-inline: var(--dinova-facets-pad) var(--dinova-facets-pad-end);
+  }
+
+  /* Let the FILTERS line run to the sidebar's edge. */
+  .collection-wrapper .facets.dinova-facets:not(.facets--drawer) .facets__filters-wrapper {
+    margin-inline-end: 0;
+  }
+
+  /* No separator lines above each filter group. */
+  .collection-wrapper .facets.dinova-facets .facets__item::before {
+    content: none;
   }
 
   /* Top bar: product count on the left of the grid, view switch on the right. */
@@ -574,5 +584,5 @@
  * colour as the collection grid lines).
  */
 #header-component:not(.header--compact) .header__row--top {
-  --header-padding: clamp(0.875rem, 1.4vw, 1.375rem);
+  --header-padding: clamp(1.25rem, 2vw, 2rem);
 }
