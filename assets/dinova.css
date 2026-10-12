@@ -175,6 +175,11 @@
   }
 }
 
+/* Wider product info: about 650-700px (Horizon caps it at 400-512px). */
+.product-information .product-information__grid--limit-details .product-details > .group-block {
+  --details-max-width: 42rem;
+}
+
 /* ---------- Collection page: lined sidebar and product grid ----------
  * Applies when the filters block uses the vertical layout with "Dinova
  * sidebar" on. Two cards per row by default, three in the smaller view.

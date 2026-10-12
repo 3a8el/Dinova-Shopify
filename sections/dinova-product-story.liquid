@@ -78,15 +78,6 @@
       data-section-id="{{ section.id }}"
     >
       <div class="dinova-buybar__inner">
-        <button
-          type="button"
-          class="dinova-buybar__toggle"
-          aria-expanded="true"
-          aria-label="{{ s.collapse_label | escape }}"
-        >
-          <svg viewBox="0 0 14 8" aria-hidden="true" focusable="false"><path d="M1 1l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
-        </button>
-
         <div class="dinova-buybar__product">
           <div class="dinova-buybar__thumb">
             {%- assign thumb = variant.featured_media.preview_image | default: product.featured_image -%}
@@ -218,6 +209,7 @@
   .dinova-story__media {
     aspect-ratio: 4 / 5;
     overflow: hidden;
+    background: var(--dinova-product-image-bg);
   }
 
   .dinova-story__image {
@@ -225,6 +217,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    mix-blend-mode: multiply;
   }
 
   /* Add-to-cart bar: sticky to the bottom of the screen while the section is
@@ -250,31 +243,6 @@
     color: var(--dinova-story-bar-text);
     box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.08);
     pointer-events: auto;
-  }
-
-  .dinova-buybar__toggle {
-    position: absolute;
-    top: 0.25rem;
-    left: 50%;
-    display: grid;
-    place-items: center;
-    width: 2.5rem;
-    height: 1.5rem;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: inherit;
-    cursor: pointer;
-    transform: translateX(-50%);
-  }
-
-  .dinova-buybar__toggle svg {
-    width: 0.875rem;
-    transition: transform 0.3s ease;
-  }
-
-  .dinova-buybar.is-collapsed .dinova-buybar__toggle svg {
-    transform: rotate(180deg);
   }
 
   .dinova-buybar__product {
@@ -425,11 +393,6 @@
     -webkit-appearance: none;
   }
 
-  /* Collapsed: only the product line and the toggle stay. */
-  .dinova-buybar.is-collapsed .dinova-buybar__actions {
-    display: none;
-  }
-
   @media screen and (max-width: 749px) {
     .dinova-buybar__button--outline {
       display: none;
@@ -490,8 +453,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dinova-buybar__button,
-    .dinova-buybar__toggle svg {
+    .dinova-buybar__button {
       transition: none;
     }
   }
@@ -551,12 +513,6 @@
           const top = target.getBoundingClientRect().top + window.scrollY - header - 32;
           window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
           return;
-        }
-
-        const toggle = event.target.closest('.dinova-buybar__toggle');
-        if (toggle) {
-          const collapsed = this.classList.toggle('is-collapsed');
-          toggle.setAttribute('aria-expanded', String(!collapsed));
         }
       }
 
@@ -719,12 +675,6 @@
       "id": "sold_out_label",
       "label": "Sold out label",
       "default": "Sold out"
-    },
-    {
-      "type": "text",
-      "id": "collapse_label",
-      "label": "Collapse button label for screen readers",
-      "default": "Collapse add to cart bar"
     },
     {
       "type": "color",

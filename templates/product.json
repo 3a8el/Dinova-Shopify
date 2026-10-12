@@ -407,11 +407,15 @@
     },
     "dinova_product_story": {
       "type": "dinova-product-story",
-      "settings": {}
+      "settings": {
+        "bar_color": "#ffffff"
+      }
     },
     "dinova_related_products": {
       "type": "dinova-related-products",
-      "settings": {}
+      "settings": {
+        "background_color": "#ffffff"
+      }
     },
     "dinova_newsletter": {
       "type": "dinova-newsletter",
