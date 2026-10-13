@@ -186,6 +186,9 @@
  */
 
 .collection-wrapper:has(.dinova-facets) {
+  /* Trying the archive cards without the grey image background. White, not
+     transparent, so the hover photo still covers the first one. */
+  --dinova-product-image-bg: #fff;
   --dinova-line: #d6d1c9;
   --dinova-page-gutter: clamp(1.25rem, 3vw, 3rem);
 
