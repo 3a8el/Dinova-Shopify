@@ -54,6 +54,7 @@
     <ul class="dinova-ccar__track" role="list" data-track>
       {{ cards }}
     </ul>
+    <div class="dinova-ccar__progress" aria-hidden="true"><span></span></div>
 
     <div class="dinova-ccar__controls">
       <button type="button" class="dinova-ccar__arrow" data-direction="-1" aria-label="Previous collections">
@@ -102,6 +103,12 @@
 
         updateArrows() {
           const { scrollLeft, scrollWidth, clientWidth } = this.track;
+          /* Progress bar: the dark part is the share of cards in view. */
+          const max = Math.max(scrollWidth - clientWidth, 0);
+          const size = scrollWidth ? clientWidth / scrollWidth : 1;
+          const progress = max ? scrollLeft / max : 0;
+          this.style.setProperty('--dinova-ccar-thumb', String(Math.min(size, 1)));
+          this.style.setProperty('--dinova-ccar-progress', String(progress));
           const [prev, next] = this.arrows;
           if (!prev || !next) return;
           prev.disabled = scrollLeft <= 1;
@@ -143,7 +150,6 @@
     gap: var(--gap);
     margin: 0;
     padding: 0 0 0.875rem;
-    border-bottom: 1px solid var(--dinova-ccar-line);
     list-style: none;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -160,6 +166,23 @@
     }
   }
 
+  /* Light line under the cards with a darker stretch that tracks the scroll. */
+  .dinova-ccar__progress {
+    position: relative;
+    height: 1px;
+    background: var(--dinova-ccar-line);
+  }
+
+  .dinova-ccar__progress span {
+    position: absolute;
+    top: -0.5px;
+    left: calc((100% - 100% * var(--dinova-ccar-thumb, 1)) * var(--dinova-ccar-progress, 0));
+    width: calc(100% * var(--dinova-ccar-thumb, 1));
+    height: 2px;
+    background: var(--dinova-ccar-text);
+    transition: left 0.15s linear;
+  }
+
   .dinova-ccar__item {
     scroll-snap-align: start;
     min-width: 0;
@@ -174,6 +197,7 @@
   .dinova-ccar__media {
     aspect-ratio: var(--dinova-ccar-ratio);
     overflow: hidden;
+    background: var(--dinova-product-image-bg);
   }
 
   .dinova-ccar__image {
@@ -181,6 +205,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    mix-blend-mode: multiply;
     transition: transform 0.8s ease;
   }
 
@@ -226,6 +251,7 @@
     height: 2rem;
     padding: 0;
     border: 1px solid currentColor;
+    border-radius: 50%;
     background: transparent;
     color: inherit;
     cursor: pointer;
