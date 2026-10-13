@@ -20,7 +20,7 @@
         "height_desktop": 75,
         "height_mobile": 65,
         "overlay_opacity": 30,
-        "background_color": "#fffbf5",
+        "background_color": "#FFFFFF",
         "text_color": "#121212",
         "slide_text_color": "#ffffff"
       }
