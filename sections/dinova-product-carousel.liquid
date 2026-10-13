@@ -26,7 +26,7 @@
 -%}
 
 <dinova-product-carousel
-  class="dinova-carousel"
+  class="dinova-carousel{% unless s.show_lines %} dinova-carousel--no-lines{% endunless %}"
   style="
     --dinova-carousel-bg: {{ s.background_color }};
     --dinova-carousel-text: {{ s.text_color }};
@@ -216,6 +216,11 @@
   .dinova-carousel__item {
     scroll-snap-align: start;
     border-inline-end: 1px solid var(--dinova-carousel-line);
+  }
+
+  .dinova-carousel--no-lines .dinova-carousel__track,
+  .dinova-carousel--no-lines .dinova-carousel__item {
+    border: 0;
   }
 
   .dinova-carousel__card {
@@ -440,6 +445,12 @@
       "id": "text_color",
       "label": "Text",
       "default": "#121212"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_lines",
+      "label": "Show divider lines around the cards",
+      "default": true
     },
     {
       "type": "color",
