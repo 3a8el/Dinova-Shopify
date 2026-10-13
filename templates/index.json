@@ -33,7 +33,7 @@
         "columns_desktop": 4,
         "columns_mobile": "1.25",
         "hover_image": true,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#dcd9d4",
         "image_background": "#efeeec",
@@ -48,7 +48,7 @@
           "type": "category",
           "settings": {
             "title": "Tennis Collection",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>An unbroken line of diamonds, each one matched and hand-set so the row flows as one. Our tennis bracelets and rivieras are the classic in its purest form, made to be worn from day to evening and kept for a lifetime.</p>",
             "image": "shopify://shop_images/Dinova-Tennis-Necklaces.webp",
             "collection": "",
             "link": ""
@@ -58,7 +58,7 @@
           "type": "category",
           "settings": {
             "title": "Rings",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>From a single emerald cut to an eternity band set all the way around, each Dinova ring is set by hand in 18K gold in our Cairo atelier, made to mark a moment and then wear every day.</p>",
             "image": "shopify://shop_images/Dinova-Rings.webp",
             "collection": "",
             "link": ""
@@ -68,7 +68,7 @@
           "type": "category",
           "settings": {
             "title": "Necklaces",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>Rivieras, pendants and fine chains that rest close to the skin. Every stone is chosen one by one for its fire, so the light follows you.</p>",
             "image": "shopify://shop_images/Dinova-Necklaces.webp",
             "collection": "",
             "link": ""
@@ -78,7 +78,7 @@
           "type": "category",
           "settings": {
             "title": "Earrings",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>Studs for the everyday and drops that move when you do. Diamonds in pear, oval and round cuts, set to catch the light from every angle.</p>",
             "image": "shopify://shop_images/Dinova-Earrings.webp",
             "collection": "",
             "link": ""
@@ -88,7 +88,7 @@
           "type": "category",
           "settings": {
             "title": "Bracelets",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>Tennis lines and delicate links, a continuous row of diamonds made to sit easily on the wrist and stack with what you already love.</p>",
             "image": "shopify://shop_images/Dinova-Braceletes.webp",
             "collection": "",
             "link": ""
@@ -98,7 +98,7 @@
           "type": "category",
           "settings": {
             "title": "Bangles",
-            "text": "<p>Describe this category here.</p>",
+            "text": "<p>Sculpted gold with a quiet line of diamonds. They’re bold enough to wear alone and refined enough to layer.</p>",
             "image": "shopify://shop_images/Dinova-Bangles.webp",
             "collection": "",
             "link": ""
@@ -119,7 +119,7 @@
         "switch_on_hover": false,
         "name_size": 5,
         "image_ratio": "1 / 1",
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "inactive_color": "#d6d2cd",
         "padding_top": 64,
@@ -197,7 +197,7 @@
       ],
       "settings": {
         "title": "Stones Cuts",
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "big_name_color": "#bdbab5",
         "image_background_style": "glass",
@@ -561,6 +561,7 @@
               "type": "_product-card-gallery",
               "name": "t:names.product_card_media",
               "settings": {
+                "dinova_hover": false,
                 "image_ratio": "adapt",
                 "border": "none",
                 "border_width": 1,
