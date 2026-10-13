@@ -197,6 +197,7 @@
       'names'
       'link';
     gap: 1.5rem;
+    padding-inline: clamp(1.25rem, 3vw, 3rem);
   }
 
   @media screen and (min-width: 750px) {
@@ -294,6 +295,16 @@
     position: relative;
     aspect-ratio: var(--dinova-switcher-ratio);
     overflow: hidden;
+  }
+
+  /* Desktop: keep the whole section inside one screen. The image fills the
+     right half up to the screen height (minus header and padding). */
+  @media screen and (min-width: 750px) {
+    .dinova-switcher__media {
+      aspect-ratio: auto;
+      height: min(calc((100vw - 2 * clamp(1.25rem, 3vw, 3rem) - 1.5rem) / 2), calc(100svh - 10rem));
+      min-height: 22rem;
+    }
   }
 
   .dinova-switcher__image {
