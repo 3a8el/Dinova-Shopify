@@ -286,7 +286,8 @@
 
   @media screen and (min-width: 750px) {
     .dinova-vblog__track {
-      grid-auto-columns: calc((100% - 2 * var(--dinova-vblog-gutter) - (var(--dinova-vblog-columns) - 1) * var(--dinova-vblog-gap)) / var(--dinova-vblog-columns));
+      /* 100% is already inside the track's side padding. */
+      grid-auto-columns: calc((100% - (var(--dinova-vblog-columns) - 1) * var(--dinova-vblog-gap)) / var(--dinova-vblog-columns));
     }
   }
 
