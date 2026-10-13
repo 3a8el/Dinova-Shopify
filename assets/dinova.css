@@ -157,6 +157,12 @@
   background-color: var(--dinova-product-image-bg);
 }
 
+/* Home page product lists: white instead of grey (the Best Sellers carousel
+   uses its own Image background setting, also set to white). */
+.template-index .ui-test-product-list {
+  --dinova-product-image-bg: #fff;
+}
+
 .product-media__image,
 .product-media img,
 .dinova-carousel__img,
