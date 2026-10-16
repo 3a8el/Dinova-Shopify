@@ -4,14 +4,14 @@
       "type": "dinova-policy",
       "settings": {
         "source": "terms_of_service",
-        "eyebrow": "Legal",
+        "eyebrow": "",
         "title": "Terms & Conditions",
-        "updated": "Last updated: October 2026",
+        "updated": "",
         "lead": "",
-        "show_index": true,
+        "show_index": false,
         "show_numbers": true,
         "contact_title": "Questions?",
-        "contact_text": "<p>Our team is happy to help. Email <a href=\"mailto:info@dinovadiamond.com\">info@dinovadiamond.com</a> or call <a href=\"tel:01200126408\">01200126408</a>.</p>",
+        "contact_text": "",
         "background_color": "#FFFFFF",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
