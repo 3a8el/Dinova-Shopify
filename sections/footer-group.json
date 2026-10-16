@@ -29,7 +29,10 @@
         "text_color": "#121212",
         "line_color": "#d6d1c9",
         "nav_menu": "footer-navigation",
-        "legal_menu": "footer-policies"
+        "legal_menu": "footer-policies",
+        "facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
+        "instagram_url": "https://www.instagram.com/dinova.eg",
+        "tiktok_url": "https://www.tiktok.com/@dinova.eg"
       }
     },
     "footer": {
