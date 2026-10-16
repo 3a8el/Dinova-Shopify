@@ -13,42 +13,8 @@
   "sections": {
     "dinova_footer": {
       "type": "dinova-footer",
-      "blocks": {
-        "menu_1": {
-          "type": "menu",
-          "settings": {
-            "heading": "Store",
-            "menu": "main-menu"
-          }
-        },
-        "menu_2": {
-          "type": "menu",
-          "settings": {
-            "heading": "Shop",
-            "menu": "main-menu"
-          }
-        },
-        "menu_3": {
-          "type": "menu",
-          "settings": {
-            "heading": "Collections",
-            "menu": "main-menu"
-          }
-        },
-        "menu_4": {
-          "type": "menu",
-          "settings": {
-            "heading": "Help",
-            "menu": "footer"
-          }
-        }
-      },
-      "block_order": [
-        "menu_1",
-        "menu_2",
-        "menu_3",
-        "menu_4"
-      ],
+      "blocks": {},
+      "block_order": [],
       "settings": {
         "logo_width": 150,
         "logo_width_mobile": 125,
@@ -59,9 +25,11 @@
         "show_powered_by": false,
         "show_country": false,
         "show_payment_icons": false,
-        "background_color": "#000000",
-        "text_color": "#ffffff",
-        "line_color": "#5a5a5a"
+        "background_color": "#ffffff",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9",
+        "nav_menu": "footer-navigation",
+        "legal_menu": "footer-policies"
       }
     },
     "footer": {

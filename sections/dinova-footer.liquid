@@ -45,6 +45,20 @@
     </div>
 
     <div class="dinova-footer__menus">
+      {%- if s.nav_menu.links.size > 0 -%}
+        <nav class="dinova-footer__nav" aria-label="{{ s.nav_menu.title | escape }}">
+          <ul class="dinova-footer__nav-list" role="list">
+            {%- for link in s.nav_menu.links -%}
+              <li>
+                {%- unless forloop.first -%}<span class="dinova-footer__sep" aria-hidden="true">|</span>{%- endunless -%}
+                <a href="{{ link.url }}" class="dinova-footer__nav-link dinova-underline"{% if link.current %} aria-current="page"{% endif %}>
+                  {{- link.title | escape -}}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
       {%- for block in section.blocks -%}
         <nav class="dinova-footer__menu" aria-label="{{ block.settings.heading | default: block.settings.menu.title | escape }}" {{ block.shopify_attributes }}>
           {%- assign heading = block.settings.heading | default: block.settings.menu.title -%}
@@ -97,6 +111,19 @@
     </p>
 
     <div class="dinova-footer__utilities">
+      {%- if s.legal_menu.links.size > 0 -%}
+        <nav class="dinova-footer__legal" aria-label="{{ s.legal_menu.title | escape }}">
+          <ul class="dinova-footer__legal-list" role="list">
+            {%- for link in s.legal_menu.links -%}
+              <li>
+                <a href="{{ link.url }}" class="dinova-footer__legal-link dinova-underline"{% if link.current %} aria-current="page"{% endif %}>
+                  {{- link.title | escape -}}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
       {%- if show_country -%}
         {%- form 'localization', class: 'dinova-footer__localization' -%}
           <label for="DinovaFooterCountry-{{ section.id }}" class="visually-hidden">{{ 'content.localization_region_and_language' | t }}</label>
@@ -223,6 +250,58 @@
     opacity: 1;
   }
 
+  /* One row of links separated by a thin bar: Home | About | Shop ... */
+  .dinova-footer__nav {
+    grid-column: 1 / -1;
+    padding: 1.75rem 1.5rem;
+    border-bottom: 1px solid var(--dinova-footer-line);
+  }
+
+  .dinova-footer__nav-list,
+  .dinova-footer__legal-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dinova-footer__nav-list {
+    row-gap: 0.75rem;
+  }
+
+  .dinova-footer__nav-list li {
+    display: flex;
+    align-items: center;
+  }
+
+  .dinova-footer__sep {
+    margin-inline: 0.875rem;
+    opacity: 0.35;
+  }
+
+  .dinova-footer__nav-link {
+    font-size: 0.875rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .dinova-footer__legal-list {
+    gap: 0.5rem 1.5rem;
+  }
+
+  .dinova-footer__legal-link {
+    font-size: 0.75rem;
+    opacity: 0.75;
+    transition: opacity 0.2s ease;
+  }
+
+  .dinova-footer__legal-link:hover,
+  .dinova-footer__legal-link[aria-current] {
+    opacity: 1;
+  }
+
   .dinova-footer__contact {
     grid-area: contact;
     display: grid;
@@ -340,6 +419,22 @@
       border: 0;
     }
 
+    /* With only the link row, centre it in the right-hand area. */
+    .dinova-footer__menus:has(> .dinova-footer__nav:only-child) {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .dinova-footer__nav {
+      padding: 0;
+      border: 0;
+    }
+
+    .dinova-footer__nav-link {
+      font-size: 0.9375rem;
+    }
+
     .dinova-footer__heading {
       font-size: 0.9375rem;
     }
@@ -368,7 +463,19 @@
       "type": "image_picker",
       "id": "logo",
       "label": "Logo",
-      "info": "Use a light version of the logo for the dark background."
+      "info": "Use a logo version that contrasts with the footer background."
+    },
+    {
+      "type": "link_list",
+      "id": "nav_menu",
+      "label": "Navigation row",
+      "info": "Shown as one row of links separated by |."
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "Policy links",
+      "info": "Shown in the bottom bar, e.g. Terms & Conditions."
     },
     {
       "type": "range",
