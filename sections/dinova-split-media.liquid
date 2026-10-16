@@ -215,6 +215,24 @@
   .dinova-split__button:hover {
     opacity: 0.85;
   }
+
+  /* Mobile: the text column grows with its content instead of being a fixed
+     square, so the logo and text are never clipped or covered. */
+  @media screen and (max-width: 749px) {
+    .dinova-split__column:has(> .dinova-split__content) {
+      aspect-ratio: auto;
+    }
+
+    .dinova-split__column:has(> .dinova-split__content) > .dinova-split__content {
+      position: relative;
+      inset: auto;
+      padding: 3rem 1.5rem;
+    }
+
+    .dinova-split__text {
+      font-size: 1.5rem;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
