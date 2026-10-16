@@ -600,3 +600,48 @@
 #header-component:not(.header--compact) .header__row--top {
   --header-padding: clamp(1.25rem, 2vw, 2rem);
 }
+
+/* ---------- Store policy pages (/policies/...) ----------
+ * Shopify renders these itself, so only CSS reaches them. Match the lined
+ * Dinova policy pages: serif title, Inter body, a line above each heading.
+ */
+
+.shopify-policy__container {
+  max-width: 52rem;
+  padding-block: clamp(2.5rem, 6vw, 5rem);
+  padding-inline: 1.25rem;
+}
+
+.shopify-policy__title h1 {
+  margin: 0 0 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #d6d1c9;
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight, 400);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1.05;
+}
+
+.shopify-policy__body .rte {
+  font-family: var(--font-body--family);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.shopify-policy__body .rte h2 {
+  margin: 2.5rem 0 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #d6d1c9;
+  font-family: var(--font-heading--family);
+  font-weight: var(--font-heading--weight, 400);
+  font-size: clamp(1.625rem, 2.4vw, 2.25rem);
+  line-height: 1.1;
+}
+
+.shopify-policy__body .rte h3 {
+  font-family: var(--font-body--family);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

@@ -1,0 +1,389 @@
+{%- comment -%}
+  Dinova policy: a lined page for long legal text (Exchange & Refunds, Terms).
+  The text comes from the page itself or from one of the store policies in
+  Settings > Policies, so the checkout links and this page share one source.
+  A head row (title left, intro right) is followed by one lined row per
+  "Heading 2" in the text: number and heading on the left, the clause on the
+  right. Text with no Heading 2 is shown in one block.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  case s.source
+    when 'refund_policy'
+      assign policy = shop.refund_policy
+    when 'terms_of_service'
+      assign policy = shop.terms_of_service
+    when 'privacy_policy'
+      assign policy = shop.privacy_policy
+    when 'shipping_policy'
+      assign policy = shop.shipping_policy
+  endcase
+
+  if policy != blank and policy.body != blank
+    assign body = policy.body
+  else
+    assign body = page.content
+  endif
+
+  assign title = s.title | default: page.title | default: policy.title
+  assign chunks = body | split: '<h2'
+  assign intro = chunks.first | strip
+  assign clause_count = chunks.size | minus: 1
+-%}
+
+<div
+  class="dinova-policy"
+  style="
+    --dinova-policy-bg: {{ s.background_color }};
+    --dinova-policy-text: {{ s.text_color }};
+    --dinova-policy-line: {{ s.line_color }};
+  "
+>
+  <div class="dinova-policy__row dinova-policy__head">
+    <div class="dinova-policy__cell">
+      {%- if s.eyebrow != blank -%}
+        <p class="dinova-policy__eyebrow">{{ s.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h1 class="dinova-policy__title">{{ title | escape }}</h1>
+      {%- if s.updated != blank -%}
+        <p class="dinova-policy__updated">{{ s.updated | escape }}</p>
+      {%- endif -%}
+    </div>
+    <div class="dinova-policy__cell dinova-policy__intro">
+      {%- if s.lead != blank -%}
+        <p class="dinova-policy__lead">{{ s.lead | escape | newline_to_br }}</p>
+      {%- endif -%}
+      {%- if intro != blank -%}
+        <div class="dinova-policy__text rte">{{ intro }}</div>
+      {%- endif -%}
+      {%- if s.show_index and clause_count > 1 -%}
+        <ol class="dinova-policy__index" role="list">
+          {%- for chunk in chunks offset: 1 -%}
+            {%- assign parts = chunk | split: '</h2>' -%}
+            {%- assign head_parts = parts.first | split: '>' -%}
+            {%- assign heading = head_parts | slice: 1, head_parts.size | join: '>' | strip_html | strip -%}
+            <li>
+              <a href="#{{ section.id }}-{{ forloop.index }}" class="dinova-underline">
+                <span class="dinova-policy__index-number">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+                {{- heading -}}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ol>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- for chunk in chunks offset: 1 -%}
+    {%- liquid
+      assign parts = chunk | split: '</h2>'
+      assign head_parts = parts.first | split: '>'
+      assign heading = head_parts | slice: 1, head_parts.size | join: '>' | strip_html | strip
+      assign clause = parts | slice: 1, parts.size | join: '</h2>'
+    -%}
+    <div class="dinova-policy__row dinova-policy__clause" id="{{ section.id }}-{{ forloop.index }}">
+      <div class="dinova-policy__cell dinova-policy__clause-head">
+        <div class="dinova-policy__sticky">
+          {%- if s.show_numbers -%}
+            <span class="dinova-policy__number">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          {%- endif -%}
+          <h2 class="dinova-policy__heading">{{ heading }}</h2>
+        </div>
+      </div>
+      <div class="dinova-policy__cell">
+        <div class="dinova-policy__text rte">{{ clause }}</div>
+      </div>
+    </div>
+  {%- endfor -%}
+
+  {%- if s.contact_text != blank -%}
+    <div class="dinova-policy__row dinova-policy__contact">
+      <div class="dinova-policy__cell">
+        <h2 class="dinova-policy__heading">{{ s.contact_title | escape }}</h2>
+      </div>
+      <div class="dinova-policy__cell">
+        <div class="dinova-policy__text rte">{{ s.contact_text }}</div>
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .dinova-policy {
+    background: var(--dinova-policy-bg);
+    color: var(--dinova-policy-text);
+    border-bottom: 1px solid var(--dinova-policy-line);
+  }
+
+  .dinova-policy__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-top: 1px solid var(--dinova-policy-line);
+    scroll-margin-top: 72px;
+  }
+
+  .dinova-policy__row:first-child {
+    border-top: 0;
+  }
+
+  .dinova-policy__cell {
+    padding: 2rem 1.25rem;
+  }
+
+  .dinova-policy__head .dinova-policy__cell:first-child,
+  .dinova-policy__clause-head,
+  .dinova-policy__contact .dinova-policy__cell:first-child {
+    padding-bottom: 0;
+  }
+
+  .dinova-policy__eyebrow {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .dinova-policy__title {
+    margin: 0;
+    max-width: 12ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-policy__updated {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .dinova-policy__lead {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.5rem, 2.4vw, 2.125rem);
+    line-height: 1.2;
+  }
+
+  .dinova-policy__text {
+    max-width: 62ch;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .dinova-policy__text p {
+    margin: 0 0 0.875rem;
+  }
+
+  .dinova-policy__text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .dinova-policy__text h3 {
+    margin: 1.5rem 0 0.5rem;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .dinova-policy__text ul,
+  .dinova-policy__text ol {
+    margin: 0 0 0.875rem;
+    padding-inline-start: 1.25em;
+  }
+
+  .dinova-policy__text li {
+    margin-bottom: 0.375rem;
+  }
+
+  .dinova-policy__text a {
+    color: inherit;
+    text-underline-offset: 0.2em;
+  }
+
+  .dinova-policy__index {
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--dinova-policy-line);
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+  }
+
+  .dinova-policy__index li {
+    border-bottom: 1px solid var(--dinova-policy-line);
+  }
+
+  .dinova-policy__index a {
+    display: inline-flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .dinova-policy__index-number,
+  .dinova-policy__number {
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    opacity: 0.5;
+  }
+
+  .dinova-policy__index-number {
+    padding-top: 0.125em;
+  }
+
+  .dinova-policy__number {
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .dinova-policy__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.625rem, 2.4vw, 2.25rem);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  /* Desktop: head | text, a line between them; the left column stays in view. */
+  @media screen and (min-width: 750px) {
+    .dinova-policy__row {
+      grid-template-columns: 2fr 3fr;
+    }
+
+    .dinova-policy__cell,
+    .dinova-policy__head .dinova-policy__cell:first-child,
+    .dinova-policy__clause-head,
+    .dinova-policy__contact .dinova-policy__cell:first-child {
+      padding: clamp(2.5rem, 4.5vw, 4rem) 2rem;
+    }
+
+    .dinova-policy__cell + .dinova-policy__cell {
+      border-inline-start: 1px solid var(--dinova-policy-line);
+    }
+
+    .dinova-policy__sticky {
+      position: sticky;
+      top: 96px;
+    }
+
+    .dinova-policy__clause-head .dinova-policy__heading {
+      max-width: 14ch;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova policy",
+  "tag": "section",
+  "class": "dinova-policy-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Text",
+      "options": [
+        { "value": "page", "label": "Page content" },
+        { "value": "refund_policy", "label": "Refund policy (Settings > Policies)" },
+        { "value": "terms_of_service", "label": "Terms of service (Settings > Policies)" },
+        { "value": "privacy_policy", "label": "Privacy policy (Settings > Policies)" },
+        { "value": "shipping_policy", "label": "Shipping policy (Settings > Policies)" }
+      ],
+      "default": "page",
+      "info": "Each Heading 2 in the text starts a new lined row. Falls back to the page content when the policy is empty."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "info": "Leave empty to use the page title."
+    },
+    {
+      "type": "text",
+      "id": "updated",
+      "label": "Last updated line"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Large serif paragraph"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_index",
+      "label": "Show list of contents",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_numbers",
+      "label": "Show numbers",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Closing row"
+    },
+    {
+      "type": "text",
+      "id": "contact_title",
+      "label": "Heading",
+      "default": "Questions?"
+    },
+    {
+      "type": "richtext",
+      "id": "contact_text",
+      "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova policy"
+    }
+  ]
+}
+{% endschema %}
