@@ -13,10 +13,14 @@
   "sections": {
     "dinova_footer": {
       "type": "dinova-footer",
-      "blocks": {},
-      "block_order": [],
       "settings": {
-        "logo_width": 150,
+        "logo": "shopify://shop_images/Dinova-logo.svg",
+        "nav_menu": "footer-1",
+        "facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
+        "instagram_url": "https://www.instagram.com/dinova.eg",
+        "tiktok_url": "https://www.tiktok.com/@dinova.eg",
+        "legal_menu": "footer-2",
+        "logo_width": 125,
         "logo_width_mobile": 125,
         "address": "",
         "phone": "",
@@ -27,12 +31,7 @@
         "show_payment_icons": false,
         "background_color": "#ffffff",
         "text_color": "#121212",
-        "line_color": "#d6d1c9",
-        "nav_menu": "footer-navigation",
-        "legal_menu": "footer-policies",
-        "facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
-        "instagram_url": "https://www.instagram.com/dinova.eg",
-        "tiktok_url": "https://www.tiktok.com/@dinova.eg"
+        "line_color": "#d6d1c9"
       }
     },
     "footer": {
