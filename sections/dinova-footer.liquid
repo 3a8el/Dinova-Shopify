@@ -429,6 +429,71 @@
     height: 1.5rem;
   }
 
+  /* Mobile: a centred, quieter column. Logo and icons on top, the links
+     stacked in small spaced capitals, then the policies and copyright. */
+  @media screen and (max-width: 749px) {
+    .dinova-footer__logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-block: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .dinova-footer__social {
+      justify-content: center;
+    }
+
+    .dinova-footer__nav {
+      padding-block: 2rem;
+    }
+
+    .dinova-footer__nav-list {
+      flex-direction: column;
+      gap: 1.125rem;
+    }
+
+    .dinova-footer__sep {
+      display: none;
+    }
+
+    .dinova-footer__nav-link {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+    }
+
+    .dinova-footer__bottom {
+      align-items: center;
+      gap: 1rem;
+      padding-block: 1.75rem 2rem;
+      text-align: center;
+    }
+
+    .dinova-footer__utilities,
+    .dinova-footer__legal-list {
+      justify-content: center;
+    }
+
+    .dinova-footer__legal-list {
+      gap: 0;
+    }
+
+    .dinova-footer__legal-list li + li::before {
+      content: '·';
+      margin-inline: 0.75rem;
+      opacity: 0.5;
+    }
+
+    .dinova-footer__legal-link {
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+    }
+
+    .dinova-footer__copyright {
+      font-size: 0.6875rem;
+    }
+  }
+
   @media screen and (min-width: 750px) {
     /* Desktop: logo and contact share the left column, menus fill the rest. */
     .dinova-footer__main {
