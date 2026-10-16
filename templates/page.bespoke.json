@@ -1,0 +1,166 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "dinova_about_hero": {
+      "type": "dinova-about-hero",
+      "settings": {
+        "title": "BESPOKE",
+        "subtitle": "Start Your Bespoke Journey",
+        "text": "<p><strong>Create Something Uniquely Yours.</strong></p><p>From a meaningful stone to a completely original design, our bespoke service brings your vision to life through lab-grown diamonds, 18K gold, and considered craftsmanship.</p><p><em>Made for you. Made to last.</em></p>",
+        "sticky": true,
+        "sticky_offset": 72,
+        "box_position": "left",
+        "box_width": 610,
+        "box_background": "#fffbf5",
+        "text_color": "#121212",
+        "height_desktop": 150,
+        "height_mobile": 120
+      }
+    },
+    "dinova_statement": {
+      "type": "dinova-statement",
+      "settings": {
+        "eyebrow": "",
+        "title": "Your vision,\nreimagined",
+        "subtitle": "You bring the idea. We bring it to life.",
+        "lead": "Some pieces are meant to be chosen.\nOthers are meant to be created.",
+        "text": "<p>Whether you have a specific design in mind, a diamond you've always imagined, or simply a feeling you want your piece to capture, our bespoke service gives you the freedom to create something entirely personal.</p><p>From the first conversation to the final detail, we'll work with you to shape a piece that feels unmistakably yours.</p>",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    },
+    "dinova_journey": {
+      "type": "dinova-journey",
+      "blocks": {
+        "step_1": {
+          "type": "step",
+          "settings": {
+            "title": "Start with an idea",
+            "text": "<p>Tell us what you're imagining.</p><p>It could be a sketch, a reference, a particular diamond cut, a meaningful detail, or simply an idea you're not quite sure how to express yet.</p>",
+            "closing": "No idea is too early."
+          }
+        },
+        "step_2": {
+          "type": "step",
+          "settings": {
+            "title": "Make it yours",
+            "text": "<p>Together, we'll explore the details that make your piece unique.</p><p>Choose from different diamond cuts, sizes, settings, gold tones and design directions while our team guides you through every decision.</p>",
+            "closing": "Your piece. Your choices."
+          }
+        },
+        "step_3": {
+          "type": "step",
+          "settings": {
+            "title": "Bring it to life",
+            "text": "<p>Once your design is finalized, our artisans begin creating your piece with precision and attention to detail.</p><p>Your selected lab-grown diamond is paired with 18K gold and crafted specifically for you.</p>",
+            "closing": ""
+          }
+        },
+        "step_4": {
+          "type": "step",
+          "settings": {
+            "title": "Your piece, complete",
+            "text": "<p>The final result is a piece that exists nowhere else.</p><p>Designed around your vision, made specifically for you, and created to become part of your story.</p>",
+            "closing": "Yours, by design."
+          }
+        }
+      },
+      "block_order": [
+        "step_1",
+        "step_2",
+        "step_3",
+        "step_4"
+      ],
+      "settings": {
+        "eyebrow": "",
+        "title": "The bespoke journey",
+        "image_position": "left",
+        "image_ratio": "4 / 5",
+        "sticky_offset": 72,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    },
+    "dinova_values": {
+      "type": "dinova-values",
+      "blocks": {
+        "value_1": {
+          "type": "value",
+          "settings": {
+            "title": "Diamond",
+            "text": "Explore different cuts, sizes and configurations to find the stone that feels right for your design."
+          }
+        },
+        "value_2": {
+          "type": "value",
+          "settings": {
+            "title": "Gold",
+            "text": "Choose from our 18K gold options to create the finish you envision."
+          }
+        },
+        "value_3": {
+          "type": "value",
+          "settings": {
+            "title": "Design",
+            "text": "From subtle modifications to an entirely original piece, we can develop a design around your idea."
+          }
+        },
+        "value_4": {
+          "type": "value",
+          "settings": {
+            "title": "Personal details",
+            "text": "Add the details that make it personal, from proportions and silhouettes to meaningful elements incorporated into the design."
+          }
+        }
+      },
+      "block_order": [
+        "value_1",
+        "value_2",
+        "value_3",
+        "value_4"
+      ],
+      "settings": {
+        "title": "What can be bespoke?",
+        "subtitle": "The details are yours to choose",
+        "show_numbers": false,
+        "image_position": "right",
+        "image_ratio": "4 / 5",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    },
+    "dinova_cta": {
+      "type": "dinova-cta",
+      "settings": {
+        "title": "Have something in mind?",
+        "subtitle": "Let's start there.",
+        "text": "<p>Already know exactly what you want?</p><p>Or maybe you only have a screenshot saved in your camera roll.</p><p>Either way, we'd love to hear about it.</p>",
+        "button_label": "Book a Consultation",
+        "button_link": "",
+        "image_position": "left",
+        "image_ratio": "4 / 5",
+        "background_color": "#fffbf5",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    }
+  },
+  "order": [
+    "dinova_about_hero",
+    "dinova_statement",
+    "dinova_journey",
+    "dinova_values",
+    "dinova_cta"
+  ]
+}

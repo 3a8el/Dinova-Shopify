@@ -38,6 +38,9 @@
     {%- if s.title != blank -%}
       <div class="dinova-values__head">
         <h2 class="dinova-values__title">{{ s.title | newline_to_br }}</h2>
+        {%- if s.subtitle != blank -%}
+          <p class="dinova-values__subtitle">{{ s.subtitle | escape }}</p>
+        {%- endif -%}
       </div>
     {%- endif -%}
 
@@ -98,6 +101,15 @@
     font-size: clamp(2.25rem, 4vw, 3.25rem);
     line-height: 1.05;
     color: inherit;
+  }
+
+  .dinova-values__subtitle {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
   }
 
   .dinova-values__list {
@@ -193,6 +205,11 @@
       "id": "title",
       "label": "Title",
       "default": "Innovation, Transparency, Modern Egyptian Luxury"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle"
     },
     {
       "type": "checkbox",

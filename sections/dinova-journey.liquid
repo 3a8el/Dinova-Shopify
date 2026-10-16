@@ -1,0 +1,350 @@
+{%- comment -%}
+  Dinova journey: a title row above an image that stays in view on desktop
+  while a list of numbered steps scrolls beside it. Each step has a serif
+  title, paragraphs and an optional closing line. Lined like "Dinova values".
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign steps = section.blocks | where: 'type', 'step'
+-%}
+
+<div
+  class="dinova-journey dinova-journey--image-{{ s.image_position }}"
+  style="
+    --dinova-journey-bg: {{ s.background_color }};
+    --dinova-journey-text: {{ s.text_color }};
+    --dinova-journey-line: {{ s.line_color }};
+    --dinova-journey-ratio: {{ s.image_ratio }};
+    --dinova-journey-offset: {{ s.sticky_offset }}px;
+  "
+>
+  {%- if s.title != blank or s.eyebrow != blank -%}
+    <div class="dinova-journey__head">
+      {%- if s.eyebrow != blank -%}
+        <p class="dinova-journey__eyebrow">{{ s.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if s.title != blank -%}
+        <h2 class="dinova-journey__heading">{{ s.title | newline_to_br }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="dinova-journey__media">
+    <div class="dinova-journey__sticky">
+      <div class="dinova-journey__frame">
+        {%- if s.image != blank -%}
+          {{
+            s.image
+            | image_url: width: 1600
+            | image_tag:
+              widths: '600, 900, 1200, 1600',
+              sizes: '(min-width: 750px) 50vw, 100vw',
+              loading: 'lazy',
+              class: 'dinova-journey__img'
+          }}
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-journey__img' }}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+  <ol class="dinova-journey__list" role="list">
+    {%- for block in steps -%}
+      <li class="dinova-journey__step" {{ block.shopify_attributes }}>
+        <span class="dinova-journey__number" aria-hidden="true">
+          {%- if forloop.index < 10 %}0{% endif %}{{ forloop.index -}}
+        </span>
+        <div class="dinova-journey__body">
+          <h3 class="dinova-journey__title">{{ block.settings.title | escape }}</h3>
+          {%- if block.settings.text != blank -%}
+            <div class="dinova-journey__text">{{ block.settings.text }}</div>
+          {%- endif -%}
+          {%- if block.settings.closing != blank -%}
+            <p class="dinova-journey__closing">{{ block.settings.closing | escape }}</p>
+          {%- endif -%}
+        </div>
+      </li>
+    {%- endfor -%}
+  </ol>
+</div>
+
+{% stylesheet %}
+  .dinova-journey {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: 'head' 'media' 'list';
+    background: var(--dinova-journey-bg);
+    color: var(--dinova-journey-text);
+  }
+
+  .dinova-journey__head {
+    grid-area: head;
+    padding: 2.5rem 1.25rem 2rem;
+  }
+
+  .dinova-journey__eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .dinova-journey__heading {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-journey__media {
+    grid-area: media;
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .dinova-journey__frame {
+    overflow: hidden;
+  }
+
+  .dinova-journey__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--dinova-journey-ratio);
+    object-fit: cover;
+  }
+
+  .dinova-journey__list {
+    grid-area: list;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dinova-journey__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem;
+    padding: 1.75rem 1.25rem 2rem;
+    border-top: 1px solid var(--dinova-journey-line);
+  }
+
+  .dinova-journey__number {
+    padding-top: 0.6em;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+  }
+
+  .dinova-journey__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+    line-height: 1.1;
+    color: inherit;
+  }
+
+  .dinova-journey__text {
+    max-width: 48ch;
+    margin-top: 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-journey__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-journey__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dinova-journey__closing {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* Desktop: head across the top; sticky image | steps, lines between the cells. */
+  @media screen and (min-width: 750px) {
+    .dinova-journey {
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas:
+        'head head'
+        'media list';
+      border-bottom: 1px solid var(--dinova-journey-line);
+    }
+
+    .dinova-journey--image-right {
+      grid-template-areas:
+        'head head'
+        'list media';
+    }
+
+    .dinova-journey__head {
+      padding: clamp(2.5rem, 5vw, 4rem) 2rem 2.5rem;
+      border-bottom: 1px solid var(--dinova-journey-line);
+    }
+
+    .dinova-journey__media {
+      padding: 1.25rem;
+    }
+
+    .dinova-journey__sticky {
+      position: sticky;
+      top: calc(var(--dinova-journey-offset) + 1.25rem);
+    }
+
+    .dinova-journey__list {
+      border-inline-start: 1px solid var(--dinova-journey-line);
+    }
+
+    .dinova-journey--image-right .dinova-journey__list {
+      border-inline-start: 0;
+      border-inline-end: 1px solid var(--dinova-journey-line);
+    }
+
+    /* Each step fills half a screen so the image stays in view while they pass. */
+    .dinova-journey__step {
+      align-content: center;
+      gap: 2rem;
+      min-height: 50vh;
+      padding: 2.5rem 2rem 3rem;
+    }
+
+    .dinova-journey__step:first-child {
+      border-top: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova journey",
+  "tag": "section",
+  "class": "dinova-journey-section",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "The bespoke journey"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Sticky image space from top",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72,
+      "info": "Room for the header while the image stays in view."
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Paragraphs"
+        },
+        {
+          "type": "text",
+          "id": "closing",
+          "label": "Closing line"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova journey",
+      "blocks": [
+        { "type": "step", "settings": { "title": "Start with an idea" } },
+        { "type": "step", "settings": { "title": "Make it yours" } },
+        { "type": "step", "settings": { "title": "Bring it to life" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

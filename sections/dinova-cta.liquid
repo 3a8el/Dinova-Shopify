@@ -1,0 +1,264 @@
+{%- comment -%}
+  Dinova call to action: an image beside a lined content cell with a large
+  serif title, a short subtitle, paragraphs and an outlined square button.
+  Stacks on mobile with the content first.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign button_link = s.button_link | default: '/pages/contact'
+-%}
+
+<div
+  class="dinova-cta dinova-cta--image-{{ s.image_position }}"
+  style="
+    --dinova-cta-bg: {{ s.background_color }};
+    --dinova-cta-text: {{ s.text_color }};
+    --dinova-cta-line: {{ s.line_color }};
+    --dinova-cta-ratio: {{ s.image_ratio }};
+  "
+>
+  <div class="dinova-cta__media">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 900, 1200, 1600',
+          sizes: '(min-width: 750px) 50vw, 100vw',
+          loading: 'lazy',
+          class: 'dinova-cta__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-cta__img' }}
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-cta__content">
+    {%- if s.title != blank -%}
+      <h2 class="dinova-cta__title">{{ s.title | newline_to_br }}</h2>
+    {%- endif -%}
+    {%- if s.subtitle != blank -%}
+      <p class="dinova-cta__subtitle">{{ s.subtitle | escape }}</p>
+    {%- endif -%}
+    {%- if s.text != blank -%}
+      <div class="dinova-cta__text">{{ s.text }}</div>
+    {%- endif -%}
+    {%- if s.button_label != blank -%}
+      <a class="dinova-cta__button" href="{{ button_link }}">{{ s.button_label | escape }}</a>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-cta {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--dinova-cta-bg);
+    color: var(--dinova-cta-text);
+    border-bottom: 1px solid var(--dinova-cta-line);
+  }
+
+  .dinova-cta__media {
+    order: 2;
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .dinova-cta__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--dinova-cta-ratio);
+    object-fit: cover;
+  }
+
+  .dinova-cta__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2.5rem 1.25rem;
+  }
+
+  .dinova-cta__title {
+    margin: 0;
+    max-width: 14ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-cta__subtitle {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .dinova-cta__text {
+    max-width: 42ch;
+    margin-top: 1.5rem;
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-cta__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-cta__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Same outlined square button as the About section. */
+  .dinova-cta__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-cta__button:hover {
+    background: var(--dinova-cta-text);
+    color: var(--dinova-cta-bg);
+  }
+
+  /* Desktop: image and content side by side, a line between them. */
+  @media screen and (min-width: 750px) {
+    .dinova-cta {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .dinova-cta__media {
+      order: 0;
+      padding: 1.25rem;
+    }
+
+    .dinova-cta--image-right .dinova-cta__media {
+      order: 2;
+    }
+
+    .dinova-cta__content {
+      justify-content: center;
+      padding: clamp(2.5rem, 5vw, 4.5rem) 2rem;
+      border-inline-start: 1px solid var(--dinova-cta-line);
+    }
+
+    .dinova-cta--image-right .dinova-cta__content {
+      border-inline-start: 0;
+      border-inline-end: 1px solid var(--dinova-cta-line);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova call to action",
+  "tag": "section",
+  "class": "dinova-cta-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Have something in mind?"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Let's start there."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraphs"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Book a consultation"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link",
+      "info": "Goes to the Contact page when empty."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova call to action"
+    }
+  ]
+}
+{% endschema %}

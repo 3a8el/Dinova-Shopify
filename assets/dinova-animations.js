@@ -39,6 +39,10 @@
     '.dinova-ctitle__heading',
     '.dinova-story__heading',
     '.dinova-related__heading',
+    '.dinova-statement__title',
+    '.dinova-statement__lead',
+    '.dinova-journey__heading',
+    '.dinova-cta__title',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -73,6 +77,15 @@
     '.dinova-contact__detail',
     '.dinova-contact__form-wrap',
     '.dinova-story__text',
+    '.dinova-values__subtitle',
+    '.dinova-statement__eyebrow',
+    '.dinova-statement__subtitle',
+    '.dinova-statement__text',
+    '.dinova-journey__eyebrow',
+    '.dinova-journey__step',
+    '.dinova-cta__subtitle',
+    '.dinova-cta__text',
+    '.dinova-cta__button',
   ];
 
   /* Media frames that unveil; the image or video inside eases out of a zoom. */
@@ -97,6 +110,8 @@
     '.dinova-spot__card-media',
     '.dinova-spot__photo',
     '.dinova-cgrid__tile',
+    '.dinova-journey__frame',
+    '.dinova-cta__media',
   ];
 
   const sectionOf = (el) => el.closest('.shopify-section') || el.parentElement;

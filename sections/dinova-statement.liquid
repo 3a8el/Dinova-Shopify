@@ -1,0 +1,194 @@
+{%- comment -%}
+  Dinova statement: a text-only lined section. On the left a small eyebrow,
+  a large serif title and a short subtitle; on the right a decorative serif
+  lead and the body paragraphs. Stacks on mobile.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<div
+  class="dinova-statement"
+  style="
+    --dinova-statement-bg: {{ s.background_color }};
+    --dinova-statement-text: {{ s.text_color }};
+    --dinova-statement-line: {{ s.line_color }};
+  "
+>
+  <div class="dinova-statement__cell dinova-statement__head">
+    {%- if s.eyebrow != blank -%}
+      <p class="dinova-statement__eyebrow">{{ s.eyebrow | escape }}</p>
+    {%- endif -%}
+    {%- if s.title != blank -%}
+      <h2 class="dinova-statement__title">{{ s.title | newline_to_br }}</h2>
+    {%- endif -%}
+    {%- if s.subtitle != blank -%}
+      <p class="dinova-statement__subtitle">{{ s.subtitle | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-statement__cell dinova-statement__body">
+    {%- if s.lead != blank -%}
+      <p class="dinova-statement__lead">{{ s.lead | escape | newline_to_br }}</p>
+    {%- endif -%}
+    {%- if s.text != blank -%}
+      <div class="dinova-statement__text">{{ s.text }}</div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-statement {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--dinova-statement-bg);
+    color: var(--dinova-statement-text);
+    border-bottom: 1px solid var(--dinova-statement-line);
+  }
+
+  .dinova-statement__cell {
+    padding: 2.5rem 1.25rem;
+  }
+
+  .dinova-statement__head {
+    border-bottom: 1px solid var(--dinova-statement-line);
+  }
+
+  .dinova-statement__eyebrow {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .dinova-statement__title {
+    margin: 0;
+    max-width: 12ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-statement__subtitle {
+    margin: 1.25rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .dinova-statement__lead {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.75rem, 2.6vw, 2.375rem);
+    line-height: 1.15;
+  }
+
+  .dinova-statement__text {
+    max-width: 52ch;
+    margin-top: 1.75rem;
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-statement__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-statement__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Desktop: head | body, a line between them. */
+  @media screen and (min-width: 750px) {
+    .dinova-statement {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .dinova-statement__cell {
+      padding: clamp(2.5rem, 5vw, 4.5rem) 2rem;
+    }
+
+    .dinova-statement__head {
+      border-bottom: 0;
+    }
+
+    .dinova-statement__body {
+      border-inline-start: 1px solid var(--dinova-statement-line);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova statement",
+  "tag": "section",
+  "class": "dinova-statement-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Your vision,\nreimagined"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "You bring the idea. We bring it to life."
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Large serif paragraph",
+      "default": "Some pieces are meant to be chosen.\nOthers are meant to be created."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraphs"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova statement"
+    }
+  ]
+}
+{% endschema %}
