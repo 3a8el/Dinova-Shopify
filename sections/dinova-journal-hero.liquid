@@ -182,15 +182,19 @@
     background: #000;
   }
 
-  .dinova-jhero__image,
-  .dinova-jhero__iframe {
+  /* Extra specificity so no theme img rule (height: auto) can stop the
+     cover image filling the whole box. */
+  .dinova-jhero .dinova-jhero__media .dinova-jhero__image,
+  .dinova-jhero .dinova-jhero__media .dinova-jhero__iframe {
     position: absolute;
     inset: 0;
     display: block;
     width: 100%;
     height: 100%;
+    max-width: none;
     border: 0;
     object-fit: cover;
+    object-position: center;
   }
 
   .dinova-jhero__play {
@@ -290,9 +294,16 @@
     }
 
     .dinova-jhero__media-cell {
+      display: flex;
+      flex-direction: column;
       order: 0;
       padding: 1.5rem;
       border-inline-start: 1px solid var(--dinova-jhero-line);
+    }
+
+    /* The image grows to the full column height when the text is taller. */
+    .dinova-jhero__media {
+      flex: 1 0 auto;
     }
 
     .dinova-jhero--image-left .dinova-jhero__media-cell {
