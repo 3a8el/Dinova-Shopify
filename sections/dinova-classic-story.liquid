@@ -9,7 +9,7 @@
 -%}
 
 <div
-  class="dinova-classic-story"
+  class="dinova-classic-story{% if s.full_height %} dinova-classic-story--full{% endif %}"
   style="
     --dinova-cstory-bg: {{ s.background_color }};
     --dinova-cstory-text: {{ s.text_color }};
@@ -145,6 +145,14 @@
       padding: 0 0 1.5rem 0.5rem;
     }
   }
+
+  /* Desktop: fill the first screen so the next section starts below the fold. */
+  @media screen and (min-width: 990px) {
+    .dinova-classic-story--full {
+      min-height: calc(100svh - var(--header-height, 0px));
+      align-content: center;
+    }
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -197,6 +205,12 @@
     {
       "type": "header",
       "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_height",
+      "label": "Fill the screen on desktop",
+      "default": true
     },
     {
       "type": "range",

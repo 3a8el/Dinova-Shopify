@@ -167,13 +167,28 @@
   }
 
   /* Headings marked data-dinova-reveal: each letter shifts from white to the
-     heading's own colour, scrubbed with the scroll. The reveal finishes when
-     the heading's column scrolls out, so a sticky heading completes as it
-     reaches the bottom of its section. */
+     heading's own colour, scrubbed with the scroll. It starts when the heading
+     column comes into view and finishes when a sticky heading reaches the
+     bottom of its column, or at the end of the page if that comes first. */
   function reveal(el) {
     const color = getComputedStyle(el).color;
     const area = el.parentElement;
-    const stickTop = () => parseFloat(getComputedStyle(el).top) || 0;
+    const scrollerEl = () => scroller();
+    const scrollPos = () => {
+      const sc = scrollerEl();
+      return sc === window ? window.scrollY : sc.scrollTop;
+    };
+    const viewport = () => {
+      const sc = scrollerEl();
+      return sc === window ? window.innerHeight : sc.clientHeight;
+    };
+    const maxScroll = () => ScrollTrigger.maxScroll(scrollerEl());
+    const startPx = () => Math.max(0, area.getBoundingClientRect().top + scrollPos() - viewport() * 0.7);
+    const endPx = () => {
+      const stickTop = parseFloat(getComputedStyle(el).top) || 0;
+      const natural = area.getBoundingClientRect().bottom + scrollPos() - stickTop - el.offsetHeight;
+      return Math.max(startPx() + 1, Math.min(natural, maxScroll() - 2));
+    };
     const targets = SplitText ? SplitText.create(el, { type: 'words,chars' }).chars : [el];
     gsap.fromTo(
       targets,
@@ -182,13 +197,8 @@
         color,
         ease: 'none',
         stagger: 0.1,
-        scrollTrigger: {
-          trigger: area,
-          start: 'top 70%',
-          end: () => `bottom top+=${stickTop() + el.offsetHeight}`,
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-        },
+        immediateRender: true,
+        scrollTrigger: { trigger: area, start: startPx, end: endPx, scrub: 0.6 },
       }
     );
   }
@@ -243,8 +253,19 @@
       ScrollTrigger.refresh();
     });
 
-    /* Images and fonts change the layout after load; re-measure trigger points. */
+    /* Images and fonts change the layout after load; re-measure trigger points.
+       Lazy images load later too, so re-measure (debounced) whenever one lands. */
     window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true });
+    let refreshTimer;
+    document.addEventListener(
+      'load',
+      (event) => {
+        if (event.target.tagName !== 'IMG') return;
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
+      },
+      true
+    );
 
     /* Theme editor: replay a section's animations when it is added or changed. */
     if (window.Shopify?.designMode) {
