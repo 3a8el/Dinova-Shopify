@@ -42,7 +42,7 @@
           assign b = block.settings
           assign article = b.article
           assign title = b.title | default: article.title
-          assign author = b.author | default: article.author
+          assign author = b.author | default: article.metafields.custom.guest_name.value | default: article.author
           assign link = b.link | default: article.url
           assign thumb = b.image | default: article.image
           assign video_id = blank

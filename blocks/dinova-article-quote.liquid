@@ -1,0 +1,67 @@
+{%- comment -%}
+  Dinova post quote: the short quote (custom.quote) and the guest's name
+  (custom.guest_name) from the blog post's metafields. Shows nothing when
+  both are empty.
+{%- endcomment -%}
+
+{%- liquid
+  assign article = closest.article
+  assign quote = article.metafields.custom.quote.value | default: article.metafields.custom.quote
+  assign guest = article.metafields.custom.guest_name.value | default: article.metafields.custom.guest_name
+-%}
+
+{%- if quote != blank or guest != blank -%}
+  <figure class="dinova-aquote" {{ block.shopify_attributes }}>
+    {%- if quote != blank -%}
+      <blockquote class="dinova-aquote__text">&ldquo;{{ quote | escape }}&rdquo;</blockquote>
+    {%- endif -%}
+    {%- if guest != blank -%}
+      <figcaption class="dinova-aquote__guest">&mdash; {{ guest | escape }}</figcaption>
+    {%- endif -%}
+  </figure>
+{%- endif -%}
+
+{% stylesheet %}
+  .dinova-aquote {
+    width: 100%;
+    margin: 0;
+    text-align: center;
+  }
+
+  .dinova-aquote__text {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-style: italic;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1.1;
+  }
+
+  .dinova-aquote__guest {
+    margin-top: 0.75rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova post quote",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the post's Quote (custom.quote) and Guest name (custom.guest_name) fields."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova post quote"
+    }
+  ]
+}
+{% endschema %}

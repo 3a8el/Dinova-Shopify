@@ -83,9 +83,15 @@
             "use_post_image": true
           },
           "blocks": {}
+        },
+        "dinova_quote": {
+          "type": "dinova-article-quote",
+          "settings": {},
+          "blocks": {}
         }
       },
       "block_order": [
+        "dinova_quote",
         "blog-post-title",
         "blog-post-details",
         "dinova_video",

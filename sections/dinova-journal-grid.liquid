@@ -57,6 +57,7 @@
           if article.metafields.custom.youtube_url != blank
             assign is_video = true
           endif
+          assign guest = article.metafields.custom.guest_name.value
           assign excerpt = article.excerpt | strip_html | strip
           if excerpt == blank
             assign excerpt = article.content | strip_html | truncatewords: 30
@@ -94,6 +95,9 @@
               <h3 class="dinova-jgrid__title">
                 <a href="{{ article.url }}">{{ article.title | escape }}</a>
               </h3>
+              {%- if guest != blank -%}
+                <p class="dinova-jgrid__guest">{{ guest | escape }}</p>
+              {%- endif -%}
               {%- if excerpt != blank -%}
                 <p class="dinova-jgrid__excerpt">{{ excerpt }}</p>
               {%- endif -%}
@@ -269,6 +273,15 @@
     font-size: clamp(1.25rem, 1.5vw, 1.5rem);
     line-height: 1.2;
     color: inherit;
+  }
+
+  .dinova-jgrid__guest {
+    margin: 0.5rem 0 0;
+    font-family: var(--font-body--family);
+    font-size: 0.6875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.7;
   }
 
   .dinova-jgrid__excerpt {
