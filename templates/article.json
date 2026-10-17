@@ -12,6 +12,11 @@
     "section": {
       "type": "main-blog-post",
       "blocks": {
+        "dinova_quote": {
+          "type": "dinova-article-quote",
+          "settings": {},
+          "blocks": {}
+        },
         "blog-post-title": {
           "type": "text",
           "name": "t:names.title",
@@ -27,6 +32,7 @@
             "letter_spacing": "normal",
             "case": "none",
             "wrap": "pretty",
+            "text_color": "",
             "background": false,
             "background_color": "#00000026",
             "corner_radius": 0,
@@ -45,36 +51,13 @@
             "show_author": false,
             "type_preset": "",
             "alignment": "center",
+            "text_color": "",
             "show_alignment": true,
-            "padding-block-start": 0,
-            "padding-block-end": 0
-          },
-          "blocks": {}
-        },
-        "blog-post-image": {
-          "type": "_blog-post-featured-image",
-          "name": "t:names.featured_image",
-          "settings": {
-            "image_ratio": "landscape",
-            "width": "fill",
-            "custom_width": 100,
-            "width_mobile": "fill",
-            "custom_width_mobile": 100,
-            "height": "fit",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
             "padding-inline-start": 0,
             "padding-inline-end": 0
           },
-          "blocks": {}
-        },
-        "blog-post-content": {
-          "type": "_blog-post-content",
-          "settings": {},
           "blocks": {}
         },
         "dinova_video": {
@@ -84,9 +67,11 @@
           },
           "blocks": {}
         },
-        "dinova_quote": {
-          "type": "dinova-article-quote",
-          "settings": {},
+        "blog-post-content": {
+          "type": "_blog-post-content",
+          "settings": {
+            "text_color": ""
+          },
           "blocks": {}
         }
       },
@@ -95,12 +80,12 @@
         "blog-post-title",
         "blog-post-details",
         "dinova_video",
-        "blog-post-image",
         "blog-post-content"
       ],
       "settings": {
         "content_direction": "column",
         "gap": 32,
+        "background_color": "",
         "padding-block-start": 40,
         "padding-block-end": 80
       }
