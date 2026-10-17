@@ -181,6 +181,59 @@
   }
 }
 
+/* Product page and quick view: white behind the product photos. */
+.product-information,
+.quick-add-modal {
+  --dinova-product-image-bg: #fff;
+}
+
+/* Mobile: product name and details use the same side gutter as the rest of
+   the site instead of the block's 48px desktop padding. */
+@media screen and (max-width: 749px) {
+  .product-information .product-details > .group-block {
+    padding-inline: 1.25rem;
+  }
+}
+
+/* ---------- Quick view ----------
+ * Square corners, and the thumbnail strip sits in its own column beside the
+ * photos instead of floating over them.
+ */
+
+.quick-add-modal {
+  --style-border-radius-popover: 0;
+  border-radius: 0;
+}
+
+@media screen and (min-width: 750px) {
+  .quick-add-modal media-gallery:has(> .dinova-thumbs) {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .quick-add-modal media-gallery:has(> .dinova-thumbs) > :not(.dinova-thumbs) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .quick-add-modal .dinova-thumbs {
+    position: static;
+    flex: 0 0 auto;
+    padding: 0;
+  }
+
+  .quick-add-modal .dinova-thumbs__list {
+    top: 0.75rem;
+  }
+
+  .quick-add-modal .dinova-thumbs__button {
+    width: 4.5rem;
+  }
+}
+
 /* Wider product info: about 650-700px (Horizon caps it at 400-512px). */
 .product-information .product-information__grid--limit-details .product-details > .group-block {
   --details-max-width: 42rem;
@@ -486,7 +539,7 @@
   height: 2.5rem;
   padding: 0;
   border: 1px solid #e5e0d8;
-  background: #fffbf5;
+  background: #fff;
   color: #121212;
   cursor: pointer;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -500,7 +553,7 @@
 .dinova-card-hover__action:hover,
 .dinova-card-hover__action:focus-visible {
   background: #121212;
-  color: #fffbf5;
+  color: #fff;
 }
 
 .dinova-card-hover__sizes {
@@ -520,7 +573,7 @@
 .dinova-card-hover__size {
   display: block;
   padding: 0.5rem 0.25rem;
-  background: #fffbf5;
+  background: #fff;
   color: #121212;
   font-family: var(--font-body--family);
   font-size: 0.6875rem;
@@ -535,7 +588,7 @@
 .dinova-card-hover__size:hover,
 .dinova-card-hover__size:focus-visible {
   background: #121212;
-  color: #fffbf5;
+  color: #fff;
 }
 
 .dinova-card-hover__size.is-unavailable {

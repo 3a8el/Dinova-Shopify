@@ -109,9 +109,14 @@
           const item = this.items[Number(button.dataset.index)];
           if (!item) return;
           const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
-          const top = item.getBoundingClientRect().top + window.scrollY - header;
-          window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+          // scrollIntoView works for every scroller: the window, Horizon's
+          // .page-wrapper on wide screens, and the quick view dialog.
+          const inDialog = !!this.closest('dialog');
+          const header = inDialog
+            ? 0
+            : parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-height')) || 0;
+          item.style.scrollMarginTop = `${header}px`;
+          item.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
         };
         this.addEventListener('click', this.onClick);
 
