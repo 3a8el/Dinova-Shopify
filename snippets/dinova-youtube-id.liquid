@@ -1,0 +1,16 @@
+{%- comment -%}
+  Outputs the YouTube video ID from a watch, youtu.be or shorts link.
+  Use with capture: {% capture id %}{% render 'dinova-youtube-id', url: link %}{% endcapture %}
+{%- endcomment -%}
+{%- liquid
+  if url != blank
+    assign link = url | append: ''
+    if link contains 'v='
+      echo link | split: 'v=' | last | split: '&' | first
+    elsif link contains '/shorts/'
+      echo link | split: '/shorts/' | last | split: '?' | first
+    else
+      echo link | split: '?' | first | split: '/' | last
+    endif
+  endif
+-%}

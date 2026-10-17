@@ -37,74 +37,72 @@
 
   <div class="dinova-vblog__viewport">
     <ul class="dinova-vblog__track" role="list" data-track>
-      {%- for block in section.blocks -%}
-        {%- liquid
-          assign b = block.settings
-          assign article = b.article
-          assign title = b.title | default: article.title
-          assign author = b.author | default: article.metafields.custom.guest_name.value | default: article.author
-          assign link = b.link | default: article.url
-          assign thumb = b.image | default: article.image
-          assign video_id = blank
-          if b.video.type == 'youtube'
-            assign video_id = b.video.id
+      {%- liquid
+        assign manual_count = 0
+        for block in section.blocks
+          if block.settings.video != blank or block.settings.article != blank
+            assign manual_count = manual_count | plus: 1
           endif
-        -%}
-        <li class="dinova-vblog__item" {{ block.shopify_attributes }}>
-          <div class="dinova-vblog__media" {% if video_id != blank %}data-video-id="{{ video_id }}"{% endif %}>
-            {%- if thumb != blank -%}
-              {{
-                thumb
-                | image_url: width: 1400
-                | image_tag:
-                  widths: '500, 800, 1100, 1400',
-                  sizes: '(min-width: 750px) 50vw, 90vw',
-                  loading: 'lazy',
-                  alt: '',
-                  class: 'dinova-vblog__thumb'
-              }}
-            {%- elsif video_id != blank -%}
-              <img
-                class="dinova-vblog__thumb"
-                src="https://i.ytimg.com/vi/{{ video_id }}/maxresdefault.jpg"
-                data-fallback="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
-                alt=""
-                loading="lazy"
-                width="1280"
-                height="720"
-              >
-            {%- else -%}
-              {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-vblog__thumb dinova-vblog__placeholder' }}
-            {%- endif -%}
-
-            {%- if video_id != blank -%}
-              <button type="button" class="dinova-vblog__play" aria-label="Play video: {{ title | escape }}">
-                <svg viewBox="0 0 80 80" aria-hidden="true" focusable="false">
-                  <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="2.5"/>
-                  <path d="M33 27l20 13-20 13z" fill="currentColor"/>
-                </svg>
-              </button>
-            {%- endif -%}
-          </div>
-
-          <div class="dinova-vblog__info">
-            <div class="dinova-vblog__meta">
-              {%- if title != blank -%}
-                <h3 class="dinova-vblog__title">{{ title | escape }}</h3>
-              {%- endif -%}
-              {%- if author != blank -%}
-                <p class="dinova-vblog__author">{{ author | escape }}</p>
-              {%- endif -%}
-            </div>
-            {%- if link != blank and s.view_more_label != blank -%}
-              <a class="dinova-vblog__button dinova-vblog__button--small" href="{{ link }}">
-                {{- s.view_more_label | escape -}}
-                <span class="visually-hidden">: {{ title | escape }}</span>
-              </a>
-            {%- endif -%}
-          </div>
-        </li>
-      {%- endfor -%}
+        endfor
+      -%}
+      {%- if manual_count > 0 -%}
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign b = block.settings
+            if b.video == blank and b.article == blank
+              continue
+            endif
+            assign article = b.article
+            assign title = b.title | default: article.title
+            assign author = b.author | default: article.metafields.custom.guest_name.value | default: article.author
+            assign link = b.link | default: article.url
+            assign thumb = b.image | default: article.image
+            if b.video.type == 'youtube'
+              assign video_id = b.video.id
+            else
+              capture video_id
+                render 'dinova-youtube-id', url: article.metafields.custom.youtube_url.value
+              endcapture
+              assign video_id = video_id | strip
+            endif
+          -%}
+          {%- render 'dinova-vblog-item',
+            video_id: video_id,
+            thumb: thumb,
+            title: title,
+            author: author,
+            link: link,
+            view_more_label: s.view_more_label,
+            attributes: block.shopify_attributes
+          -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} No videos picked: show the newest posts with a YouTube URL. {%- endcomment -%}
+        {%- assign source_blog = s.blog | default: blogs.news -%}
+        {%- assign shown = 0 -%}
+        {%- for article in source_blog.articles limit: 50 -%}
+          {%- if shown >= s.auto_count -%}{%- break -%}{%- endif -%}
+          {%- liquid
+            capture video_id
+              render 'dinova-youtube-id', url: article.metafields.custom.youtube_url.value
+            endcapture
+            assign video_id = video_id | strip
+            if video_id == blank
+              continue
+            endif
+            assign shown = shown | plus: 1
+          -%}
+          {%- render 'dinova-vblog-item',
+            video_id: video_id,
+            thumb: article.image,
+            title: article.title,
+            author: article.metafields.custom.guest_name.value,
+            link: article.url,
+            view_more_label: s.view_more_label,
+            attributes: ''
+          -%}
+        {%- endfor -%}
+      {%- endif -%}
     </ul>
 
     <button type="button" class="dinova-vblog__arrow dinova-vblog__arrow--prev" data-direction="-1" aria-label="Previous videos" hidden>
@@ -433,7 +431,16 @@
       "type": "blog",
       "id": "blog",
       "label": "Blog",
-      "info": "The View all button opens this blog unless a link is set below."
+      "info": "The View all button opens this blog. With no videos added below, the newest posts from it that have a YouTube URL show automatically."
+    },
+    {
+      "type": "range",
+      "id": "auto_count",
+      "label": "Posts shown automatically",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
     },
     {
       "type": "url",

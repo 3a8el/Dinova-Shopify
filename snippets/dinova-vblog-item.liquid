@@ -1,0 +1,58 @@
+{%- comment -%}
+  One card of the Dinova video blog carousel.
+  Params: video_id, thumb (image), title, author, link, view_more_label, attributes.
+{%- endcomment -%}
+<li class="dinova-vblog__item" {{ attributes }}>
+  <div class="dinova-vblog__media" {% if video_id != blank %}data-video-id="{{ video_id }}"{% endif %}>
+    {%- if thumb != blank -%}
+      {{
+        thumb
+        | image_url: width: 1400
+        | image_tag:
+          widths: '500, 800, 1100, 1400',
+          sizes: '(min-width: 750px) 50vw, 90vw',
+          loading: 'lazy',
+          alt: '',
+          class: 'dinova-vblog__thumb'
+      }}
+    {%- elsif video_id != blank -%}
+      <img
+        class="dinova-vblog__thumb"
+        src="https://i.ytimg.com/vi/{{ video_id }}/maxresdefault.jpg"
+        data-fallback="https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg"
+        alt=""
+        loading="lazy"
+        width="1280"
+        height="720"
+      >
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-vblog__thumb dinova-vblog__placeholder' }}
+    {%- endif -%}
+
+    {%- if video_id != blank -%}
+      <button type="button" class="dinova-vblog__play" aria-label="Play video: {{ title | escape }}">
+        <svg viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+          <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M33 27l20 13-20 13z" fill="currentColor"/>
+        </svg>
+      </button>
+    {%- endif -%}
+  </div>
+
+  <div class="dinova-vblog__info">
+    <div class="dinova-vblog__meta">
+      {%- if title != blank -%}
+        <h3 class="dinova-vblog__title">{{ title | escape }}</h3>
+      {%- endif -%}
+      {%- if author != blank -%}
+        <p class="dinova-vblog__author">{{ author | escape }}</p>
+      {%- endif -%}
+    </div>
+    {%- if link != blank and view_more_label != blank -%}
+      <a class="dinova-vblog__button dinova-vblog__button--small" href="{{ link }}">
+        {{- view_more_label | escape -}}
+        <span class="visually-hidden">: {{ title | escape }}</span>
+      </a>
+    {%- endif -%}
+  </div>
+</li>
