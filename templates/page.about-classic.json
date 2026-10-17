@@ -1,0 +1,65 @@
+{
+  "sections": {
+    "dinova_classic_story": {
+      "type": "dinova-classic-story",
+      "settings": {
+        "title": "Our Story",
+        "subtitle": "Redefining the Diamond Industry, One Brilliant Choice at a Time",
+        "intro": "<p>We didn’t set out to create another jewelry brand.</p><p>We set out to challenge an industry.</p>",
+        "image_ratio": "2 / 3",
+        "story": "<p>For decades, buying a diamond meant accepting a system built on tradition, limited transparency, and unnecessary compromise. Meanwhile, a new generation emerged—one that values innovation as much as craftsmanship, and conscious choices as much as timeless design.</p><p><strong>Dinova was built for them.</strong></p><p>Founded by Egyptian innovators, gemologists, and entrepreneurs, Dinova introduces a new chapter of fine jewelry through IGI-certified lab-grown diamonds and exceptional craftsmanship in 18K gold.</p><p>We’re not simply bringing lab-grown diamonds to Egypt.</p><p>We’re redefining luxury for a generation that expects more.</p><p>Diamonds. Reimagined.</p>",
+        "padding_top": 40,
+        "padding_bottom": 80,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212"
+      }
+    },
+    "dinova_classic_portrait": {
+      "type": "dinova-classic-portrait",
+      "settings": {
+        "image": "shopify://shop_images/IMG_3330_JPG.webp",
+        "image_ratio": "8 / 9",
+        "heading": "Innovation, Transparency, Modern Egyptian Luxury",
+        "padding_top": 40,
+        "padding_bottom": 64,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212"
+      }
+    },
+    "dinova_classic_values": {
+      "type": "dinova-classic-values",
+      "blocks": {
+        "value_1": {
+          "type": "value",
+          "settings": {
+            "title": "Innovation",
+            "text": "We embrace the technology that allows us to create brilliance, not just find it."
+          }
+        },
+        "value_2": {
+          "type": "value",
+          "settings": {
+            "title": "Transparency",
+            "text": "From our IGI certifications to our educational hub, we empower you with knowledge. A Dinova customer is an educated customer."
+          }
+        },
+        "value_3": {
+          "type": "value",
+          "settings": {
+            "title": "Modern Egyptian Luxury",
+            "text": "We are proudly based in Cairo, blending global standards with a deep understanding of what our market desires: quality, value, and authenticity."
+          }
+        }
+      },
+      "block_order": ["value_1", "value_2", "value_3"],
+      "settings": {
+        "padding_top": 40,
+        "padding_bottom": 64,
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
+    }
+  },
+  "order": ["dinova_classic_story", "dinova_classic_portrait", "dinova_classic_values"]
+}

@@ -1,0 +1,164 @@
+{%- comment -%}
+  Dinova classic portrait: from the old WordPress About page. A large image on
+  the left and a serif heading on the right, aligned to the image's bottom edge.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<div
+  class="dinova-classic-portrait"
+  style="
+    --dinova-cportrait-bg: {{ s.background_color }};
+    --dinova-cportrait-text: {{ s.text_color }};
+    --dinova-cportrait-pt: {{ s.padding_top }}px;
+    --dinova-cportrait-pb: {{ s.padding_bottom }}px;
+    --dinova-cportrait-ratio: {{ s.image_ratio }};
+  "
+>
+  <div class="dinova-classic-portrait__media">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 1600
+        | image_tag:
+          widths: '600, 900, 1200, 1600',
+          sizes: '(min-width: 750px) 35vw, 100vw',
+          loading: 'lazy',
+          class: 'dinova-classic-portrait__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'dinova-classic-portrait__img' }}
+    {%- endif -%}
+  </div>
+
+  {%- if s.heading != blank -%}
+    <h2 class="dinova-classic-portrait__heading">{{ s.heading | newline_to_br }}</h2>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .dinova-classic-portrait {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: var(--dinova-cportrait-pt) 1.25rem var(--dinova-cportrait-pb);
+    background: var(--dinova-cportrait-bg);
+    color: var(--dinova-cportrait-text);
+  }
+
+  .dinova-classic-portrait__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--dinova-cportrait-ratio);
+    object-fit: cover;
+  }
+
+  .dinova-classic-portrait__heading {
+    margin: 0;
+    max-width: 22ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2.25rem, 3.6vw, 3.25rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-classic-portrait {
+      /* Old page: image 8-41%, heading from 51% of the content width. */
+      grid-template-columns: 8% 33% 10% minmax(0, 1fr);
+      gap: 0;
+      align-items: end;
+      padding-inline: 5%;
+    }
+
+    .dinova-classic-portrait__media {
+      grid-column: 2;
+    }
+
+    .dinova-classic-portrait__heading {
+      grid-column: 4;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova classic portrait",
+  "tag": "section",
+  "class": "dinova-classic-portrait-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "8 / 9", "label": "Near square 8:9" },
+        { "value": "1 / 1", "label": "Square" },
+        { "value": "4 / 5", "label": "Portrait 4:5" },
+        { "value": "auto", "label": "Original" }
+      ],
+      "default": "8 / 9"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Innovation, Transparency, Modern Egyptian Luxury"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova classic portrait"
+    }
+  ]
+}
+{% endschema %}

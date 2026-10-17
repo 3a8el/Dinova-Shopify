@@ -1,0 +1,181 @@
+{%- comment -%}
+  Dinova classic values: from the old WordPress About page. Centered value
+  columns (serif title + short text) separated by thin vertical lines.
+  Each value is a block.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign values = section.blocks | where: 'type', 'value'
+-%}
+
+<div
+  class="dinova-classic-values"
+  style="
+    --dinova-cvalues-bg: {{ s.background_color }};
+    --dinova-cvalues-text: {{ s.text_color }};
+    --dinova-cvalues-line: {{ s.line_color }};
+    --dinova-cvalues-pt: {{ s.padding_top }}px;
+    --dinova-cvalues-pb: {{ s.padding_bottom }}px;
+    --dinova-cvalues-count: {{ values.size | at_least: 1 }};
+  "
+>
+  <ul class="dinova-classic-values__list" role="list">
+    {%- for block in values -%}
+      <li class="dinova-classic-values__item" {{ block.shopify_attributes }}>
+        <h3 class="dinova-classic-values__title">{{ block.settings.title | escape }}</h3>
+        {%- if block.settings.text != blank -%}
+          <p class="dinova-classic-values__text">{{ block.settings.text | escape }}</p>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% stylesheet %}
+  .dinova-classic-values {
+    padding: var(--dinova-cvalues-pt) 1.25rem var(--dinova-cvalues-pb);
+    background: var(--dinova-cvalues-bg);
+    color: var(--dinova-cvalues-text);
+  }
+
+  .dinova-classic-values__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dinova-classic-values__item {
+    padding: 2rem 0.5rem;
+    text-align: center;
+  }
+
+  .dinova-classic-values__item + .dinova-classic-values__item {
+    border-top: 1px solid var(--dinova-cvalues-line);
+  }
+
+  .dinova-classic-values__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: 500;
+    font-size: clamp(1.625rem, 2.2vw, 2rem);
+    line-height: 1.15;
+    color: inherit;
+  }
+
+  .dinova-classic-values__text {
+    max-width: 44ch;
+    margin: 0.75rem auto 0;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-classic-values {
+      padding-inline: 5%;
+    }
+
+    .dinova-classic-values__list {
+      grid-template-columns: repeat(var(--dinova-cvalues-count), minmax(0, 1fr));
+    }
+
+    .dinova-classic-values__item {
+      min-height: 10rem;
+      padding: 2.5rem 2.5rem 3.5rem;
+    }
+
+    .dinova-classic-values__item + .dinova-classic-values__item {
+      border-top: 0;
+      border-left: 1px solid var(--dinova-cvalues-line);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova classic values",
+  "tag": "section",
+  "class": "dinova-classic-values-section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom spacing",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Dividers",
+      "default": "#d6d1c9"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "value",
+      "name": "Value",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Innovation"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova classic values",
+      "blocks": [
+        { "type": "value" },
+        { "type": "value" },
+        { "type": "value" }
+      ]
+    }
+  ]
+}
+{% endschema %}
