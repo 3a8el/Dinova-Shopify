@@ -33,7 +33,7 @@
         "subtitle": "You bring the idea. We bring it to life.",
         "lead": "Some pieces are meant to be chosen.\nOthers are meant to be created.",
         "text": "<p>Whether you have a specific design in mind, a diamond you've always imagined, or simply a feeling you want your piece to capture, our bespoke service gives you the freedom to create something entirely personal.</p><p>From the first conversation to the final detail, we'll work with you to shape a piece that feels unmistakably yours.</p>",
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
@@ -86,7 +86,7 @@
         "image_position": "left",
         "image_ratio": "4 / 5",
         "sticky_offset": 72,
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
@@ -135,7 +135,7 @@
         "show_numbers": false,
         "image_position": "right",
         "image_ratio": "4 / 5",
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
@@ -150,7 +150,7 @@
         "button_link": "",
         "image_position": "left",
         "image_ratio": "4 / 5",
-        "background_color": "#fffbf5",
+        "background_color": "#FFFFFF",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
