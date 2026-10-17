@@ -213,7 +213,7 @@
 
 /* Quick view: show the product description (Horizon hides it) right under
    the price and tax note, above the options and buttons. */
-.quick-add-modal__content .product-details > .group-block > .group-block-content > div.text-block.rte {
+.quick-add-modal__content .product-details > .group-block > .group-block-content > rte-formatter.text-block {
   display: block;
   order: 1;
   margin-block: 1.25rem;
@@ -222,7 +222,7 @@
   opacity: 0.85;
 }
 
-.quick-add-modal__content .product-details > .group-block > .group-block-content > product-price ~ :not(div.text-block.rte) {
+.quick-add-modal__content .product-details > .group-block > .group-block-content > product-price ~ :not(rte-formatter.text-block) {
   order: 2;
 }
 
