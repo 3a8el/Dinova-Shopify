@@ -308,9 +308,9 @@
           "settings": {
             "video": "",
             "article": "",
-            "title": "Fashion, diamonds & personal style.",
-            "author": "Noha El Sherbiny",
-            "link": "https://www.youtube.com/watch?v=I9bI0tF9AlQ"
+            "title": "",
+            "author": "",
+            "link": ""
           }
         },
         "video_2": {
@@ -332,7 +332,7 @@
         "heading": "Experience Dinova in Person",
         "text": "<p>Words can only say so much. The best way to understand the brilliance of a Dinova diamond is to see it for yourself.</p>",
         "view_all_label": "View all",
-        "blog": "",
+        "blog": "news",
         "view_all_link": "",
         "view_more_label": "View more",
         "columns_desktop": "2",
