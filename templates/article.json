@@ -76,11 +76,19 @@
           "type": "_blog-post-content",
           "settings": {},
           "blocks": {}
+        },
+        "dinova_video": {
+          "type": "dinova-article-video",
+          "settings": {
+            "use_post_image": true
+          },
+          "blocks": {}
         }
       },
       "block_order": [
         "blog-post-title",
         "blog-post-details",
+        "dinova_video",
         "blog-post-image",
         "blog-post-content"
       ],

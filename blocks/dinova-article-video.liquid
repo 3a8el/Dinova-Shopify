@@ -1,0 +1,166 @@
+{%- comment -%}
+  Dinova article video: when the blog post has a YouTube link in its
+  custom.youtube_url metafield, shows the video (thumbnail with a play
+  button; the player loads on click) and hides the featured image block.
+  Shows nothing for posts without a video.
+{%- endcomment -%}
+
+{%- liquid
+  assign article = closest.article
+  assign video_id = blank
+  assign video_url = article.metafields.custom.youtube_url.value | default: article.metafields.custom.youtube_url
+  if video_url != blank
+    assign video_url = video_url | append: ''
+    if video_url contains 'v='
+      assign video_id = video_url | split: 'v=' | last | split: '&' | first
+    elsif video_url contains '/shorts/'
+      assign video_id = video_url | split: '/shorts/' | last | split: '?' | first
+    else
+      assign video_id = video_url | split: '?' | first | split: '/' | last
+    endif
+  endif
+-%}
+
+{%- if video_id != blank -%}
+  <dinova-article-video class="dinova-avideo" data-video-id="{{ video_id }}" {{ block.shopify_attributes }}>
+    {%- if article.image != blank and block.settings.use_post_image -%}
+      {{
+        article.image
+        | image_url: width: 2400
+        | image_tag:
+          widths: '600, 900, 1200, 1800, 2400',
+          sizes: '(min-width: 1200px) 1100px, 100vw',
+          loading: 'eager',
+          alt: '',
+          class: 'dinova-avideo__thumb'
+      }}
+    {%- else -%}
+      <img
+        class="dinova-avideo__thumb"
+        src="https://i.ytimg.com/vi/{{ video_id }}/maxresdefault.jpg"
+        alt=""
+        width="1280"
+        height="720"
+        onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/{{ video_id }}/hqdefault.jpg'"
+      >
+    {%- endif -%}
+    <button type="button" class="dinova-avideo__play" aria-label="Play video: {{ article.title | escape }}">
+      <svg viewBox="0 0 80 80" aria-hidden="true" focusable="false">
+        <circle cx="40" cy="40" r="38" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M33 27l20 13-20 13z" fill="currentColor"/>
+      </svg>
+    </button>
+  </dinova-article-video>
+
+  <script type="module">
+    if (!customElements.get('dinova-article-video')) {
+      customElements.define(
+        'dinova-article-video',
+        class DinovaArticleVideo extends HTMLElement {
+          connectedCallback() {
+            const button = this.querySelector('.dinova-avideo__play');
+            button?.addEventListener('click', () => {
+              const iframe = document.createElement('iframe');
+              iframe.src = `https://www.youtube-nocookie.com/embed/${this.dataset.videoId}?autoplay=1&rel=0&playsinline=1`;
+              iframe.title = button.getAttribute('aria-label');
+              iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+              iframe.allowFullscreen = true;
+              iframe.className = 'dinova-avideo__iframe';
+              this.append(iframe);
+              this.classList.add('is-playing');
+              iframe.focus();
+            });
+          }
+        }
+      );
+    }
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .dinova-avideo {
+    position: relative;
+    display: block;
+    width: min(100%, 70rem);
+    margin-inline: auto;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .dinova-avideo__thumb,
+  .dinova-avideo__iframe {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    object-fit: cover;
+  }
+
+  .dinova-avideo__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: rgb(0 0 0 / 0.15);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .dinova-avideo__play svg {
+    width: clamp(4rem, 7vw, 6rem);
+    height: auto;
+    filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.25));
+    transition: transform 0.3s ease;
+  }
+
+  .dinova-avideo__play:hover svg,
+  .dinova-avideo__play:focus-visible svg {
+    transform: scale(1.08);
+  }
+
+  .dinova-avideo.is-playing .dinova-avideo__play,
+  .dinova-avideo.is-playing .dinova-avideo__thumb {
+    display: none;
+  }
+
+  /* A video post shows the video in place of its featured image. */
+  :has(> .dinova-avideo) > .blog-post-featured-image {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-avideo__play svg {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova post video",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows the YouTube video from the post's YouTube URL field (custom.youtube_url). Posts without one show nothing here."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_post_image",
+      "label": "Use the post's featured image as the video cover",
+      "info": "Off uses YouTube's own thumbnail.",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova post video"
+    }
+  ]
+}
+{% endschema %}
