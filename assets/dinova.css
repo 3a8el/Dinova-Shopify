@@ -175,8 +175,14 @@
  * The details column stays in view (Horizon's sticky details setting).
  */
 
+/* The line sits on the gallery column, which stretches to the full row
+   height; the sticky details column is only as tall as its content. */
 @media screen and (min-width: 750px) {
-  .product-information .product-details {
+  .product-information--media-left .product-information__media {
+    border-inline-end: 1px solid #d6d1c9;
+  }
+
+  .product-information--media-right .product-information__media {
     border-inline-start: 1px solid #d6d1c9;
   }
 }
