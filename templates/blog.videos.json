@@ -11,11 +11,38 @@
   "sections": {
     "dinova_journal_hero": {
       "type": "dinova-journal-hero",
-      "settings": {}
+      "settings": {
+        "heading": "",
+        "article": "",
+        "video": "",
+        "link_label": "Read article",
+        "excerpt_words": 55,
+        "image_position": "right",
+        "image_ratio": "5 / 4",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
     },
     "dinova_journal_grid": {
       "type": "dinova-journal-grid",
-      "settings": {}
+      "settings": {
+        "heading": "Our stories",
+        "skip_featured": true,
+        "per_page": 12,
+        "show_tags": true,
+        "all_label": "All",
+        "show_badge": true,
+        "article_badge": "Article",
+        "video_badge": "Video",
+        "show_date": true,
+        "link_label": "Read article",
+        "image_ratio": "3 / 2",
+        "columns_desktop": "4",
+        "background_color": "#FFFFFF",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9"
+      }
     }
   },
   "order": [
