@@ -22,6 +22,7 @@
   endif
 
   assign thumb = s.image | default: article.image
+  assign thumb_alt = article.title | default: ''
 
   assign video_id = blank
   if s.video.type == 'youtube'
@@ -91,7 +92,7 @@
               widths: '600, 900, 1300, 2000',
               sizes: '(min-width: 750px) 50vw, 100vw',
               fetchpriority: 'high',
-              alt: article.title | default: '',
+              alt: thumb_alt,
               class: 'dinova-jhero__image'
           }}
         {%- elsif video_id != blank -%}
@@ -179,13 +180,14 @@
     position: relative;
     aspect-ratio: var(--dinova-jhero-ratio);
     overflow: hidden;
+  }
+
+  .dinova-jhero__media.is-playing {
     background: #000;
   }
 
-  /* Extra specificity so no theme img rule (height: auto) can stop the
-     cover image filling the whole box. */
-  .dinova-jhero .dinova-jhero__media .dinova-jhero__image,
-  .dinova-jhero .dinova-jhero__media .dinova-jhero__iframe {
+  .dinova-jhero__image,
+  .dinova-jhero__iframe {
     position: absolute;
     inset: 0;
     display: block;
