@@ -11,6 +11,12 @@
   "type": "footer",
   "name": "t:names.footer",
   "sections": {
+    "dinova_popup": {
+      "type": "dinova-popup",
+      "settings": {
+        "enabled": false
+      }
+    },
     "dinova_footer": {
       "type": "dinova-footer",
       "settings": {
@@ -286,6 +292,7 @@
   },
   "order": [
     "dinova_footer",
+    "dinova_popup",
     "footer",
     "utilities"
   ]

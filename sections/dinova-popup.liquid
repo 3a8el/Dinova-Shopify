@@ -1,0 +1,786 @@
+{%- comment -%}
+  Dinova popup: an email sign-up window that fades in after a delay. Uses
+  Shopify's built-in customer form, so sign-ups are saved as customers
+  subscribed to email marketing (Customers in the Shopify admin).
+
+  Lives in the footer group so it can load on every page. The page settings
+  pick where it appears; a closed popup stays hidden for the chosen number of
+  days (remembered in the visitor's browser), and a visitor who subscribes is
+  not asked again. In the theme editor it opens whenever the section is
+  selected, whatever those settings say.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign form_id = 'DinovaPopupForm-' | append: section.id
+
+  assign page_allowed = false
+  case template.name
+    when 'index'
+      if s.show_on_home
+        assign page_allowed = true
+      endif
+    when 'collection', 'list-collections', 'search'
+      if s.show_on_collections
+        assign page_allowed = true
+      endif
+    when 'product'
+      if s.show_on_products
+        assign page_allowed = true
+      endif
+    when 'cart', 'password', 'gift_card', 'account', 'login', 'register', 'order', 'addresses', 'activate_account', 'reset_password'
+      assign page_allowed = false
+    else
+      if s.show_on_other
+        assign page_allowed = true
+      endif
+  endcase
+
+  if customer and customer.accepts_marketing
+    assign page_allowed = false
+  endif
+
+  assign render_popup = false
+  if request.design_mode
+    assign render_popup = true
+  elsif s.enabled and page_allowed
+    assign render_popup = true
+  endif
+-%}
+
+{%- if render_popup and template.name != 'password' -%}
+  <dinova-popup
+    data-section-id="{{ section.id }}"
+    data-form-id="{{ form_id }}"
+    data-delay="{{ s.delay }}"
+    data-days="{{ s.frequency_days }}"
+    data-auto="{% if s.enabled and page_allowed %}true{% else %}false{% endif %}"
+  >
+    <dialog
+      class="dinova-popup"
+      aria-labelledby="DinovaPopupHeading-{{ section.id }}"
+      style="
+        --dinova-popup-bg: {{ s.background_color }};
+        --dinova-popup-text: {{ s.text_color }};
+        --dinova-popup-line: {{ s.line_color }};
+        --dinova-popup-overlay: {{ s.overlay_color | color_modify: 'alpha', s.overlay_opacity | divided_by: 100.0 }};
+      "
+    >
+      <div class="dinova-popup__overlay" data-popup-close aria-hidden="true"></div>
+
+      <div class="dinova-popup__panel{% if s.image != blank %} dinova-popup__panel--media dinova-popup__panel--media-{{ s.image_position }}{% endif %}{% unless s.image_on_mobile %} dinova-popup__panel--no-mobile-media{% endunless %}">
+        <button type="button" class="dinova-popup__close" data-popup-close aria-label="{{ 'accessibility.close_dialog' | t | default: 'Close' }}">
+          <svg viewBox="0 0 14 14" aria-hidden="true" focusable="false">
+            <path d="M1 1l12 12M13 1L1 13" fill="none" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        </button>
+
+        {%- if s.image != blank -%}
+          <div class="dinova-popup__media">
+            {{
+              s.image
+              | image_url: width: 1400
+              | image_tag:
+                widths: '500, 800, 1100, 1400',
+                sizes: '(min-width: 750px) 440px, 100vw',
+                loading: 'lazy',
+                alt: s.image.alt,
+                class: 'dinova-popup__image'
+            }}
+          </div>
+        {%- endif -%}
+
+        <div class="dinova-popup__content">
+          {%- form 'customer', id: form_id, class: 'dinova-popup__form' -%}
+            <input type="hidden" name="contact[tags]" value="newsletter, popup">
+
+            {%- if form.posted_successfully? -%}
+              <div class="dinova-popup__success" data-popup-success>
+                {%- if s.success_heading != blank -%}
+                  <h2 id="DinovaPopupHeading-{{ section.id }}" class="dinova-popup__heading">{{ s.success_heading | escape }}</h2>
+                {%- endif -%}
+                {%- if s.success_text != blank -%}
+                  <div class="dinova-popup__text" role="status">{{ s.success_text }}</div>
+                {%- endif -%}
+                <button type="button" class="dinova-popup__button" data-popup-close>{{ s.success_button | escape }}</button>
+              </div>
+            {%- else -%}
+              {%- if s.eyebrow != blank -%}
+                <p class="dinova-popup__eyebrow">{{ s.eyebrow | escape }}</p>
+              {%- endif -%}
+              <h2 id="DinovaPopupHeading-{{ section.id }}" class="dinova-popup__heading">{{ s.heading | escape }}</h2>
+              {%- if s.text != blank -%}
+                <div class="dinova-popup__text">{{ s.text }}</div>
+              {%- endif -%}
+
+              <div class="dinova-popup__fields">
+                <label for="DinovaPopupEmail-{{ section.id }}" class="visually-hidden">{{ s.placeholder | escape }}</label>
+                <input
+                  id="DinovaPopupEmail-{{ section.id }}"
+                  class="dinova-popup__input"
+                  type="email"
+                  name="contact[email]"
+                  value="{{ form.email }}"
+                  placeholder="{{ s.placeholder | escape }}"
+                  autocomplete="email"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  required
+                  {% if form.errors %}
+                    aria-invalid="true" aria-describedby="DinovaPopupError-{{ section.id }}"
+                  {% endif %}
+                >
+                {%- if form.errors -%}
+                  <p id="DinovaPopupError-{{ section.id }}" class="dinova-popup__error" role="alert" data-popup-error>
+                    {{- form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email -}}
+                  </p>
+                {%- endif -%}
+                <button type="submit" class="dinova-popup__button">{{ s.button_label | escape }}</button>
+              </div>
+
+              {%- if s.note != blank -%}
+                <div class="dinova-popup__note">{{ s.note }}</div>
+              {%- endif -%}
+
+              {%- if s.dismiss_label != blank -%}
+                <button type="button" class="dinova-popup__dismiss dinova-underline" data-popup-close>{{ s.dismiss_label | escape }}</button>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endform -%}
+        </div>
+      </div>
+    </dialog>
+  </dinova-popup>
+{%- endif -%}
+
+{% stylesheet %}
+  dinova-popup {
+    display: contents;
+  }
+
+  .dinova-popup,
+  .dinova-popup * {
+    box-sizing: border-box;
+  }
+
+  /* The dialog covers the viewport; the overlay and panel sit inside it so
+     both can fade together. */
+  .dinova-popup {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 1.25rem;
+    border: 0;
+    background: transparent;
+    color: var(--dinova-popup-text);
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+
+  .dinova-popup[open] {
+    display: grid;
+  }
+
+  .dinova-popup::backdrop {
+    background: transparent;
+  }
+
+  html:has(.dinova-popup[open]) {
+    overflow: hidden;
+  }
+
+  .dinova-popup__overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--dinova-popup-overlay);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  /* Same fade-and-blur entrance as the product card hover. */
+  .dinova-popup__panel {
+    position: relative;
+    display: grid;
+    width: min(100%, 30rem);
+    margin: auto;
+    background: var(--dinova-popup-bg);
+    border: 1px solid var(--dinova-popup-line);
+    opacity: 0;
+    filter: blur(16px);
+    transform: scale(1.06);
+    transition:
+      opacity 0.6s ease,
+      filter 0.75s ease,
+      transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .dinova-popup.is-visible .dinova-popup__overlay {
+    opacity: 1;
+  }
+
+  .dinova-popup.is-visible .dinova-popup__panel {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+
+  .dinova-popup__close {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    background: var(--dinova-popup-bg);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .dinova-popup__close svg {
+    width: 0.875rem;
+    height: 0.875rem;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .dinova-popup__close:hover svg,
+  .dinova-popup__close:focus-visible svg {
+    transform: rotate(90deg);
+  }
+
+  .dinova-popup__media {
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    border-bottom: 1px solid var(--dinova-popup-line);
+  }
+
+  .dinova-popup__panel--no-mobile-media .dinova-popup__media {
+    display: none;
+  }
+
+  .dinova-popup__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dinova-popup__content {
+    display: grid;
+    align-content: center;
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+  }
+
+  .dinova-popup__form,
+  .dinova-popup__success {
+    display: grid;
+    justify-items: center;
+  }
+
+  .dinova-popup__eyebrow {
+    margin: 0 0 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .dinova-popup__heading {
+    margin: 0;
+    max-width: 14ch;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.05;
+    color: inherit;
+  }
+
+  .dinova-popup__text {
+    max-width: 34ch;
+    margin-top: 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-popup__text p {
+    margin: 0;
+  }
+
+  .dinova-popup__fields {
+    display: grid;
+    gap: 0.625rem;
+    width: 100%;
+    margin-top: 1.75rem;
+  }
+
+  .dinova-popup__input {
+    width: 100%;
+    padding: 0.9375rem 1rem;
+    border: 1px solid var(--dinova-popup-line);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .dinova-popup__input::placeholder {
+    color: inherit;
+    opacity: 0.6;
+  }
+
+  .dinova-popup__input:focus {
+    border-color: var(--dinova-popup-text);
+  }
+
+  /* Square button: filled, inverting to an outline on hover. */
+  .dinova-popup__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.9375rem 1.25rem;
+    border: 1px solid var(--dinova-popup-text);
+    border-radius: 0;
+    background: var(--dinova-popup-text);
+    color: var(--dinova-popup-bg);
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .dinova-popup__button:hover,
+  .dinova-popup__button:focus-visible {
+    background: transparent;
+    color: var(--dinova-popup-text);
+  }
+
+  .dinova-popup__success .dinova-popup__button {
+    margin-top: 1.75rem;
+  }
+
+  .dinova-popup__error {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    color: #a3352b;
+  }
+
+  .dinova-popup__note {
+    margin-top: 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    opacity: 0.6;
+  }
+
+  .dinova-popup__note p {
+    margin: 0;
+  }
+
+  .dinova-popup__dismiss {
+    margin-top: 1.25rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: var(--font-body--family);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  @media screen and (min-width: 750px) {
+    .dinova-popup {
+      padding: 2rem;
+    }
+
+    .dinova-popup__content {
+      padding: 3.5rem 3rem 2.75rem;
+    }
+
+    /* With an image: two halves side by side, a line between them. */
+    .dinova-popup__panel--media {
+      grid-template-columns: 1fr 1fr;
+      width: min(100%, 56rem);
+    }
+
+    .dinova-popup__panel--media .dinova-popup__media,
+    .dinova-popup__panel--no-mobile-media .dinova-popup__media {
+      display: block;
+      aspect-ratio: auto;
+      min-height: 32rem;
+      border-bottom: 0;
+      border-inline-end: 1px solid var(--dinova-popup-line);
+    }
+
+    .dinova-popup__panel--media-right .dinova-popup__media {
+      order: 1;
+      border-inline-end: 0;
+      border-inline-start: 1px solid var(--dinova-popup-line);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dinova-popup__overlay,
+    .dinova-popup__panel {
+      filter: none;
+      transform: none;
+      transition: opacity 0.2s ease;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('dinova-popup')) {
+    const STORAGE_KEY = 'dinova-popup';
+    const DAY = 24 * 60 * 60 * 1000;
+
+    const readState = () => {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch (error) {
+        return {};
+      }
+    };
+
+    const writeState = (state) => {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        /* Storage blocked: the popup simply shows again next visit. */
+      }
+    };
+
+    class DinovaPopup extends HTMLElement {
+      connectedCallback() {
+        this.dialog = this.querySelector('dialog');
+        if (!this.dialog) return;
+
+        this.onClick = (event) => {
+          if (event.target.closest('[data-popup-close]')) this.close();
+        };
+        this.onCancel = (event) => {
+          event.preventDefault();
+          this.close();
+        };
+        this.dialog.addEventListener('click', this.onClick);
+        this.dialog.addEventListener('cancel', this.onCancel);
+
+        if (window.Shopify && window.Shopify.designMode) {
+          this.setupEditor();
+          return;
+        }
+
+        const posted = window.location.hash === `#${this.dataset.formId}`;
+        if (this.querySelector('[data-popup-success]')) {
+          writeState({ subscribed: true });
+          if (posted) this.open();
+          return;
+        }
+        if (posted && this.querySelector('[data-popup-error]')) {
+          this.open();
+          return;
+        }
+
+        if (this.dataset.auto !== 'true') return;
+        const state = readState();
+        if (state.subscribed) return;
+        const days = Number(this.dataset.days) || 0;
+        if (state.closedAt && Date.now() - state.closedAt < days * DAY) return;
+
+        this.timer = setTimeout(() => this.open(), (Number(this.dataset.delay) || 0) * 1000);
+      }
+
+      disconnectedCallback() {
+        clearTimeout(this.timer);
+        clearTimeout(this.closeTimer);
+        if (this.onSelect) {
+          document.removeEventListener('shopify:section:select', this.onSelect);
+          document.removeEventListener('shopify:section:deselect', this.onDeselect);
+        }
+      }
+
+      /* In the theme editor: open while the section is selected, and stay
+         open when a setting change re-renders it. */
+      setupEditor() {
+        const key = `dinova-popup-editing-${this.dataset.sectionId}`;
+        this.onSelect = (event) => {
+          if (event.detail.sectionId !== this.dataset.sectionId) return;
+          sessionStorage.setItem(key, '1');
+          this.open();
+        };
+        this.onDeselect = (event) => {
+          if (event.detail.sectionId !== this.dataset.sectionId) return;
+          sessionStorage.removeItem(key);
+          this.close({ remember: false });
+        };
+        document.addEventListener('shopify:section:select', this.onSelect);
+        document.addEventListener('shopify:section:deselect', this.onDeselect);
+        if (sessionStorage.getItem(key)) this.open({ instant: true });
+      }
+
+      open({ instant = false } = {}) {
+        if (this.dialog.open) return;
+        this.previousFocus = document.activeElement;
+        this.dialog.showModal();
+        if (instant) {
+          this.dialog.classList.add('is-visible');
+        } else {
+          requestAnimationFrame(() => requestAnimationFrame(() => this.dialog.classList.add('is-visible')));
+        }
+      }
+
+      close({ remember = true } = {}) {
+        if (!this.dialog.open) return;
+        if (remember && !(window.Shopify && window.Shopify.designMode)) {
+          const state = readState();
+          if (!state.subscribed) writeState({ closedAt: Date.now() });
+        }
+        if (window.location.hash === `#${this.dataset.formId}`) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        this.dialog.classList.remove('is-visible');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        this.closeTimer = setTimeout(() => {
+          this.dialog.close();
+          if (this.previousFocus && this.previousFocus.focus) this.previousFocus.focus();
+        }, reduced ? 200 : 600);
+      }
+    }
+
+    customElements.define('dinova-popup', DinovaPopup);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Dinova popup",
+  "tag": "div",
+  "class": "dinova-popup-section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Show popup to visitors",
+      "info": "The popup always opens here in the editor while this section is selected, so you can design it before switching it on.",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "delay",
+      "label": "Delay before it opens",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "frequency_days",
+      "label": "Show again after closing",
+      "info": "Days before a visitor who closed it sees it again. Visitors who subscribe are not asked again.",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "unit": "d",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Pages"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_home",
+      "label": "Home page",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_collections",
+      "label": "Collections and search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_products",
+      "label": "Product pages",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_on_other",
+      "label": "Other pages and blog",
+      "info": "Never shows on the cart, account pages or the password page, or to signed-in customers already subscribed.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Optional. Fills one half of the popup on desktop."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "image_on_mobile",
+      "label": "Show image on mobile",
+      "info": "Shown as a strip above the text.",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Small label",
+      "default": "The Dinova Circle"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "First light, for our circle"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Be the first to see new pieces from our Cairo atelier: lab-grown diamonds set in 18K gold, private previews and quiet notes on the craft.</p>"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Email field placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button",
+      "default": "Join the circle"
+    },
+    {
+      "type": "richtext",
+      "id": "note",
+      "label": "Small print",
+      "default": "<p>Only the letters worth opening. Unsubscribe at any time.</p>"
+    },
+    {
+      "type": "text",
+      "id": "dismiss_label",
+      "label": "Decline link",
+      "info": "Leave empty to hide it. The close button and the Escape key always work.",
+      "default": "No, thank you"
+    },
+    {
+      "type": "header",
+      "content": "After subscribing"
+    },
+    {
+      "type": "text",
+      "id": "success_heading",
+      "label": "Heading",
+      "default": "Welcome to the circle"
+    },
+    {
+      "type": "richtext",
+      "id": "success_text",
+      "label": "Text",
+      "default": "<p>Thank you. Your first letter from the atelier will find you soon.</p>"
+    },
+    {
+      "type": "text",
+      "id": "success_button",
+      "label": "Button",
+      "default": "Continue browsing"
+    },
+    {
+      "type": "paragraph",
+      "content": "Sign-ups appear under Customers in the Shopify admin, subscribed to email marketing and tagged newsletter and popup."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and button",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Borders",
+      "default": "#d6d1c9"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Page overlay",
+      "default": "#121212"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Page overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "presets": [
+    {
+      "name": "Dinova popup"
+    }
+  ]
+}
+{% endschema %}
