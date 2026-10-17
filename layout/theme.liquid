@@ -179,6 +179,7 @@
 
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
+      <script src="{{ 'dinova-quick-gallery.js' | asset_url }}" type="module"></script>
     {% endif %}
   </body>
 </html>

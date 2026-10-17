@@ -7,6 +7,10 @@
 {%- enddoc -%}
 
 <dinova-gallery-thumbs class="dinova-thumbs">
+  {%- comment -%} The arrows only show in the quick view carousel. {%- endcomment -%}
+  <button type="button" class="dinova-thumbs__step dinova-thumbs__step--prev" data-step="-1" aria-label="Previous image">
+    <span aria-hidden="true">&larr;</span>
+  </button>
   <ul class="dinova-thumbs__list list-unstyled">
     {%- for item in media -%}
       <li>
@@ -28,10 +32,17 @@
       </li>
     {%- endfor -%}
   </ul>
+  <button type="button" class="dinova-thumbs__step dinova-thumbs__step--next" data-step="1" aria-label="Next image">
+    <span aria-hidden="true">&rarr;</span>
+  </button>
 </dinova-gallery-thumbs>
 
 {% stylesheet %}
   .dinova-thumbs {
+    display: none;
+  }
+
+  .dinova-thumbs__step {
     display: none;
   }
 
@@ -102,6 +113,9 @@
         this.items = [...(this.gallery?.querySelectorAll('.media-gallery__grid > li') ?? [])];
         this.buttons = [...this.querySelectorAll('.dinova-thumbs__button')];
         if (!this.items.length) return;
+
+        // In the quick view the thumbnails switch photos instead (dinova-quick-gallery.js).
+        if (this.closest('dialog')) return;
 
         this.onClick = (event) => {
           const button = event.target.closest('.dinova-thumbs__button');
