@@ -15,6 +15,7 @@
     --dinova-cportrait-pt: {{ s.padding_top }}px;
     --dinova-cportrait-pb: {{ s.padding_bottom }}px;
     --dinova-cportrait-ratio: {{ s.image_ratio }};
+    --dinova-cportrait-sticky: {{ s.sticky_offset }}px;
   "
 >
   <div class="dinova-classic-portrait__media">
@@ -34,7 +35,16 @@
   </div>
 
   {%- if s.heading != blank -%}
-    <h2 class="dinova-classic-portrait__heading">{{ s.heading | newline_to_br }}</h2>
+    <div class="dinova-classic-portrait__aside">
+      <h2
+        class="dinova-classic-portrait__heading{% if s.sticky_heading %} dinova-classic-portrait__heading--sticky{% endif %}"
+        {% if s.reveal_heading %}
+          data-dinova-reveal
+        {% endif %}
+      >
+        {{ s.heading | newline_to_br }}
+      </h2>
+    </div>
   {%- endif -%}
 </div>
 
@@ -71,7 +81,6 @@
       /* Old page: image 0-49%, heading from 51% of the content width. */
       grid-template-columns: 49% 2% minmax(0, 1fr);
       gap: 0;
-      align-items: end;
       padding-inline: 5%;
     }
 
@@ -79,8 +88,22 @@
       grid-column: 1;
     }
 
-    .dinova-classic-portrait__heading {
+    /* The heading column runs the full height of the image, so a sticky
+       heading travels from the image's top edge down to its bottom edge. */
+    .dinova-classic-portrait__aside {
       grid-column: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .dinova-classic-portrait__aside:has(.dinova-classic-portrait__heading--sticky) {
+      justify-content: flex-start;
+    }
+
+    .dinova-classic-portrait__heading--sticky {
+      position: sticky;
+      top: var(--dinova-cportrait-sticky);
     }
   }
 {% endstylesheet %}
@@ -113,6 +136,30 @@
       "id": "heading",
       "label": "Heading",
       "default": "Innovation, Transparency, Modern Egyptian Luxury"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_heading",
+      "label": "Heading follows the scroll",
+      "info": "Desktop only. The heading stays in view from the top to the bottom of the image.",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Distance from top of screen",
+      "min": 0,
+      "max": 240,
+      "step": 8,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "checkbox",
+      "id": "reveal_heading",
+      "label": "Reveal letters while scrolling",
+      "info": "Letters fade from white to the text colour as the visitor scrolls.",
+      "default": true
     },
     {
       "type": "header",

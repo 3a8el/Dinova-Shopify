@@ -45,7 +45,6 @@
     '.dinova-cta__title',
     '.dinova-classic-story__title',
     '.dinova-classic-story__subtitle',
-    '.dinova-classic-portrait__heading',
   ];
 
   /* Smaller text, buttons and blocks that just fade up, staggered per section. */
@@ -167,6 +166,33 @@
     });
   }
 
+  /* Headings marked data-dinova-reveal: each letter shifts from white to the
+     heading's own colour, scrubbed with the scroll. The reveal finishes when
+     the heading's column scrolls out, so a sticky heading completes as it
+     reaches the bottom of its section. */
+  function reveal(el) {
+    const color = getComputedStyle(el).color;
+    const area = el.parentElement;
+    const stickTop = () => parseFloat(getComputedStyle(el).top) || 0;
+    const targets = SplitText ? SplitText.create(el, { type: 'words,chars' }).chars : [el];
+    gsap.fromTo(
+      targets,
+      { color: '#ffffff' },
+      {
+        color,
+        ease: 'none',
+        stagger: 0.1,
+        scrollTrigger: {
+          trigger: area,
+          start: 'top 70%',
+          end: () => `bottom top+=${stickTop() + el.offsetHeight}`,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+        },
+      }
+    );
+  }
+
   /* Group matches by section so each section staggers on its own. */
   function bySection(selectors, root = document) {
     const groups = new Map();
@@ -189,6 +215,8 @@
       lineEls.forEach(lines);
       bySection(FADES, root).forEach(fade);
       bySection(MEDIA, root).forEach(media);
+      const revealEls = root.matches?.('[data-dinova-reveal]') ? [root] : root.querySelectorAll('[data-dinova-reveal]');
+      revealEls.forEach(reveal);
     });
     contexts.set(root, mm);
   }

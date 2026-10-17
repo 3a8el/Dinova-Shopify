@@ -71,11 +71,12 @@
   }
 
   .dinova-classic-story__subtitle {
-    margin: 2rem 0 0;
-    max-width: 14ch;
+    margin: 1.5rem 0 0;
+    max-width: 30ch;
     font-family: var(--font-heading--family);
     font-weight: 500;
-    font-size: clamp(1.5rem, 2vw, 1.75rem);
+    font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+    text-wrap: balance;
     line-height: 1.2;
     color: inherit;
   }
@@ -88,7 +89,7 @@
   }
 
   .dinova-classic-story__intro-text {
-    max-width: 26ch;
+    max-width: 34ch;
     margin-top: 1.5rem;
   }
 
@@ -117,8 +118,8 @@
 
   @media screen and (min-width: 750px) {
     .dinova-classic-story {
-      /* Old page: text 0-20%, image 24-62%, story 62-100% of the content width. */
-      grid-template-columns: 20% 4% 38% minmax(0, 1fr);
+      /* Text 0-32% (wide enough for a two-line subtitle), image 34-64%, story 64-100%. */
+      grid-template-columns: 32% 2% 30% minmax(0, 1fr);
       gap: 0;
       padding-inline: 5%;
     }
@@ -126,7 +127,8 @@
     .dinova-classic-story__intro {
       grid-column: 1;
       grid-row: 1;
-      align-self: center;
+      align-self: start;
+      padding: clamp(1rem, 3vw, 3rem) 1.5rem 0 0;
     }
 
     .dinova-classic-story__media {
@@ -204,7 +206,7 @@
       "max": 160,
       "step": 8,
       "unit": "px",
-      "default": 40
+      "default": 16
     },
     {
       "type": "range",
