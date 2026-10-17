@@ -16,9 +16,10 @@
         "subtitle": "Redefining the Diamond Industry, One Brilliant Choice at a Time",
         "intro": "<p>We didn’t set out to create another jewelry brand.</p><p>We set out to challenge an industry.</p>",
         "image": "shopify://shop_images/dinova-about-1.webp",
-        "image_ratio": "5 / 7",
+        "image_ratio": "auto",
         "story": "<p>For decades, buying a diamond meant accepting a system built on tradition, limited transparency, and unnecessary compromise. Meanwhile, a new generation emerged—one that values innovation as much as craftsmanship, and conscious choices as much as timeless design.</p><p><strong>Dinova was built for them.</strong></p><p>Founded by Egyptian innovators, gemologists, and entrepreneurs, Dinova introduces a new chapter of fine jewelry through IGI-certified lab-grown diamonds and exceptional craftsmanship in 18K gold.</p><p>We’re not simply bringing lab-grown diamonds to Egypt.</p><p>We’re redefining luxury for a generation that expects more.</p><p>Diamonds. Reimagined.</p>",
-        "padding_top": 16,
+        "full_height": true,
+        "padding_top": 0,
         "padding_bottom": 80,
         "background_color": "#ffffff",
         "text_color": "#121212"
