@@ -211,15 +211,21 @@
   border-radius: 0;
 }
 
-/* Quick view: show the product description (Horizon hides it) right under
-   the price and tax note, above the options and buttons. */
+/* Quick view: show the product description right under the price and tax
+   note, above the options and buttons. Horizon hides everything in the quick
+   view's details except a short list, with display: none !important, so this
+   needs !important too (and a stronger selector) for the block and its text. */
 .quick-add-modal__content .product-details > .group-block > .group-block-content > rte-formatter.text-block {
-  display: block;
+  display: block !important;
   order: 1;
   margin-block: 1.25rem;
   font-size: 0.875rem;
   line-height: 1.6;
   opacity: 0.85;
+}
+
+.quick-add-modal__content .product-details > .group-block > .group-block-content > rte-formatter.text-block * {
+  display: revert !important;
 }
 
 .quick-add-modal__content .product-details > .group-block > .group-block-content > product-price ~ :not(rte-formatter.text-block) {
