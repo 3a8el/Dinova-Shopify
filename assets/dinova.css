@@ -216,6 +216,7 @@
 .quick-add-modal__content .product-details > .group-block > .group-block-content > div.text-block.rte {
   display: block;
   order: 1;
+  margin-block: 1.25rem;
   font-size: 0.875rem;
   line-height: 1.6;
   opacity: 0.85;
