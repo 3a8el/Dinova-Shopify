@@ -67,10 +67,14 @@
         "phrase_5"
       ],
       "settings": {
-        "heading": "EXPLORE OUR CURATIONS",
+        "heading": "",
         "separator": "/",
         "speed": 40,
         "direction": "left",
+        "pause_on_hover": false,
+        "show_images": false,
+        "enable_links": false,
+        "fade_images": false,
         "image_size": 56,
         "font_size": 36,
         "faded_opacity": 55,
