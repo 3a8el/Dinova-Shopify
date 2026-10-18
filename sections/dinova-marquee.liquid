@@ -1,7 +1,8 @@
 {%- comment -%}
   Dinova marquee: an endless row of phrases, each with a small round image.
-  Images are faded until hovered; hovering an item restores its colour, scales
-  it up and pauses the row. Each item can link somewhere.
+  Images can be faded until hovered; hovering an item restores its colour and
+  scales it up, and can pause the row. Images, links, pausing and fading each
+  have an on/off setting.
 {%- endcomment -%}
 
 {%- liquid
@@ -13,7 +14,7 @@
   {%- for block in section.blocks -%}
     {%- liquid
       assign tag = 'div'
-      if block.settings.link != blank
+      if s.enable_links and block.settings.link != blank
         assign tag = 'a'
       endif
       assign placeholder_index = forloop.index0 | modulo: 4
@@ -23,7 +24,8 @@
       {% if tag == 'a' %}href="{{ block.settings.link }}"{% endif %}
       {{ block.shopify_attributes }}
     >
-      {%- if block.settings.image != blank -%}
+      {%- if s.show_images == false -%}
+      {%- elsif block.settings.image != blank -%}
         {{
           block.settings.image
           | image_url: width: 160
@@ -44,7 +46,7 @@
 {%- endcapture -%}
 
 <dinova-marquee
-  class="dinova-marquee dinova-marquee--{{ s.direction }}"
+  class="dinova-marquee dinova-marquee--{{ s.direction }}{% if s.pause_on_hover %} dinova-marquee--pause{% endif %}{% if s.fade_images %} dinova-marquee--fade{% endif %}"
   style="
     --dinova-marquee-bg: {{ s.background_color }};
     --dinova-marquee-text: {{ s.text_color }};
@@ -100,7 +102,7 @@
             const clone = first.cloneNode(true);
             clone.setAttribute('aria-hidden', 'true');
             clone.inert = true;
-                  this.track.append(clone);
+            this.track.append(clone);
           }
 
           const speed = Number(this.dataset.speed) || 40;
@@ -143,8 +145,8 @@
     animation-direction: reverse;
   }
 
-  .dinova-marquee__track:hover,
-  .dinova-marquee__track:focus-within {
+  .dinova-marquee--pause .dinova-marquee__track:hover,
+  .dinova-marquee--pause .dinova-marquee__track:focus-within {
     animation-play-state: paused;
   }
 
@@ -180,9 +182,12 @@
     height: var(--dinova-marquee-image-size);
     border-radius: 50%;
     object-fit: cover;
+    transition: opacity 0.35s ease, filter 0.35s ease, transform 0.35s ease;
+  }
+
+  .dinova-marquee--fade .dinova-marquee__image {
     opacity: var(--dinova-marquee-faded);
     filter: grayscale(0.6);
-    transition: opacity 0.35s ease, filter 0.35s ease, transform 0.35s ease;
   }
 
   .dinova-marquee__item:hover .dinova-marquee__image,
@@ -268,6 +273,31 @@
       "default": "left"
     },
     {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_images",
+      "label": "Show images",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_links",
+      "label": "Make phrases links",
+      "info": "Uses each phrase's Link.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "fade_images",
+      "label": "Fade images until hovered",
+      "default": true
+    },
+    {
       "type": "range",
       "id": "image_size",
       "label": "Image size",
@@ -291,7 +321,7 @@
       "type": "range",
       "id": "faded_opacity",
       "label": "Faded image opacity",
-      "info": "How visible images are before they are hovered.",
+      "info": "How visible images are before they are hovered, when fading is on.",
       "min": 10,
       "max": 100,
       "step": 5,
