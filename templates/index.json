@@ -20,10 +20,70 @@
         "background_color": "#ffffff"
       }
     },
+    "dinova_marquee": {
+      "type": "dinova-marquee",
+      "blocks": {
+        "phrase_1": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Explore our curations",
+            "link": ""
+          }
+        },
+        "phrase_2": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Explore our curations",
+            "link": ""
+          }
+        },
+        "phrase_3": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Explore our curations",
+            "link": ""
+          }
+        },
+        "phrase_4": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Explore our curations",
+            "link": ""
+          }
+        },
+        "phrase_5": {
+          "type": "phrase",
+          "settings": {
+            "phrase": "Explore our curations",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "phrase_1",
+        "phrase_2",
+        "phrase_3",
+        "phrase_4",
+        "phrase_5"
+      ],
+      "settings": {
+        "heading": "EXPLORE OUR CURATIONS",
+        "separator": "/",
+        "speed": 40,
+        "direction": "left",
+        "image_size": 56,
+        "font_size": 36,
+        "faded_opacity": 55,
+        "background_color": "#ffffff",
+        "text_color": "#9a9a9a",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
     "dinova_product_carousel": {
       "type": "dinova-product-carousel",
       "settings": {
-        "title": "Best Sellers",
+        "title": "",
         "source": "latest",
         "product_list": [],
         "collection": "",
@@ -38,7 +98,7 @@
         "show_lines": false,
         "line_color": "#dcd9d4",
         "image_background": "#ffffff",
-        "padding_top": 48,
+        "padding_top": 0,
         "padding_bottom": 48
       }
     },
@@ -214,67 +274,6 @@
         "padding_bottom": 64
       }
     },
-    "dinova_marquee": {
-      "type": "dinova-marquee",
-      "blocks": {
-        "phrase_1": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Explore our curations",
-            "link": ""
-          }
-        },
-        "phrase_2": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Explore our curations",
-            "link": ""
-          }
-        },
-        "phrase_3": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Explore our curations",
-            "link": ""
-          }
-        },
-        "phrase_4": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Explore our curations",
-            "link": ""
-          }
-        },
-        "phrase_5": {
-          "type": "phrase",
-          "settings": {
-            "phrase": "Explore our curations",
-            "link": ""
-          }
-        }
-      },
-      "block_order": [
-        "phrase_1",
-        "phrase_2",
-        "phrase_3",
-        "phrase_4",
-        "phrase_5"
-      ],
-      "disabled": true,
-      "settings": {
-        "heading": "",
-        "separator": "/",
-        "speed": 40,
-        "direction": "left",
-        "image_size": 44,
-        "font_size": 36,
-        "faded_opacity": 55,
-        "background_color": "#ffffff",
-        "text_color": "#9a9a9a",
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
-    },
     "dinova_about": {
       "type": "dinova-about",
       "settings": {
@@ -333,6 +332,7 @@
         "text": "<p>Words can only say so much. The best way to understand the brilliance of a Dinova diamond is to see it for yourself.</p>",
         "view_all_label": "View all",
         "blog": "news",
+        "auto_count": 6,
         "view_all_link": "",
         "view_more_label": "View more",
         "columns_desktop": "2",
@@ -368,10 +368,10 @@
   },
   "order": [
     "dinova_hero",
+    "dinova_marquee",
     "dinova_product_carousel",
     "dinova_collection_switcher",
     "dinova_stone_cuts",
-    "dinova_marquee",
     "dinova_about",
     "dinova_video_blog",
     "dinova_split_media"
