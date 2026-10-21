@@ -1,6 +1,6 @@
 /**
  * Dinova desktop navigation (snippets/dinova-nav.liquid).
- * Places the drawer under the header, and expands it to show a top-level item's
+ * Places the drawer under the header, sizes it to the main column, and expands it to show a top-level item's
  * submenu when that item is clicked. Opening and closing the drawer stays with
  * Horizon's header-drawer.
  */
@@ -44,6 +44,10 @@ class DinovaNav extends HTMLElement {
     if (!this.header || !this.drawer) return;
     const top = Math.max(0, Math.round(this.header.getBoundingClientRect().bottom));
     this.details.style.setProperty('--dinova-nav-top', `${top}px`);
+
+    // The closed drawer is as wide as the main column, which fits its longest item
+    const main = this.querySelector('.dinova-nav__main');
+    if (main?.offsetWidth) this.details.style.setProperty('--dinova-nav-main-width', `${Math.ceil(main.offsetWidth)}px`);
   };
 
   /** @param {HTMLElement} button */

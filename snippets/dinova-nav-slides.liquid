@@ -1,0 +1,29 @@
+{%- doc -%}
+  Carousel slides for dinova-nav: the image of each collection or product in the
+  given links, then in their sub-links.
+
+  @param {object[]} links - The submenu links
+{%- enddoc -%}
+
+{%- for slide_link in links -%}
+  {%- liquid
+    assign slide_image = blank
+    case slide_link.type
+      when 'collection_link'
+        assign slide_image = slide_link.object.featured_image | default: slide_link.object.products.first.featured_image
+      when 'product_link'
+        assign slide_image = slide_link.object.featured_image
+    endcase
+  -%}
+  {%- if slide_image != blank -%}
+    <li class="dinova-nav__slide">
+      {{ slide_image | image_url: width: 800 | image_tag: widths: '400, 600, 800', sizes: '24vw', loading: 'lazy', class: 'dinova-nav__image', alt: slide_link.title }}
+    </li>
+  {%- endif -%}
+{%- endfor -%}
+
+{%- for slide_link in links -%}
+  {%- if slide_link.links.size > 0 -%}
+    {%- render 'dinova-nav-slides', links: slide_link.links -%}
+  {%- endif -%}
+{%- endfor -%}
