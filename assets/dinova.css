@@ -109,6 +109,16 @@
   }
 }
 
+/* On phones, search sits next to the menu button. Horizon moves it to the right
+ * when the header has no Shopify account element, which Dinova's own account
+ * link replaces. */
+@media screen and (max-width: 749px) {
+  #header-component[data-force-drawer] .header__columns .search-action,
+  #header-component[data-force-drawer][data-menu-style='drawer'] .header__columns .search-action {
+    grid-area: leftB;
+  }
+}
+
 /* ---------- Header: account link ---------- */
 
 .dinova-account-link {
