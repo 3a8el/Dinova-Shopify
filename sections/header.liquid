@@ -1306,6 +1306,117 @@
       "default": false
     },
     {
+      "type": "header",
+      "content": "Dinova menu drawer (desktop)",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "range",
+      "id": "dinova_nav_columns",
+      "label": "Submenu columns",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "link_list",
+      "id": "dinova_nav_secondary_menu",
+      "label": "Small links menu",
+      "info": "Shown at the bottom of the drawer, e.g. Privacy Policy, Shipping & Returns, Terms & Conditions.",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "text",
+      "id": "dinova_nav_phone",
+      "label": "Phone",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "text",
+      "id": "dinova_nav_hours",
+      "label": "Opening hours",
+      "placeholder": "Daily: 10:00 – 19:00",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "url",
+      "id": "dinova_nav_facebook_url",
+      "label": "Facebook",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "url",
+      "id": "dinova_nav_instagram_url",
+      "label": "Instagram",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "url",
+      "id": "dinova_nav_tiktok_url",
+      "label": "TikTok",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "url",
+      "id": "dinova_nav_pinterest_url",
+      "label": "Pinterest",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "paragraph",
+      "content": "Submenu images scroll from bottom to top next to the submenu links. Without any picked here, the images of the linked collections and products are used.",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_1",
+      "label": "Image 1",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_2",
+      "label": "Image 2",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_3",
+      "label": "Image 3",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_4",
+      "label": "Image 4",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_5",
+      "label": "Image 5",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "dinova_nav_image_6",
+      "label": "Image 6",
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
+      "type": "range",
+      "id": "dinova_nav_image_speed",
+      "label": "Image scroll duration",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "unit": "s",
+      "default": 30,
+      "visible_if": "{{ section.settings.dinova_force_drawer }}"
+    },
+    {
       "type": "select",
       "id": "menu_row",
       "label": "t:settings.row",
