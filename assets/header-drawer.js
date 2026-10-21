@@ -14,6 +14,9 @@ import { onAnimationEnd, removeWillChangeOnAnimationEnd } from '@theme/utilities
 class HeaderDrawer extends Component {
   requiredRefs = ['details', 'menuDrawer'];
 
+  /** Counts opens, so a close that finishes after the drawer was reopened doesn't reset it */
+  #openCount = 0;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -73,6 +76,7 @@ class HeaderDrawer extends Component {
     if (!summary) return;
 
     summary.setAttribute('aria-expanded', 'true');
+    this.#openCount++;
 
     this.preventInitialAccordionAnimations(details);
     requestAnimationFrame(() => {
@@ -120,10 +124,14 @@ class HeaderDrawer extends Component {
     // Wait for the .menu-drawer element's transition, not the entire details subtree
     // This avoids waiting for child accordion/resource-card animations which can cause issues on Firefox
     const drawer = details.querySelector('.menu-drawer, .menu-drawer__submenu');
+    const openCount = this.#openCount;
 
     onAnimationEnd(
       drawer || details,
       () => {
+        // Reopened while closing: leave it open
+        if (openCount !== this.#openCount) return;
+
         reset(details);
         if (details === this.refs.details) {
           removeTrapFocus();
