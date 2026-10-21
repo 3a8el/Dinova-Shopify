@@ -28,19 +28,46 @@
     color: var(--color-foreground);
   }
 
+  /* Three lines that turn into an X while the drawer is open */
   .dinova-menu-trigger__icon {
-    display: inline-flex;
-    width: 1.125rem;
-    transition: transform 0.3s ease;
+    position: relative;
+    display: inline-block;
+    width: 1.25rem;
+    height: 0.75rem;
   }
 
-  .dinova-menu-trigger__icon svg {
-    width: 100%;
-    height: auto;
+  .dinova-menu-trigger__bar {
+    position: absolute;
+    inset-inline: 0;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, top 0.4s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .header__icon--menu:hover .dinova-menu-trigger__icon {
-    transform: rotate(180deg);
+  .dinova-menu-trigger__bar:nth-child(1) {
+    top: 0;
+  }
+
+  .dinova-menu-trigger__bar:nth-child(2) {
+    top: calc(50% - 0.5px);
+  }
+
+  .dinova-menu-trigger__bar:nth-child(3) {
+    top: calc(100% - 1px);
+  }
+
+  .menu-open .dinova-menu-trigger__bar:nth-child(1) {
+    top: calc(50% - 0.5px);
+    transform: rotate(45deg);
+  }
+
+  .menu-open .dinova-menu-trigger__bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-open .dinova-menu-trigger__bar:nth-child(3) {
+    top: calc(50% - 0.5px);
+    transform: rotate(-45deg);
   }
 }
 
@@ -96,7 +123,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dinova-menu-trigger__icon {
+  .dinova-menu-trigger__bar {
     transition: none;
   }
 }
