@@ -1,0 +1,53 @@
+{%- doc -%}
+  A mobile page of dinova-nav: a back button and the link's title on top, then its
+  sub-links. Sub-links with their own children open the next page.
+
+  @param {string} page_id - The page's id; a child's page id is this id, a dash and the child's handle
+  @param {object} link - The menu link whose sub-links the page lists
+  @param {string} caret - The caret icon markup
+{%- enddoc -%}
+
+<div
+  class="dinova-nav__page"
+  id="{{ page_id }}"
+  data-dinova-nav-page-panel
+  role="group"
+  aria-label="{{ link.title | escape }}"
+>
+  <div class="dinova-nav__page-bar">
+    <button type="button" class="dinova-nav__back" aria-label="{{ 'actions.back' | t | default: 'Back' }}" data-dinova-nav-back>
+      {{- caret -}}
+    </button>
+    <a href="{{ link.url }}" class="dinova-nav__page-title">
+      <span class="dinova-nav__link-text">{{ link.title | escape }}</span>
+    </a>
+  </div>
+
+  <ul class="dinova-nav__page-list" role="list">
+    {%- for child in link.links -%}
+      <li class="dinova-nav__item dinova-nav__fade" style="--i: {{ forloop.index }};">
+        {%- if child.links.size > 0 -%}
+          <button
+            type="button"
+            class="dinova-nav__link"
+            aria-expanded="false"
+            data-dinova-nav-page="{{ page_id }}-{{ child.handle }}"
+          >
+            <span class="dinova-nav__link-text">{{ child.title | escape }}</span>
+            {{- caret -}}
+          </button>
+        {%- else -%}
+          <a
+            href="{{ child.url }}"
+            class="dinova-nav__link"
+            {% if child.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            <span class="dinova-nav__link-text">{{ child.title | escape }}</span>
+          </a>
+        {%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
