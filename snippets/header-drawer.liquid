@@ -88,6 +88,9 @@
         {% endif %}
       "
     >
+      {%- if section.settings.dinova_force_drawer -%}
+        {% render 'dinova-nav', linklist: linklist, section: section %}
+      {%- endif -%}
       <button
         class="button close-button menu-drawer__close-button focus-inset"
         type="button"
