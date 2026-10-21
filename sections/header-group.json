@@ -125,7 +125,10 @@
         "text_color_transparent_product": "",
         "enable_transparent_header_collection": false,
         "collection_inverse_logo": false,
-        "text_color_transparent_collection": ""
+        "text_color_transparent_collection": "",
+        "dinova_nav_facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
+        "dinova_nav_instagram_url": "https://www.instagram.com/dinova.eg",
+        "dinova_nav_tiktok_url": "https://www.tiktok.com/@dinova.eg"
       }
     }
   },
