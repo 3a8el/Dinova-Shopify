@@ -28,63 +28,44 @@
     color: var(--color-foreground);
   }
 
-  /* Two lines that turn into an X while the drawer is open */
+  /* Two lines that turn into an X while the drawer is open.
+     Both lines start on whole pixels so they render alike; the X is made with
+     transforms only, so the move stays calm. */
   .dinova-menu-trigger__icon {
     position: relative;
     display: inline-block;
-    width: 1.375rem;
-    height: 0.5rem;
+    width: 22px;
+    height: 8px;
   }
 
   .dinova-menu-trigger__bar {
-    --dinova-bar-ease: cubic-bezier(0.22, 1, 0.36, 1);
-
     position: absolute;
     inset-inline: 0;
     height: 1.5px;
     background: currentColor;
-    transition: transform 0.45s var(--dinova-bar-ease), top 0.45s var(--dinova-bar-ease);
+    clip-path: inset(0);
+    transition: transform 0.35s ease, clip-path 0.35s ease;
   }
 
   .dinova-menu-trigger__bar:nth-child(1) {
     top: 0;
-    transform-origin: right center;
   }
 
   .dinova-menu-trigger__bar:nth-child(2) {
-    top: calc(100% - 1.5px);
-    transform-origin: left center;
+    top: 6px;
   }
 
-  /* Hover: the lines shorten towards opposite ends */
-  .menu-drawer-container:not(.menu-open) .header__icon--menu:hover .dinova-menu-trigger__bar {
-    transform: scaleX(0.6);
-  }
-
+  /* Hover: the lower line shortens a little */
   .menu-drawer-container:not(.menu-open) .header__icon--menu:hover .dinova-menu-trigger__bar:nth-child(2) {
-    transition-delay: 0.06s;
-  }
-
-  .menu-open .dinova-menu-trigger__bar {
-    top: calc(50% - 0.75px);
-    transform-origin: center;
+    clip-path: inset(0 0 0 35%);
   }
 
   .menu-open .dinova-menu-trigger__bar:nth-child(1) {
-    transform: rotate(45deg);
+    transform: translateY(3px) rotate(45deg);
   }
 
   .menu-open .dinova-menu-trigger__bar:nth-child(2) {
-    transform: rotate(-45deg);
-  }
-
-  /* Hover on the X: it turns a quarter */
-  .menu-open .header__icon--menu:hover .dinova-menu-trigger__icon {
-    transform: rotate(90deg);
-  }
-
-  .dinova-menu-trigger__icon {
-    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(-3px) rotate(-45deg);
   }
 }
 
@@ -140,8 +121,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dinova-menu-trigger__bar,
-  .dinova-menu-trigger__icon {
+  .dinova-menu-trigger__bar {
     transition: none;
   }
 }
