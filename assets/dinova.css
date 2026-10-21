@@ -3,10 +3,32 @@
  * Keep Dinova-only styles here so Horizon's own files stay close to upstream.
  */
 
-/* ---------- Header: "Menu" + diamond trigger ---------- */
+/* ---------- Header: "Menu" + two-line trigger ----------
+ * With the Dinova menu drawer on, the trigger replaces Horizon's menu icons at
+ * every width; below 750px only the lines show, without the "Menu" word.
+ */
 
 .dinova-menu-trigger {
   display: none;
+}
+
+#header-component[data-force-drawer] .header__icon--menu .header-drawer-icon {
+  display: none;
+}
+
+#header-component[data-force-drawer] .dinova-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+@media screen and (max-width: 749px) {
+  #header-component[data-force-drawer] .dinova-menu-trigger__label {
+    display: none;
+  }
 }
 
 @media screen and (min-width: 750px) {
@@ -14,59 +36,46 @@
     width: auto;
     height: auto;
   }
+}
 
-  #header-component[data-force-drawer] .header__icon--menu .header-drawer-icon {
-    display: none;
-  }
+/* Two lines that turn into an X while the drawer is open.
+   Both lines start on whole pixels so they render alike; the X is made with
+   transforms only, so the move stays calm. */
+.dinova-menu-trigger__icon {
+  position: relative;
+  display: inline-block;
+  width: 22px;
+  height: 8px;
+}
 
-  #header-component[data-force-drawer] .dinova-menu-trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--color-foreground);
-  }
+.dinova-menu-trigger__bar {
+  position: absolute;
+  inset-inline: 0;
+  height: 1.5px;
+  background: currentColor;
+  clip-path: inset(0);
+  transition: transform 0.35s ease, clip-path 0.35s ease;
+}
 
-  /* Two lines that turn into an X while the drawer is open.
-     Both lines start on whole pixels so they render alike; the X is made with
-     transforms only, so the move stays calm. */
-  .dinova-menu-trigger__icon {
-    position: relative;
-    display: inline-block;
-    width: 22px;
-    height: 8px;
-  }
+.dinova-menu-trigger__bar:nth-child(1) {
+  top: 0;
+}
 
-  .dinova-menu-trigger__bar {
-    position: absolute;
-    inset-inline: 0;
-    height: 1.5px;
-    background: currentColor;
-    clip-path: inset(0);
-    transition: transform 0.35s ease, clip-path 0.35s ease;
-  }
+.dinova-menu-trigger__bar:nth-child(2) {
+  top: 6px;
+}
 
-  .dinova-menu-trigger__bar:nth-child(1) {
-    top: 0;
-  }
+/* Hover: the lower line shortens a little */
+.menu-drawer-container:not(.menu-open) .header__icon--menu:hover .dinova-menu-trigger__bar:nth-child(2) {
+  clip-path: inset(0 0 0 35%);
+}
 
-  .dinova-menu-trigger__bar:nth-child(2) {
-    top: 6px;
-  }
+.menu-open .dinova-menu-trigger__bar:nth-child(1) {
+  transform: translateY(3px) rotate(45deg);
+}
 
-  /* Hover: the lower line shortens a little */
-  .menu-drawer-container:not(.menu-open) .header__icon--menu:hover .dinova-menu-trigger__bar:nth-child(2) {
-    clip-path: inset(0 0 0 35%);
-  }
-
-  .menu-open .dinova-menu-trigger__bar:nth-child(1) {
-    transform: translateY(3px) rotate(45deg);
-  }
-
-  .menu-open .dinova-menu-trigger__bar:nth-child(2) {
-    transform: translateY(-3px) rotate(-45deg);
-  }
+.menu-open .dinova-menu-trigger__bar:nth-child(2) {
+  transform: translateY(-3px) rotate(-45deg);
 }
 
 /* ---------- Header: keep it visible while the menu drawer is open ----------
@@ -113,7 +122,7 @@
   height: 17px;
 }
 
-/* Account lives in the off-canvas menu on mobile (to be added with the navigation design) */
+/* Below 750px the account link lives in the menu drawer (snippets/dinova-nav.liquid) */
 @media screen and (max-width: 749px) {
   .dinova-account-link {
     display: none;
