@@ -68,11 +68,10 @@
       <span class="svg-wrapper header-drawer-icon header-drawer-icon--open">
         {{- 'icon-menu.svg' | inline_asset_content -}}
       </span>
-      {%- comment -%} Dinova: "Menu" + three-line icon that turns into an X, shown on desktop when the section forces the drawer {%- endcomment -%}
+      {%- comment -%} Dinova: "Menu" + two-line icon that turns into an X, shown on desktop when the section forces the drawer {%- endcomment -%}
       <span class="dinova-menu-trigger" aria-hidden="true">
         <span class="dinova-menu-trigger__label">{{ 'accessibility.menu' | t }}</span>
         <span class="dinova-menu-trigger__icon">
-          <span class="dinova-menu-trigger__bar"></span>
           <span class="dinova-menu-trigger__bar"></span>
           <span class="dinova-menu-trigger__bar"></span>
         </span>
