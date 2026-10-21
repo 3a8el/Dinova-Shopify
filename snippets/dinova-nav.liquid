@@ -219,11 +219,11 @@
       transition: opacity 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
     }
 
-    /* The blur builds up slowly as the drawer finishes sliding in */
+    /* The blur builds up as the drawer slides in */
     .menu-open.menu-drawer-container:has(.dinova-nav) .menu-drawer__backdrop {
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      transition: opacity 0.4s ease 0.3s, backdrop-filter 0.9s ease 0.35s, -webkit-backdrop-filter 0.9s ease 0.35s;
+      transition: opacity 0.3s ease 0.1s, backdrop-filter 0.4s ease 0.1s, -webkit-backdrop-filter 0.4s ease 0.1s;
     }
 
     /* ---------- Layout ---------- */
