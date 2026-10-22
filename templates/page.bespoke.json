@@ -12,13 +12,14 @@
     "dinova_page_hero": {
       "type": "dinova-page-hero",
       "settings": {
+        "image": "shopify://shop_images/IMG-20260908-WA0030.jpg",
         "eyebrow": "Start your bespoke journey",
         "title": "Bespoke",
         "lead": "Create something uniquely yours.",
         "text": "<p>From a meaningful stone to a completely original design, our bespoke service brings your vision to life through lab-grown diamonds, 18K gold, and considered craftsmanship.</p><p><em>Made for you. Made to last.</em></p>",
         "image_position": "right",
         "image_ratio": "4 / 5",
-        "background_color": "#fffbf5",
+        "background_color": "#FFFFFF",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
@@ -81,6 +82,7 @@
       "settings": {
         "eyebrow": "",
         "title": "The bespoke journey",
+        "image": "shopify://shop_images/IMG-20260908-WA0029.jpg",
         "image_position": "left",
         "image_ratio": "4 / 5",
         "sticky_offset": 72,
@@ -128,6 +130,7 @@
         "value_4"
       ],
       "settings": {
+        "image": "shopify://shop_images/bridal-1.webp",
         "title": "What can be bespoke?",
         "subtitle": "The details are yours to choose",
         "show_numbers": false,
@@ -141,6 +144,7 @@
     "dinova_cta": {
       "type": "dinova-cta",
       "settings": {
+        "image": "shopify://shop_images/prod-1-live.webp",
         "title": "Have something in mind?",
         "subtitle": "Let's start there.",
         "text": "<p>Already know exactly what you want?</p><p>Or maybe you only have a screenshot saved in your camera roll.</p><p>Either way, we'd love to hear about it.</p>",
@@ -148,7 +152,7 @@
         "button_link": "",
         "image_position": "left",
         "image_ratio": "4 / 5",
-        "background_color": "#FFFFFF",
+        "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
       }
