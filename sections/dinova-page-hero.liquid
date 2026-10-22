@@ -1,0 +1,248 @@
+{%- comment -%}
+  Dinova page hero: a lined split opening for a page. A wide text cell with a
+  small eyebrow at the top and a very large serif title, serif lead and
+  paragraphs at the bottom, beside a framed portrait image. Works with a
+  smaller image than the full-bleed About hero. Stacks on mobile, text first.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+-%}
+
+<div
+  class="dinova-phero dinova-phero--image-{{ s.image_position }}"
+  style="
+    --dinova-phero-bg: {{ s.background_color }};
+    --dinova-phero-text: {{ s.text_color }};
+    --dinova-phero-line: {{ s.line_color }};
+    --dinova-phero-ratio: {{ s.image_ratio }};
+  "
+>
+  <div class="dinova-phero__content">
+    {%- if s.eyebrow != blank -%}
+      <p class="dinova-phero__eyebrow">{{ s.eyebrow | escape }}</p>
+    {%- endif -%}
+
+    <div class="dinova-phero__bottom">
+      {%- if s.title != blank -%}
+        <h1 class="dinova-phero__title">{{ s.title | newline_to_br }}</h1>
+      {%- endif -%}
+      {%- if s.lead != blank -%}
+        <p class="dinova-phero__lead">{{ s.lead | escape | newline_to_br }}</p>
+      {%- endif -%}
+      {%- if s.text != blank -%}
+        <div class="dinova-phero__text">{{ s.text }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="dinova-phero__media">
+    {%- if s.image != blank -%}
+      {{
+        s.image
+        | image_url: width: 1400
+        | image_tag:
+          widths: '500, 800, 1100, 1400',
+          sizes: '(min-width: 750px) 40vw, 100vw',
+          fetchpriority: 'high',
+          class: 'dinova-phero__img'
+      }}
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'dinova-phero__img' }}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .dinova-phero {
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--dinova-phero-bg);
+    color: var(--dinova-phero-text);
+    border-bottom: 1px solid var(--dinova-phero-line);
+  }
+
+  .dinova-phero__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: 2rem 1.25rem 2.5rem;
+  }
+
+  .dinova-phero__eyebrow {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .dinova-phero__title {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(3.5rem, 9vw, 8.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    color: inherit;
+  }
+
+  .dinova-phero__lead {
+    margin: 1.75rem 0 0;
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight, 400);
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .dinova-phero__text {
+    max-width: 46ch;
+    margin-top: 1rem;
+    font-family: var(--font-body--family);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  .dinova-phero__text p {
+    margin: 0 0 0.75rem;
+  }
+
+  .dinova-phero__text p:last-child {
+    margin-bottom: 0;
+  }
+
+  .dinova-phero__media {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .dinova-phero__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: var(--dinova-phero-ratio);
+    object-fit: cover;
+  }
+
+  /* Desktop: wide text cell | narrower framed image, a line between them. */
+  @media screen and (min-width: 750px) {
+    .dinova-phero {
+      grid-template-columns: 3fr 2fr;
+    }
+
+    .dinova-phero--image-left {
+      grid-template-columns: 2fr 3fr;
+    }
+
+    .dinova-phero--image-left .dinova-phero__media {
+      order: -1;
+    }
+
+    .dinova-phero__content {
+      padding: 2rem 2rem 2.5rem;
+    }
+
+    .dinova-phero__media {
+      padding: 1.25rem;
+      border-inline-start: 1px solid var(--dinova-phero-line);
+    }
+
+    .dinova-phero--image-left .dinova-phero__media {
+      border-inline-start: 0;
+      border-inline-end: 1px solid var(--dinova-phero-line);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Dinova page hero",
+  "tag": "section",
+  "class": "dinova-phero-section",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "A portrait image around 1100 × 1400 px is enough."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Start your bespoke journey"
+    },
+    {
+      "type": "textarea",
+      "id": "title",
+      "label": "Title",
+      "default": "Bespoke"
+    },
+    {
+      "type": "textarea",
+      "id": "lead",
+      "label": "Large serif line",
+      "default": "Create something uniquely yours."
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraphs"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image on desktop",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        { "value": "4 / 5", "label": "Portrait" },
+        { "value": "3 / 4", "label": "Tall portrait" },
+        { "value": "1 / 1", "label": "Square" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "header",
+      "content": "Colours"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fffbf5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Lines",
+      "default": "#d6d1c9"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dinova page hero"
+    }
+  ]
+}
+{% endschema %}

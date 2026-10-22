@@ -43,6 +43,8 @@
     '.dinova-statement__lead',
     '.dinova-journey__heading',
     '.dinova-cta__title',
+    '.dinova-phero__title',
+    '.dinova-phero__lead',
     '.dinova-classic-story__title',
     '.dinova-classic-story__subtitle',
   ];
@@ -88,6 +90,8 @@
     '.dinova-cta__subtitle',
     '.dinova-cta__text',
     '.dinova-cta__button',
+    '.dinova-phero__eyebrow',
+    '.dinova-phero__text',
     '.dinova-classic-story__intro-text',
     '.dinova-classic-story__text',
     '.dinova-classic-values__item',
@@ -117,6 +121,7 @@
     '.dinova-cgrid__tile',
     '.dinova-journey__frame',
     '.dinova-cta__media',
+    '.dinova-phero__media',
     '.dinova-classic-story__media',
     '.dinova-classic-portrait__media',
   ];

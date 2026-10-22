@@ -9,20 +9,18 @@
  */
 {
   "sections": {
-    "dinova_about_hero": {
-      "type": "dinova-about-hero",
+    "dinova_page_hero": {
+      "type": "dinova-page-hero",
       "settings": {
-        "title": "BESPOKE",
-        "subtitle": "Start Your Bespoke Journey",
-        "text": "<p><strong>Create Something Uniquely Yours.</strong></p><p>From a meaningful stone to a completely original design, our bespoke service brings your vision to life through lab-grown diamonds, 18K gold, and considered craftsmanship.</p><p><em>Made for you. Made to last.</em></p>",
-        "sticky": true,
-        "sticky_offset": 72,
-        "box_position": "left",
-        "box_width": 610,
-        "box_background": "#fffbf5",
+        "eyebrow": "Start your bespoke journey",
+        "title": "Bespoke",
+        "lead": "Create something uniquely yours.",
+        "text": "<p>From a meaningful stone to a completely original design, our bespoke service brings your vision to life through lab-grown diamonds, 18K gold, and considered craftsmanship.</p><p><em>Made for you. Made to last.</em></p>",
+        "image_position": "right",
+        "image_ratio": "4 / 5",
+        "background_color": "#fffbf5",
         "text_color": "#121212",
-        "height_desktop": 150,
-        "height_mobile": 120
+        "line_color": "#d6d1c9"
       }
     },
     "dinova_statement": {
@@ -157,7 +155,7 @@
     }
   },
   "order": [
-    "dinova_about_hero",
+    "dinova_page_hero",
     "dinova_statement",
     "dinova_journey",
     "dinova_values",
