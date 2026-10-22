@@ -292,7 +292,7 @@
         "hide_mobile_2": false,
         "media_type_3": "image",
         "image_3": "shopify://shop_images/dinova-rings.jpg",
-        "hide_mobile_3": false,
+        "hide_mobile_3": true,
         "media_ratio": "3 / 4",
         "media_width": 78,
         "media_gap": 12,
