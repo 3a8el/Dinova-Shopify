@@ -86,6 +86,14 @@
         "logo_position": "center",
         "menu_position": "left",
         "dinova_force_drawer": true,
+        "dinova_nav_columns": 2,
+        "dinova_nav_phone": "01200126408",
+        "dinova_nav_hours": "",
+        "dinova_nav_facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
+        "dinova_nav_instagram_url": "https://www.instagram.com/dinova.eg",
+        "dinova_nav_tiktok_url": "https://www.tiktok.com/@dinova.eg",
+        "dinova_nav_pinterest_url": "",
+        "dinova_nav_image_speed": 30,
         "menu_row": "top",
         "customer_account_menu": "customer-account-main-menu",
         "show_search": true,
@@ -125,10 +133,7 @@
         "text_color_transparent_product": "",
         "enable_transparent_header_collection": false,
         "collection_inverse_logo": false,
-        "text_color_transparent_collection": "",
-        "dinova_nav_facebook_url": "https://www.facebook.com/people/Dinova/61586792145404/",
-        "dinova_nav_instagram_url": "https://www.instagram.com/dinova.eg",
-        "dinova_nav_tiktok_url": "https://www.tiktok.com/@dinova.eg"
+        "text_color_transparent_collection": ""
       }
     }
   },
