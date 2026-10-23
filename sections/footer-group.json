@@ -11,12 +11,6 @@
   "type": "footer",
   "name": "t:names.footer",
   "sections": {
-    "dinova_popup": {
-      "type": "dinova-popup",
-      "settings": {
-        "enabled": false
-      }
-    },
     "dinova_footer": {
       "type": "dinova-footer",
       "settings": {
@@ -28,9 +22,9 @@
         "legal_menu": "footer-2",
         "logo_width": 120,
         "logo_width_mobile": 125,
-        "address": "",
-        "phone": "",
-        "email": "",
+        "address": "Launching Soon in Laketown, New Cairo, Egypt.",
+        "phone": "01200126408",
+        "email": "info@dinovadiamnod.com",
         "copyright": "",
         "show_powered_by": false,
         "show_country": false,
@@ -38,6 +32,35 @@
         "background_color": "#ffffff",
         "text_color": "#121212",
         "line_color": "#d6d1c9"
+      }
+    },
+    "dinova_popup": {
+      "type": "dinova-popup",
+      "settings": {
+        "enabled": false,
+        "delay": 8,
+        "frequency_days": 14,
+        "show_on_home": true,
+        "show_on_collections": true,
+        "show_on_products": false,
+        "show_on_other": true,
+        "image_position": "left",
+        "image_on_mobile": false,
+        "eyebrow": "The Dinova Circle",
+        "heading": "First light, for our circle",
+        "text": "<p>Be the first to see new pieces from our Cairo atelier: lab-grown diamonds set in 18K gold, private previews and quiet notes on the craft.</p>",
+        "placeholder": "Your email address",
+        "button_label": "Join the circle",
+        "note": "<p>Only the letters worth opening. Unsubscribe at any time.</p>",
+        "dismiss_label": "No, thank you",
+        "success_heading": "Welcome to the circle",
+        "success_text": "<p>Thank you. Your first letter from the atelier will find you soon.</p>",
+        "success_button": "Continue browsing",
+        "background_color": "#fffbf5",
+        "text_color": "#121212",
+        "line_color": "#d6d1c9",
+        "overlay_color": "#121212",
+        "overlay_opacity": 40
       }
     },
     "footer": {
