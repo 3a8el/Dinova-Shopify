@@ -41,7 +41,7 @@
           <dt>Diamonds</dt>
           <dd>
             {%- for g in groups -%}
-              <span class="dinova-ptabs__stone">{{ g.count }} &times; {{ g.weight_ct }} ct</span>
+              <span class="dinova-ptabs__stone">{{ g.count }} &times; {{ g.weight_ct | round: 2 }} ct</span>
             {%- endfor -%}
             {%- if groups.size > 1 or groups[0].count > 1 -%}
               <span class="dinova-ptabs__stone">Total {{ total_ct | round: 2 }} ct</span>
