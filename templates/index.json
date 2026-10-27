@@ -113,7 +113,6 @@
           "type": "category",
           "settings": {
             "title": "Tennis Collection",
-            "text": "<p>An unbroken line of diamonds, each one matched and hand-set so the row flows as one. Our tennis bracelets and rivieras are the classic in its purest form, made to be worn from day to evening and kept for a lifetime.</p>",
             "image": "shopify://shop_images/Dinova-Tennis-Necklaces.webp",
             "collection": "",
             "link": ""
@@ -123,7 +122,6 @@
           "type": "category",
           "settings": {
             "title": "Rings",
-            "text": "<p>From a single emerald cut to an eternity band set all the way around, each Dinova ring is set by hand in 18K gold in our Cairo atelier, made to mark a moment and then wear every day.</p>",
             "image": "shopify://shop_images/Dinova-Rings.webp",
             "collection": "",
             "link": ""
@@ -133,7 +131,6 @@
           "type": "category",
           "settings": {
             "title": "Necklaces",
-            "text": "<p>Rivieras, pendants and fine chains that rest close to the skin. Every stone is chosen one by one for its fire, so the light follows you.</p>",
             "image": "shopify://shop_images/Dinova-Necklaces.webp",
             "collection": "",
             "link": ""
@@ -143,7 +140,6 @@
           "type": "category",
           "settings": {
             "title": "Earrings",
-            "text": "<p>Studs for the everyday and drops that move when you do. Diamonds in pear, oval and round cuts, set to catch the light from every angle.</p>",
             "image": "shopify://shop_images/Dinova-Earrings.webp",
             "collection": "",
             "link": ""
@@ -153,7 +149,6 @@
           "type": "category",
           "settings": {
             "title": "Bracelets",
-            "text": "<p>Tennis lines and delicate links, a continuous row of diamonds made to sit easily on the wrist and stack with what you already love.</p>",
             "image": "shopify://shop_images/Dinova-Braceletes.webp",
             "collection": "",
             "link": ""
@@ -163,7 +158,6 @@
           "type": "category",
           "settings": {
             "title": "Bangles",
-            "text": "<p>Sculpted gold with a quiet line of diamonds. They’re bold enough to wear alone and refined enough to layer.</p>",
             "image": "shopify://shop_images/Dinova-Bangles.webp",
             "collection": "",
             "link": ""
@@ -180,6 +174,7 @@
       ],
       "settings": {
         "heading": "Our Collections",
+        "text": "<p>Each Dinova piece is set by hand in 18K gold in our Cairo atelier, with every diamond chosen one by one for its fire. Explore our tennis lines, rings, necklaces, earrings, bracelets and bangles, made to wear every day and keep for a lifetime.</p>",
         "link_label": "View Collection",
         "switch_on_hover": false,
         "name_size": 5,
