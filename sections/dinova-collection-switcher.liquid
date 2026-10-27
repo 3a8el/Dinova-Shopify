@@ -1,6 +1,7 @@
 {%- comment -%}
-  Dinova "Our collection" switcher: a fixed small heading, a list of large category
-  names, and a paragraph, image and link that change with the selected category.
+  Dinova "Our collection" switcher: a fixed small heading and paragraph for the whole
+  section, a list of large category names, and an image and link that change with
+  the selected category.
   Each category is a block, so the client can add, remove and reorder them.
 {%- endcomment -%}
 
@@ -27,22 +28,9 @@
         <h2 class="dinova-switcher__heading">{{ section.settings.heading }}</h2>
       {%- endif -%}
 
-      <div class="dinova-switcher__texts">
-        {%- for block in categories -%}
-          <div
-            class="dinova-switcher__text rte{% if forloop.first %} is-active{% endif %}"
-            id="DinovaSwitcherPanel-{{ block.id }}"
-            role="tabpanel"
-            aria-labelledby="DinovaSwitcherTab-{{ block.id }}"
-            data-index="{{ forloop.index0 }}"
-            {% unless forloop.first %}
-              hidden
-            {% endunless %}
-          >
-            {{ block.settings.text }}
-          </div>
-        {%- endfor -%}
-      </div>
+      {%- if section.settings.text != blank -%}
+        <div class="dinova-switcher__text rte">{{ section.settings.text }}</div>
+      {%- endif -%}
     </div>
 
     <div class="dinova-switcher__names" role="tablist" aria-label="{{ section.settings.heading | escape }}">
@@ -100,6 +88,9 @@
       {%- for block in categories -%}
         <div
           class="dinova-switcher__image{% if forloop.first %} is-active{% endif %}"
+          id="DinovaSwitcherPanel-{{ block.id }}"
+          role="tabpanel"
+          aria-labelledby="DinovaSwitcherTab-{{ block.id }}"
           data-index="{{ forloop.index0 }}"
         >
           {%- if block.settings.image != blank -%}
@@ -165,7 +156,7 @@
             tab.tabIndex = i === index ? 0 : -1;
           });
 
-          this.querySelectorAll('.dinova-switcher__text, .dinova-switcher__link').forEach((el) => {
+          this.querySelectorAll('.dinova-switcher__link').forEach((el) => {
             const active = Number(el.dataset.index) === index;
             el.classList.toggle('is-active', active);
             el.hidden = !active;
@@ -236,10 +227,6 @@
 
   .dinova-switcher__text p {
     margin: 0;
-  }
-
-  .dinova-switcher__text.is-active {
-    animation: dinova-switcher-fade 0.4s ease;
   }
 
   .dinova-switcher__names {
@@ -326,20 +313,10 @@
     object-fit: cover;
   }
 
-  @keyframes dinova-switcher-fade {
-    from {
-      opacity: 0;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .dinova-switcher__name,
     .dinova-switcher__image {
       transition: none;
-    }
-
-    .dinova-switcher__text.is-active {
-      animation: none;
     }
   }
 {% endstylesheet %}
@@ -355,6 +332,13 @@
       "id": "heading",
       "label": "Small heading",
       "default": "Our Collections"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Paragraph",
+      "info": "Shown once for the whole section.",
+      "default": "<p>Each Dinova piece is set by hand in 18K gold in our Cairo atelier, with every diamond chosen one by one for its fire.</p>"
     },
     {
       "type": "text",
@@ -444,12 +428,6 @@
           "id": "title",
           "label": "Name",
           "default": "Rings"
-        },
-        {
-          "type": "richtext",
-          "id": "text",
-          "label": "Paragraph",
-          "default": "<p>Describe this category here.</p>"
         },
         {
           "type": "image_picker",
