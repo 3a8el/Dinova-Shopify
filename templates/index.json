@@ -276,9 +276,9 @@
     "dinova_about": {
       "type": "dinova-about",
       "settings": {
-        "text": "<p>We believe that accessories are an essential part of expressing your personal identity, and we're dedicated to creating art pieces</p>",
+        "text": "<p>We believe diamonds can be reimagined. Driven by innovation and modern design, we’re shaping a new era of fine jewellery for those who see beyond the expected.</p>",
         "button_label": "About us",
-        "button_link": "",
+        "button_link": "shopify://pages/our-story",
         "media_type_1": "image",
         "image_1": "shopify://shop_images/dinova-aura-eye.jpg",
         "hide_mobile_1": false,
